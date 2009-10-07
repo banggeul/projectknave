@@ -18,7 +18,7 @@ void sceneManager::setup(){
 	scenes			= new baseScene*[numScenes];
 	
 	scenes[0]		= new BodyScene();				// OOP love it. 
-	scenes[1]		= new MonsterScene()
+	scenes[1]		= new MonsterScene();
 	scenes[2]		= new StarScene();
 	scenes[3]		= new TreeScene();
 	
