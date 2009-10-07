@@ -3,6 +3,7 @@
 
 
 #include "ofMain.h"
+#include "cvManager.h"
 
 
 class testApp : public ofBaseApp{
@@ -20,6 +21,9 @@ class testApp : public ofBaseApp{
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		void resized(int w, int h);
+	
+		cvManager	CVM;
+		
 
 };
 

@@ -7,31 +7,36 @@
 #include "ofxCvMain.h"
 
 
+#include "cvStrokeResampler.h"
+#include "cvPacket.h"
+#include "ofxNetwork.h"
+
+
 class cvManager {
 	
 	public:
 	
 	
 	cvManager();
+	~cvManager();
 		
 	//changing cameras or switching from/to the camera mode
 	//requires the app to be restarted - mabe we can change this?
 	void setupCamera(int deviceNumber, int width, int height);
 	void setupVideo(string videoPath);
+	void setupCV();
+
 	
 	bool isFrameNew();
 	
 	//do all our openCV allocation
 	//---------------------------		
-	void setupCV();
-	
+		
 	//good for adjusting the color balance, brightness etc
 	void openCameraSettings();
-
 	
+	void update();
 	
-	void processFrame();
-			
 	void draw(float x, float y, int w = 640, int h = 480);
 
 	//-------------
@@ -53,6 +58,24 @@ class cvManager {
 	ofxCvContourFinder		Contour;
 	
 	
+	//-----------------------------------
+	//		* packet * 
+	
+	void					fillPacket();
+	cvStrokeResampler		SR;
+	computerVisionPacket	* packet;
+	
+	//-----------------------------------
+	//		* network * 
+	
+	
+	void					receiveFromNetwork();
+	void					sendToNetwork();
+	bool					bNetworkSetup;
+	ofxUDPManager			manager;
+	string					IP;
+	unsigned short			port;
+	unsigned char *			packetData;
 	
 
 };
