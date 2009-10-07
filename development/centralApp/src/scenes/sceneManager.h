@@ -14,6 +14,11 @@
 #include "simpleScene.h"
 #include "baseScene.h"
 
+#include "BodyScene.h"
+#include "MonsterScene.h"
+#include "StarScene.h"
+#include "TreeScene.h"
+
 class sceneManager {
 	
 	public :
