@@ -32,11 +32,14 @@ void testApp::draw(){
 	} else if (drawMode == DRAW_SCENE) {
 		SM.draw();
 	}
+	
+	ofSetColor(0, 0, 0);
+	ofDrawBitmapString("left / right key to change draw", 20, 20);
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
-
+	
 	switch (key){
 			
 		case OF_KEY_RIGHT:
