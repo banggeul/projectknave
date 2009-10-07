@@ -41,6 +41,10 @@ void sceneManager::prevScene(){
 	}
 }
 
+void sceneManager::passInPacket(computerVisionPacket * packet){
+	memcpy(&(scenes[currentScene]->packet), packet, sizeof(computerVisionPacket));
+}
+
 
 
 void sceneManager::update(){

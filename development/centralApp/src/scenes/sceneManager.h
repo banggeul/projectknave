@@ -25,6 +25,10 @@ class sceneManager {
 	void nextScene();
 	void prevScene();
 	
+	void passInPacket(computerVisionPacket * packet);
+	
+	
+	
 	int						numScenes;
 	baseScene **			scenes;
 	int						currentScene;

@@ -4,6 +4,14 @@
 
 #include "ofMain.h"
 #include "cvManager.h"
+#include "sceneManager.h"
+
+
+enum {
+	
+	DRAW_SCENE, DRAW_CV
+	
+};
 
 
 class testApp : public ofBaseApp{
@@ -22,7 +30,12 @@ class testApp : public ofBaseApp{
 		void mouseReleased(int x, int y, int button);
 		void resized(int w, int h);
 	
-		cvManager	CVM;
+		cvManager				CVM;
+		sceneManager			SM;
+	
+		int						drawMode;
+	
+	
 		
 
 };
