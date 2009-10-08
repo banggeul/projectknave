@@ -12,8 +12,8 @@
  */
 
 
-// [zachl]	TODO: (first) -- 
-//			modified as setupScreen as per: http://www.openframeworks.cc/forum/viewtopic.php?p=14546&#p14546
+// [zachl]	new modications -- 
+//			* modified as setupScreenForMe / Them as per: http://www.openframeworks.cc/forum/viewtopic.php?p=14546&#p14546
 
 
 #include "ofxFBOTexture.h"
@@ -107,18 +107,28 @@ void ofxFBOTexture::setupScreenForMe(){
         float farDist   = dist * 10.0;
         aspect                  = (float)w/(float)h;
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        gluPerspective(screenFov, aspect, nearDist, farDist);
-        gluLookAt(eyeX, eyeY, dist, eyeX, eyeY, 0.0, 0.0, 1.0, 0.0);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+		/*
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(screenFov, aspect, nearDist, farDist);
+		gluLookAt(eyeX, eyeY, dist, eyeX, eyeY, 0.0, 0.0, 1.0, 0.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		*/
+	
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(screenFov, aspect, nearDist, farDist);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eyeX, eyeY, dist, eyeX, eyeY, 0.0, 0.0, 1.0, 0.0);
 
 
         glScalef(1, -1, 1);           // invert Y axis so increasing Y goes down.
         glTranslatef(0, -h, 0);       // shift origin up to upper-left corner.
 
-    glViewport(0,0,texData.width, texData.height);
+		glViewport(0,0,texData.width, texData.height);
 
 }
 
@@ -142,15 +152,24 @@ void ofxFBOTexture::setupScreenForThem(){
         float nearDist  = dist / 10.0;  // near / far clip plane
         float farDist   = dist * 10.0;
         aspect                  = (float)w/(float)h;
-
+		
+		/*
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         gluPerspective(screenFov, aspect, nearDist, farDist);
         gluLookAt(eyeX, eyeY, dist, eyeX, eyeY, 0.0, 0.0, 1.0, 0.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-
-
+		*/
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(screenFov, aspect, nearDist, farDist);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eyeX, eyeY, dist, eyeX, eyeY, 0.0, 0.0, 1.0, 0.0);
+	
+		
         glScalef(1, -1, 1);           // invert Y axis so increasing Y goes down.
         glTranslatef(0, -h, 0);       // shift origin up to upper-left corner.
 
