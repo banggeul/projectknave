@@ -13,7 +13,7 @@ void testApp::setup(){
 	SM.gotoScene(TREE_SCENE);
 	
 	drawMode = DRAW_SCENE;
-	//
+	
 }
 
 //--------------------------------------------------------------
