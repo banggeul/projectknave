@@ -1,30 +1,25 @@
-/*
- *  simpleScene.cpp
- *  openFrameworks
- *
- *  Created by Zach Lieberman on 9/23/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
 
 #include "TreeScene.h"
 
-
-void TreeScene::setup(){
-	tempC = (int)ofRandom(0, 255);
+// ------------------------------------------
+void TreeScene::setup() {
 
 }
 
-void TreeScene::update(){
+// ------------------------------------------
+
+void TreeScene::mousePressed(int x, int y, int button) {
+}
+
+// ------------------------------------------
+void TreeScene::update() {
 	
 }
 
-void TreeScene::draw(){
+// ------------------------------------------
+void TreeScene::draw() {
 	
 	
-	ofFill();
-	ofSetColor(tempC, tempC, 255);
-	ofRect(0,0,320,240);
 	
 	
 	for (int i = 0; i < packet.nBlobs; i++){

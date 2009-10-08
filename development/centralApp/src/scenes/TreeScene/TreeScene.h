@@ -12,6 +12,11 @@
 #include "ofMain.h"
 #include "baseScene.h"
 
+#include "Stem.h"
+
+#define MAX_STEMS 10
+
+
 class TreeScene : public baseScene {
 	
 public: 
@@ -19,7 +24,11 @@ public:
 	void setup();
 	void update();
 	void draw();
+
+	void mousePressed(int x, int y, int button);
 	
-	int tempC;
+	Stem stems[MAX_STEMS];
+	
+	
 	
 };

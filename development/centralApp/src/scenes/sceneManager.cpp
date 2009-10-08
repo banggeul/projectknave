@@ -58,6 +58,44 @@ void sceneManager::update(){
 void sceneManager::draw(){
 	scenes[currentScene]->draw();
 }
+void sceneManager::gotoScene(int theScene) {
+	if(theScene < 0) theScene = 0;
+	if(theScene > numScenes) theScene = numScenes;
+	currentScene = theScene;	
+}
 
 
+// --------------------------------------------------- keyboard and mouse
+void sceneManager::keyPressed(int key) {
+	scenes[currentScene]->keyPressed(key);
+}
+void sceneManager::keyReleased(int key) {
+	scenes[currentScene]->keyReleased(key);
+}
+void sceneManager::mouseMoved(int x, int y) {
+	scenes[currentScene]->mouseMoved(x, y);
+}
+void sceneManager::mouseDragged(int x, int y, int button) {
+	scenes[currentScene]->mouseDragged(x, y, button);
+}
+void sceneManager::mousePressed(int x, int y, int button) {
+	scenes[currentScene]->mousePressed(x, y, button);
+}
+void sceneManager::mouseReleased(int x, int y, int button) {
+	scenes[currentScene]->mouseReleased(x, y, button);
+}
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+

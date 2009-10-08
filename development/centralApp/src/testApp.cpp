@@ -10,8 +10,11 @@ void testApp::setup(){
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
 	SM.setup();
 	
+	SM.gotoScene(TREE_SCENE);
 	
 	drawMode = DRAW_SCENE;
+	
+	printf("%i", TREE_SCENE);
 }
 
 //--------------------------------------------------------------
@@ -45,6 +48,9 @@ void testApp::draw(){
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
 	
+	SM.keyPressed(key);
+	
+	
 	switch (key){
 			
 		case OF_KEY_RIGHT:
@@ -67,27 +73,27 @@ void testApp::keyPressed  (int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-	
+	SM.keyReleased(key);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-	
+	SM.mouseMoved(x, y);	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-	
+	SM.mouseDragged(x, y, button);
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-	
+	SM.mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-	
+	SM.mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------
