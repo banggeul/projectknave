@@ -13,7 +13,7 @@ void sceneManager::setup(){
 	
 	
 	currentScene	= 0;
-	numScenes		= 4;
+	numScenes		= 3;
 	
 	scenes			= new baseScene*[numScenes];
 	
