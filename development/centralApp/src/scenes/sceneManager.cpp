@@ -13,7 +13,7 @@ void sceneManager::setup(){
 	
 	
 	currentScene	= 0;
-	numScenes		= 3;
+	numScenes		= 4;
 	
 	scenes			= new baseScene*[numScenes];
 	
@@ -21,6 +21,7 @@ void sceneManager::setup(){
 	scenes[1]		= new MonsterScene();
 	scenes[2]		= new StarScene();
 	scenes[3]		= new TreeScene();
+	scenes[4]		= new PaintScene();
 	
 	
 	for (int i = 0; i < numScenes; i++){

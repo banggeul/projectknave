@@ -18,6 +18,7 @@
 #include "MonsterScene.h"
 #include "StarScene.h"
 #include "TreeScene.h"
+#include "PaintScene.h"
 
 class sceneManager {
 	
