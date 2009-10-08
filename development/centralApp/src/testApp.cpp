@@ -8,12 +8,12 @@
 void testApp::setup(){
 	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
-	SM.setup();
 	
+	SM.setup();
 	SM.gotoScene(TREE_SCENE);
 	
 	drawMode = DRAW_SCENE;
-	
+	//
 }
 
 //--------------------------------------------------------------

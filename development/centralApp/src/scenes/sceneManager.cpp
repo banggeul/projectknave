@@ -14,15 +14,15 @@ void sceneManager::setup(){
 	
 	
 	currentScene	= 0;
-	numScenes		= 4;
+	numScenes		= 5;
 	
 	scenes			= new baseScene*[numScenes];
 	
 	scenes[0]		= new HandScene();				// OOP love it. 
 	scenes[1]		= new TreeScene();
-	scenes[2]		= new PaintScene();
-	scenes[3]		= new MonsterScene();
-	scenes[4]		= new StarScene();
+	scenes[2]		= new HandScene();
+	scenes[3]		= new HandScene();
+	scenes[4]		= new HandScene();
 	
 	
 	for (int i = 0; i < numScenes; i++){
@@ -34,7 +34,7 @@ void sceneManager::setup(){
 
 void sceneManager::nextScene(){
 	currentScene++;
-	if (currentScene > numScenes){
+	if (currentScene >= numScenes){
 		currentScene = 0;
 	}
 }
