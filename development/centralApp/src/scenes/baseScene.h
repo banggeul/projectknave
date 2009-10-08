@@ -22,6 +22,13 @@ public:
 	virtual void setup(){}
 	virtual void update(){}
 	virtual void draw(){}
+	
+	virtual void keyPressed(int key){}
+	virtual void keyReleased(int key){}
+	virtual void mouseMoved(int x, int y){}
+	virtual void mouseDragged(int x, int y, int button){}
+	virtual void mousePressed(int x, int y, int button){}
+	virtual void mouseReleased(int x, int y, int button){}
 
 	// this is kind of ghetto
 	// but for now, every scene will have the packet data for doing 
