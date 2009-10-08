@@ -13,10 +13,7 @@ enum {
 	
 };
 
-enum {
-	BODY_SCENE, MONSTER_SCENE,
-	STAR_SCENE, TREE_SCENE, PAINT_SCENE
-};
+
 
 
 class testApp : public ofBaseApp{
