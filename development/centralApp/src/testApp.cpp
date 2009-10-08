@@ -14,7 +14,6 @@ void testApp::setup(){
 	
 	drawMode = DRAW_SCENE;
 	
-	printf("%i", TREE_SCENE);
 }
 
 //--------------------------------------------------------------

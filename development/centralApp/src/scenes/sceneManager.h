@@ -14,7 +14,7 @@
 #include "simpleScene.h"
 #include "baseScene.h"
 
-#include "BodyScene.h"
+#include "HandScene.h"
 #include "MonsterScene.h"
 #include "StarScene.h"
 #include "TreeScene.h"
@@ -22,10 +22,7 @@
 
 
 enum {
-
-	BODY_SCENE, MONSTER_SCENE,
-	STAR_SCENE, TREE_SCENE, PAINT_SCENE
-
+	HAND_SCENE, TREE_SCENE, PAINT_SCENE, MONSTER_SCENE, STAR_SCENE
 };
 
 
