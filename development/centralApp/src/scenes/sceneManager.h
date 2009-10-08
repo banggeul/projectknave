@@ -20,6 +20,15 @@
 #include "TreeScene.h"
 #include "PaintScene.h"
 
+
+enum {
+
+	BODY_SCENE, MONSTER_SCENE,
+	STAR_SCENE, TREE_SCENE, PAINT_SCENE
+
+};
+
+
 class sceneManager {
 	
 	public :
