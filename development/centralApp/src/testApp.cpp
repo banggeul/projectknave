@@ -8,12 +8,7 @@
 void testApp::setup(){
 	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
-<<<<<<< .mine
 	FB.setupBuilding("building.jpg");
-
-=======
-	
->>>>>>> .r40
 	SM.setup();
 	SM.gotoScene(TREE_SCENE);
 	
