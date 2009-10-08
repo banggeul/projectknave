@@ -12,7 +12,7 @@
 #include "ofMain.h"
 #include "baseScene.h"
 
-class BodyScene : public baseScene {
+class HandScene : public baseScene {
 	
 public: 
 	

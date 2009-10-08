@@ -7,18 +7,18 @@
  *
  */
 
-#include "BodyScene.h"
+#include "HandScene.h"
 
 
-void BodyScene::setup(){
+void HandScene::setup(){
 	tempC = (int)ofRandom(0, 255);
 }
 
-void BodyScene::update(){
+void HandScene::update(){
 	
 }
 
-void BodyScene::draw(){
+void HandScene::draw(){
 	
 	
 	ofFill();
