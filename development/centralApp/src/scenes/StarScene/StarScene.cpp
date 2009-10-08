@@ -11,7 +11,8 @@
 
 
 void StarScene::setup(){
-		
+	tempC = (int)ofRandom(0, 255);
+
 }
 
 void StarScene::update(){
@@ -22,7 +23,7 @@ void StarScene::draw(){
 	
 	
 	ofFill();
-	ofSetColor(255, 255, 255);
+	ofSetColor(tempC, tempC, 255);
 	ofRect(0,0,320,240);
 	
 	

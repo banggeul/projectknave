@@ -20,6 +20,7 @@ public:
 	void update();
 	void draw();
 	
+	int tempC;
 		
 	
 };

@@ -11,7 +11,7 @@
 
 
 void BodyScene::setup(){
-		
+	tempC = (int)ofRandom(0, 255);
 }
 
 void BodyScene::update(){
@@ -22,7 +22,7 @@ void BodyScene::draw(){
 	
 	
 	ofFill();
-	ofSetColor(255, 255, 255);
+	ofSetColor(tempC, tempC, 255);
 	ofRect(0,0,320,240);
 	
 	
