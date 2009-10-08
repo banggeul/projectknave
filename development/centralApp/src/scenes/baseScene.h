@@ -14,6 +14,7 @@
 
 #include "ofMain.h"
 #include "cvPacket.h"
+#include "FerryBuilding.h"
 
 class baseScene{
 	
@@ -36,5 +37,6 @@ public:
 	// later we might have an object sitting between the raw data and
 	// the scenes, smoothing or post processing
 	
-	computerVisionPacket		packet;		
+	computerVisionPacket		packet;	
+	FerryBuilding				building;
 };
