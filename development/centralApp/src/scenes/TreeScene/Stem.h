@@ -1,18 +1,28 @@
-/*
- *  Stem.h
- *  openFrameworks
- *
- *  Created by Todd Vanderlin on 10/7/09.
- *  Copyright 2009 Interactive Design. All rights reserved.
- *
- */
+
+#pragma once
+#include "ofMain.h"
+#include "ofxVectorMath.h"
 
 
 
 class Stem {
 
 public:
+	
+	int stemLength;
+	
+	// ------------------------------------------
 	Stem() {
+		stemLength = (int)ofRandom(10, 50);
+	}
+	
+	// ------------------------------------------
+	void update() {
 		
 	}
+	
+	// ------------------------------------------
+	void draw() {
+	}
+	
 };

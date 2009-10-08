@@ -3,32 +3,31 @@
 
 // ------------------------------------------
 void TreeScene::setup() {
-
+	curStem = 0;
 }
 
 // ------------------------------------------
 
 void TreeScene::mousePressed(int x, int y, int button) {
+
+	curStem ++;
+	curStem %= MAX_STEMS;
 }
 
 // ------------------------------------------
 void TreeScene::update() {
-	
+	for(int i=0; i<MAX_STEMS; i++) {
+		stems[i].update();
+	}
 }
 
 // ------------------------------------------
 void TreeScene::draw() {
 	
+	for(int i=0; i<MAX_STEMS; i++) {
+		stems[i].draw();
+	}	
 	
 	
-	
-	for (int i = 0; i < packet.nBlobs; i++){
-		ofNoFill();
-		ofSetColor(255, 0, 0);
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
-		}
-		ofEndShape(true);
-	}
+
 }

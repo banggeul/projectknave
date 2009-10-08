@@ -27,7 +27,9 @@ public:
 
 	void mousePressed(int x, int y, int button);
 	
-	Stem stems[MAX_STEMS];
+	
+	int		curStem;
+	Stem	stems[MAX_STEMS];
 	
 	
 	
