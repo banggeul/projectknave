@@ -6,7 +6,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-
+	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
 	SM.setup();
 	
@@ -34,7 +34,12 @@ void testApp::draw(){
 	}
 	
 	ofSetColor(0, 0, 0);
-	ofDrawBitmapString("left / right key to change draw", 20, 20);
+	string info = "	FPS: "+ofToString(ofGetFrameRate());
+	info += "\n		left / right key to change draw";
+	info += "\n		up / down to change scenes.";
+	info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
+	
+	ofDrawBitmapString(info, 20, 20);
 }
 
 //--------------------------------------------------------------
@@ -50,36 +55,43 @@ void testApp::keyPressed  (int key){
 			drawMode --;
 			if (drawMode < 0) drawMode += 2;	
 			break;
+			
+		case OF_KEY_UP:
+			SM.nextScene();
+			break;
+		case OF_KEY_DOWN:
+			SM.prevScene();
+			break;
 	}
 }
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::resized(int w, int h){
-
+	
 }
 
