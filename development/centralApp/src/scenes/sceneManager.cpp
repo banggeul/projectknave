@@ -51,6 +51,9 @@ void sceneManager::passInPacket(computerVisionPacket * packet){
 	memcpy(&(scenes[currentScene]->packet), packet, sizeof(computerVisionPacket));
 }
 
+void sceneManager::passInFerryBuilding(FerryBuilding * ferry) {
+	scenes[currentScene]->building = (*ferry);
+}
 
 
 void sceneManager::update(){

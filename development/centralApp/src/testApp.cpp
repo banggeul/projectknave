@@ -8,7 +8,12 @@
 void testApp::setup(){
 	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
+<<<<<<< .mine
+	FB.setupBuilding("building.jpg");
+
+=======
 	
+>>>>>>> .r40
 	SM.setup();
 	SM.gotoScene(TREE_SCENE);
 	
@@ -21,19 +26,28 @@ void testApp::update(){
 	
 	CVM.update();
 	
+	SM.passInFerryBuilding(&FB);
 	SM.passInPacket(CVM.packet);
 	SM.update();
+	
 	
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
 	
+	
+	FB.draw();
+	
+	
 	if (drawMode == DRAW_CV){
 		CVM.draw(0,0,900,300);
 	} else if (drawMode == DRAW_SCENE) {
 		SM.draw();
 	}
+	
+	
+	
 	
 	ofSetColor(0, 0, 0);
 	string info = "	FPS: "+ofToString(ofGetFrameRate());
