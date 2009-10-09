@@ -43,7 +43,7 @@ public:
 
         void clear();
         void clear(float r, float g, float b, float a);
-
+		void setClearColor(float r, float g, float b, float a); // 0-255 ey!
         void bindAsTexture();
 
 

@@ -220,6 +220,13 @@ void ofxFBOTexture::clear(float r, float g, float b, float a) {
     clear();
 }
 
+void ofxFBOTexture::setClearColor(float r, float g, float b, float a){
+	clearColor[0] = r/255.0f;
+    clearColor[1] = g/255.0f;
+    clearColor[2] = b/255.0f;
+    clearColor[3] = a/255.0f;
+}
+
 void ofxFBOTexture::bindAsTexture(){
 	glBindTexture(GL_TEXTURE_2D, (GLuint)texData.textureName);
 }
