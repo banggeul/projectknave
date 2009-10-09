@@ -11,6 +11,7 @@ void testApp::setup(){
 	FB.setupBuilding("building.jpg");
 	SM.setup();
 	SM.gotoScene(TREE_SCENE);
+	RM.setup();
 	
 	drawMode = DRAW_SCENE;
 	
@@ -20,6 +21,8 @@ void testApp::setup(){
 void testApp::update(){
 	
 	CVM.update();
+	
+	RM.update();
 	
 	SM.passInFerryBuilding(&FB);
 	SM.passInPacket(CVM.packet);
@@ -38,7 +41,12 @@ void testApp::draw(){
 	if (drawMode == DRAW_CV){
 		CVM.draw(0,0,900,300);
 	} else if (drawMode == DRAW_SCENE) {
+		
+		RM.swapInFBO();
 		SM.draw();
+		RM.swapOutFBO();
+		ofSetColor(255,255,255);
+		RM.drawForPreview();
 	}
 	
 	

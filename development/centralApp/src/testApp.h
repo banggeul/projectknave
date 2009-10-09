@@ -6,6 +6,8 @@
 #include "cvManager.h"
 #include "sceneManager.h"
 #include "FerryBuilding.h"
+#include "renderManager.h"
+
 
 enum {
 	
@@ -35,6 +37,8 @@ public:
 	cvManager				CVM;
 	sceneManager			SM;
 	FerryBuilding			FB;
+	renderManager			RM;
+	
 	int						drawMode;
 	
 	

@@ -15,6 +15,7 @@
 #include "ofMain.h"
 #include "cvPacket.h"
 #include "FerryBuilding.h"
+#include "renderConstants.h"
 
 class baseScene{
 	

@@ -20,9 +20,9 @@ void sceneManager::setup(){
 	
 	scenes[0]		= new HandScene();				// OOP love it. 
 	scenes[1]		= new TreeScene();
-	scenes[2]		= new HandScene();
-	scenes[3]		= new HandScene();
-	scenes[4]		= new HandScene();
+	scenes[2]		= new PaintScene();
+	scenes[3]		= new MonsterScene();
+	scenes[4]		= new StarScene();
 	
 	
 	for (int i = 0; i < numScenes; i++){

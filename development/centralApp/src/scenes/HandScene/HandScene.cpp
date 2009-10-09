@@ -35,4 +35,9 @@ void HandScene::draw(){
 		}
 		ofEndShape(true);
 	}
+	
+	ofSetColor(255, 0, 0);
+	ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
+
 }
