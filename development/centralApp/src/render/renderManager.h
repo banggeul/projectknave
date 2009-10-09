@@ -21,6 +21,6 @@ class renderManager {
 	
 	ofxFBOTexture  FBO;
 	
-	
+	ofPoint	getPointInPreview(float x, float y, bool bCap = true);
 	
 };
