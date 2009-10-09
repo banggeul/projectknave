@@ -18,6 +18,7 @@ class FerryBuilding {
 	
 public:
 	
+	bool					bEnable;
 	ofImage					building;
 	vector <FerryShape>		shapes; 
 	ofxXmlSettings			xmlSaver;

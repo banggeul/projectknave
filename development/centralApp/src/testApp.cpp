@@ -58,6 +58,7 @@ void testApp::draw(){
 		
 		info = "	FPS: "+ofToString(ofGetFrameRate());
 		info += "\n	Click to draw building contour";
+		info += "\n	[e] toggle on and off contours";
 		info += "\n	[Space] to add new shape";
 		info += "\n	[c] to clear the building";
 		info += "\n	[s] to save the building to xml";

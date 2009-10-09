@@ -6,6 +6,8 @@
 // ------------------------------------ setup
 void FerryBuilding::setupBuilding(string buildingFile) {
 	
+	bEnable = false;
+	
 	building.loadImage(buildingFile);
 	
 	// load the building from xml
@@ -28,7 +30,7 @@ void FerryBuilding::setupBuilding(string buildingFile) {
 					float y = xmlSaver.getValue("pnt:y", 0.0, j);
 					shapes.back().pnts.push_back(ofPoint(x,y,0));
 				}
-			
+				
 				xmlSaver.popTag();
 				
 			}			
@@ -96,24 +98,29 @@ void FerryBuilding::clear() {
 
 // ------------------------------------ mouse/keyboard
 void FerryBuilding::keyPressed(int key) {
-	if(key == ' ') { 
-		shapes.push_back(FerryShape());
+	if(bEnable) {
+		if(key == ' ') { 
+			shapes.push_back(FerryShape());
+		}
+		if(key == 'c') clear();
+		if(key == 's') saveBuilding();
 	}
-	if(key == 'c') clear();
-	if(key == 's') saveBuilding();
+	
+	// need to turn me on first
+	if(key == 'e') bEnable = !bEnable;
 }
 
 
 void FerryBuilding::mousePressed(int x, int y, int button) {
-	
-	// we need one to start
-	if(shapes.size() == 0) {
-		shapes.push_back(FerryShape());
+	if(bEnable) {
+		// we need one to start
+		if(shapes.size() == 0) {
+			shapes.push_back(FerryShape());
+			shapes.back().pnts.push_back(ofPoint(x,y,0));
+		}
+		
 		shapes.back().pnts.push_back(ofPoint(x,y,0));
 	}
-	
-	shapes.back().pnts.push_back(ofPoint(x,y,0));
-	
 	
 }
 
