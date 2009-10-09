@@ -90,9 +90,7 @@ void testApp::draw(){
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed  (int key){
-	
-	printf("c \n");
+void testApp::keyPressed(int key){
 	
 	SM.keyPressed(key);
 	FB.keyPressed(key);
