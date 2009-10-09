@@ -26,7 +26,7 @@ public:
 	
 	
 	// ------------------------------------
-	void setupBuilding(string buildingFile);
+	void setupBuilding();
 	void draw();
 	void drawContour();
 	void clear();

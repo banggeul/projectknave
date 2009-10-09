@@ -4,11 +4,11 @@
 
 
 // ------------------------------------ setup
-void FerryBuilding::setupBuilding(string buildingFile) {
+void FerryBuilding::setupBuilding() {
 	
 	bEnable = false;
 	
-	building.loadImage(buildingFile);
+	building.loadImage("buildingRefrences/building.jpg");
 	
 	mask.loadImage("buildingRefrences/mask_half.png");
 	
@@ -62,7 +62,7 @@ void FerryBuilding::saveBuilding() {
 		xmlSaver.popTag();
 	}
 	xmlSaver.popTag();
-	xmlSaver.saveFile("building.xml");
+	xmlSaver.saveFile("buildingRefrences/building.xml");
 	printf("--- building saved ---\n");
 }
 
@@ -71,6 +71,7 @@ void FerryBuilding::draw() {
 	
 	ofSetColor(0xffffff);
 	//mask.draw(0, 0);	
+	building.draw(0, 0);
 }
 
 // ------------------------------------ Draw the building contour
