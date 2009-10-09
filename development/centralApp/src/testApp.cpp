@@ -105,7 +105,10 @@ void testApp::keyPressed(int key){
 	FB.keyPressed(key);
 	
 	switch (key){
-			
+		
+		case 'f':
+			ofToggleFullscreen();
+			break;
 		case OF_KEY_RIGHT:
 			drawMode ++;
 			drawMode %= 3;
