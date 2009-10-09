@@ -68,9 +68,18 @@ void testApp::draw(){
 		
 	}
 	else if(drawMode == DRAW_FERRY) {
+		
+		RM.swapInFBO();
+		ofEnableAlphaBlending();
+		ofSetColor(255,255,255, 210);
+		FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+		
 		// The Ferry Building
-		//FB.draw();
 		FB.drawContour();
+		
+		RM.swapOutFBO();
+		ofSetColor(255,255,255);
+		RM.drawForPreview();
 		
 		info = "	FPS: "+ofToString(ofGetFrameRate());
 		info += "\n	Click to draw building contour";
