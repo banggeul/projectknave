@@ -121,24 +121,28 @@ void testApp::keyReleased(int key){
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ){
-	SM.mouseMoved(x, y);	
+void testApp::mouseMoved(int x, int y ) {
+	ofPoint pos = RM.getPointInPreview(x, y);
+	SM.mouseMoved(pos.x, pos.y);	
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
-	SM.mouseDragged(x, y, button);
+void testApp::mouseDragged(int x, int y, int button) {
+	ofPoint pos = RM.getPointInPreview(x, y);
+	SM.mouseDragged(pos.x, pos.y, button);
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
-	SM.mousePressed(x, y, button);
-	FB.mousePressed(x, y, button);
+void testApp::mousePressed(int x, int y, int button) {
+	ofPoint pos = RM.getPointInPreview(x, y);
+	SM.mousePressed(pos.x, pos.y, button);
+	FB.mousePressed(pos.x, pos.y, button);
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button){
-	SM.mouseReleased(x, y, button);
+void testApp::mouseReleased(int x, int y, int button) {
+	ofPoint pos = RM.getPointInPreview(x, y);
+	SM.mouseReleased(pos.x, pos.y, button);
 }
 
 //--------------------------------------------------------------
