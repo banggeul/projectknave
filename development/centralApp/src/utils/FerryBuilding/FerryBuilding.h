@@ -3,25 +3,44 @@
 #pragma once;
 
 #include "ofMain.h"
+#include "ofxXmlSettings.h"
+
+// simpe shape holder for points
+class FerryShape {
+public:
+	int				 num;
+	vector <ofPoint> pnts;	
+};
+
+
 
 class FerryBuilding {
 	
 public:
 	
-	ofImage building;
+	ofImage					building;
+	vector <FerryShape>		shapes; 
+	ofxXmlSettings			xmlSaver;
+	
 	
 	// ------------------------------------
 	void setupBuilding(string buildingFile);
 	void draw();
+	void drawContour();
+	void clear();
 	
-	void update(){}
+	void saveBuilding();
 	
 	
-	void keyPressed(int key){}
+	void update() {}
+	void keyPressed(int key);
+	void mousePressed(int x, int y, int button);
+	
+	
+	
 	void keyReleased(int key){}
 	void mouseMoved(int x, int y){}
 	void mouseDragged(int x, int y, int button){}
-	void mousePressed(int x, int y, int button){}
 	void mouseReleased(int x, int y, int button){}
 	
 	
