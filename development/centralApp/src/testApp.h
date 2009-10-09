@@ -11,7 +11,7 @@
 
 enum {
 	
-	DRAW_SCENE, DRAW_CV
+	DRAW_SCENE, DRAW_CV, DRAW_FERRY
 	
 };
 
