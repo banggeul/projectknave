@@ -34,8 +34,11 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 	
-	
-	FB.draw();
+	ofSetColor(0, 0, 0);
+	string info = "	FPS: "+ofToString(ofGetFrameRate());
+	info += "\n		left / right key to change draw";
+	info += "\n		up / down to change scenes.";
+	info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
 	
 	
 	if (drawMode == DRAW_CV){
@@ -48,15 +51,23 @@ void testApp::draw(){
 		ofSetColor(255,255,255);
 		RM.drawForPreview();
 	}
+	else if(drawMode == DRAW_FERRY) {
+		// The Ferry Building
+		FB.draw();
+		FB.drawContour();
+		
+		info = "	FPS: "+ofToString(ofGetFrameRate());
+		info += "\n	Click to draw building contour";
+		info += "\n	[Space] to add new shape";
+		info += "\n	[c] to clear the building";
+		info += "\n	[s] to save the building to xml";
+	}
 	
 	
 	
 	
-	ofSetColor(0, 0, 0);
-	string info = "	FPS: "+ofToString(ofGetFrameRate());
-	info += "\n		left / right key to change draw";
-	info += "\n		up / down to change scenes.";
-	info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
+	
+	
 	
 	ofDrawBitmapString(info, 20, 20);
 }
@@ -65,17 +76,17 @@ void testApp::draw(){
 void testApp::keyPressed  (int key){
 	
 	SM.keyPressed(key);
-	
+	FB.keyPressed(key);
 	
 	switch (key){
 			
 		case OF_KEY_RIGHT:
 			drawMode ++;
-			drawMode %= 2;
+			drawMode %= 3;
 			break;
 		case OF_KEY_LEFT:
 			drawMode --;
-			if (drawMode < 0) drawMode += 2;	
+			if (drawMode < 0) drawMode += 3;	
 			break;
 			
 		case OF_KEY_UP:
@@ -105,6 +116,7 @@ void testApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
 	SM.mousePressed(x, y, button);
+	FB.mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
