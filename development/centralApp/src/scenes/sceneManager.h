@@ -34,6 +34,7 @@ class sceneManager {
 	void setup();
 	void update();
 	void draw();
+	void drawTop();
 	
 	void nextScene();
 	void prevScene();

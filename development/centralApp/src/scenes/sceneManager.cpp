@@ -63,6 +63,11 @@ void sceneManager::update(){
 void sceneManager::draw(){
 	scenes[currentScene]->draw();
 }
+
+void sceneManager::drawTop(){
+	scenes[currentScene]->drawTop();
+}
+
 void sceneManager::gotoScene(int theScene) {
 	if(theScene < 0) theScene = 0;
 	if(theScene > numScenes) theScene = numScenes;

@@ -20,6 +20,7 @@ public:
 	
 	bool					bEnable;
 	ofImage					building;
+	ofImage					mask;		
 	vector <FerryShape>		shapes; 
 	ofxXmlSettings			xmlSaver;
 	

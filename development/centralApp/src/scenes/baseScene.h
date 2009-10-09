@@ -25,6 +25,8 @@ public:
 	virtual void update(){}
 	virtual void draw(){}
 	
+	virtual void drawTop(){}		// this is a drawing "on top" of the building mask, for diagnostic stuff. 
+	
 	virtual void keyPressed(int key){}
 	virtual void keyReleased(int key){}
 	virtual void mouseMoved(int x, int y){}

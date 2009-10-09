@@ -31,9 +31,10 @@ void renderManager::swapOutFBO(){
 
 void renderManager::drawForPreview(){
 
+	float ratio = (float)OFFSCREEN_HEIGHT / (float)OFFSCREEN_WIDTH;
 	
 	float width = ofGetWidth();
-	float height = 0.75 * width;
+	float height = ratio * width;
 	float diff = ofGetHeight() - height;
 	if (diff < 0) diff = 0;
 	FBO.draw(0,diff,width, height);

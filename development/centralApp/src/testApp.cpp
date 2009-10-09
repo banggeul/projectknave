@@ -8,7 +8,7 @@
 void testApp::setup(){
 	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
-	FB.setupBuilding("building.jpg");
+	FB.setupBuilding("buildingRefrences/building.jpg");
 	SM.setup();
 	SM.gotoScene(TREE_SCENE);
 	RM.setup();
@@ -20,6 +20,7 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
 	
+
 	CVM.update();
 	
 	RM.update();
@@ -27,8 +28,7 @@ void testApp::update(){
 	SM.passInFerryBuilding(&FB);
 	SM.passInPacket(CVM.packet);
 	SM.update();
-	
-	
+
 }
 
 //--------------------------------------------------------------
@@ -43,17 +43,28 @@ void testApp::draw(){
 	
 	if (drawMode == DRAW_CV){
 		CVM.draw(0,0,900,300);
+		
 	} else if (drawMode == DRAW_SCENE) {
 		
 		RM.swapInFBO();
 		SM.draw();
+		
+		ofEnableAlphaBlending();
+		ofSetColor(255,255,255, 210);
+		FB.mask.draw(0, 0);
+		
+		ofSetColor(255,255,255);
+		SM.drawTop();
+		
 		RM.swapOutFBO();
 		ofSetColor(255,255,255);
 		RM.drawForPreview();
+		
+		
 	}
 	else if(drawMode == DRAW_FERRY) {
 		// The Ferry Building
-		FB.draw();
+		//FB.draw();
 		FB.drawContour();
 		
 		info = "	FPS: "+ofToString(ofGetFrameRate());
@@ -75,6 +86,8 @@ void testApp::draw(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed  (int key){
+	
+	printf("c \n");
 	
 	SM.keyPressed(key);
 	FB.keyPressed(key);

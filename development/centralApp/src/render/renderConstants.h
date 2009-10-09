@@ -28,5 +28,5 @@
 												// gonna start something simpler
 */
 
-#define OFFSCREEN_WIDTH				2048		// 768 * 5
-#define OFFSCREEN_HEIGHT			1536		// 3840 * 0.75 
+#define OFFSCREEN_WIDTH				1793		// 768 * 5
+#define OFFSCREEN_HEIGHT			1024		// 3840 * 0.75 

@@ -19,15 +19,14 @@ void HandScene::update(){
 }
 
 void HandScene::draw(){
-	
-	
-	ofFill();
-	ofSetColor(tempC, tempC, 255);
-	ofRect(0,0,320,240);
-	
-	
+	ofSetColor(255, 0, 0);
+	ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
+}
+
+void HandScene::drawTop(){
 	for (int i = 0; i < packet.nBlobs; i++){
-		ofNoFill();
+		ofFill();
 		ofSetColor(255, 0, 0);
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++){	
@@ -35,9 +34,5 @@ void HandScene::draw(){
 		}
 		ofEndShape(true);
 	}
-	
-	ofSetColor(255, 0, 0);
-	ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-	ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
 
 }
