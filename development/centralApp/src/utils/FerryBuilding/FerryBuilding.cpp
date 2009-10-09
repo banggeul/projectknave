@@ -10,7 +10,7 @@ void FerryBuilding::setupBuilding(string buildingFile) {
 	
 	building.loadImage(buildingFile);
 	
-	mask.loadImage("buildingRefrences/mask.png");
+	mask.loadImage("buildingRefrences/mask_half.png");
 	
 	// load the building from xml
 	if(xmlSaver.loadFile("buildingRefrences/building.xml")) {
@@ -70,7 +70,7 @@ void FerryBuilding::saveBuilding() {
 void FerryBuilding::draw() {
 	
 	ofSetColor(0xffffff);
-	mask.draw(0, 0);	
+	//mask.draw(0, 0);	
 }
 
 // ------------------------------------ Draw the building contour

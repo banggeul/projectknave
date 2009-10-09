@@ -51,7 +51,7 @@ void testApp::draw(){
 		
 		ofEnableAlphaBlending();
 		ofSetColor(255,255,255, 210);
-		FB.mask.draw(0, 0);
+		FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 		
 		ofSetColor(255,255,255);
 		SM.drawTop();
