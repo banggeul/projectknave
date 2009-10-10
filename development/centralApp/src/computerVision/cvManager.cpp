@@ -20,6 +20,8 @@ cvManager::cvManager(){
 	
 	cout << "creating a packet, size = " << endl;
 	cout << sizeof(computerVisionPacket) << endl;
+	
+
 }
 
 

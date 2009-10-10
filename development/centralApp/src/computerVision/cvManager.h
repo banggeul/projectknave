@@ -6,10 +6,11 @@
 #include "ofMain.h"
 #include "ofxCvMain.h"
 
-
 #include "cvStrokeResampler.h"
 #include "cvPacket.h"
 #include "ofxNetwork.h"
+
+#include "ofxXmlSettings.h"
 
 
 class cvManager {
@@ -65,9 +66,15 @@ class cvManager {
 	cvStrokeResampler		SR;
 	computerVisionPacket	* packet;
 	
+	
+	//-----------------------------------
+	//		* settings * 
+	
+	ofxXmlSettings			XML;
+	
+	
 	//-----------------------------------
 	//		* network * 
-	
 	
 	void					receiveFromNetwork();
 	void					sendToNetwork();

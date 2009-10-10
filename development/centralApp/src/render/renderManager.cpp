@@ -7,7 +7,7 @@
 void renderManager::setup(){
 	
 	FBO.allocate(OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT, true);
-	FBO.setClearColor(127,127,127,255);
+	FBO.setClearColor(0,0,0,255);
 	
 }
 

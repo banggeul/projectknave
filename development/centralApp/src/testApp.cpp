@@ -54,6 +54,7 @@ void testApp::draw(){
 		
 		ofSetColor(255, 0, 0);
 		ofPoint pos = RM.getPointInPreview(mouseX, mouseY);
+		ofFill();
 		ofCircle(pos.x, pos.y, 50);
 		
 		FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
