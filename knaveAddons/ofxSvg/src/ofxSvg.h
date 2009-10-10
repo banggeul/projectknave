@@ -3,23 +3,13 @@
 #include "ofxVectorMath.h"
 #include "ofxXmlSettings.h"
 #include "ofxSvgPath.h"
-#include "ofxSvgMoveTo.h"
-#include "ofxSvgCurveTo.h"
-#include "ofxSvgSmoothCurveTo.h"
-#include "ofxSvgLineTo.h"
 
-inline ofPoint readPoint(istringstream& stream) {
-	ofPoint point;
-	stream >> point.x;
-	if(stream.peek() == ',')
-		stream.ignore(1);
-	stream >> point.y;
-	if(stream.peek() == ',')
-		stream.ignore(1);
-	return point;
-}
+class ofxSvgDrawable {
+public:
+	virtual void draw() = 0;
+};
 
-class ofxSvg {
+class ofxSvg : public ofxSvgDrawable {
 protected:
 	float width, height;
 	ofxPoint2f anchor;
@@ -51,46 +41,7 @@ public:
 		xml.pushTag("svg");
 		int paths = xml.getNumTags("path");
 		for(int i = 0; i < paths; i++) {
-			ofxSvgPath path;
-
-			string fill = xml.getAttribute("path", "fill", "none", i);
-			string stroke = xml.getAttribute("path", "stroke", "none", i);
-			double strokeWidth = xml.getAttribute("path", "stroke-width", 1., i);
-			double opacity = xml.getAttribute("path", "opacity", 1., i);
-
-			path.setOpacity(opacity);
-			path.setFill(fill);
-			path.setStroke(stroke);
-			path.setStrokeWidth(strokeWidth);
-
-			string d = xml.getAttribute("path", "d", "", i);
-			istringstream data(d);
-			while(!data.eof()) {
-				char command;
-				data.get(command);
-				if(command == 'M') {
-					ofxSvgMoveTo* startOffset = new ofxSvgMoveTo(readPoint(data));
-					path.add(startOffset);
-				}
-				if(command == 'c') {
-					ofPoint control1 = readPoint(data);
-					ofPoint control2 = readPoint(data);
-					ofPoint point = readPoint(data);
-					ofxSvgCurveTo* coord = new ofxSvgCurveTo(control1, control2, point);
-					path.add(coord);
-				}
-				if(command == 's') {
-					ofPoint control2 = readPoint(data);
-					ofPoint point = readPoint(data);
-					ofxSvgSmoothCurveTo* coord = new ofxSvgSmoothCurveTo(control2, point);
-					path.add(coord);
-				}
-				if(command == 'l') {
-					ofPoint point = readPoint(data);
-					ofxSvgLineTo* coord = new ofxSvgLineTo(point);
-					path.add(coord);
-				}
-			}
+			ofxSvgPath path(xml, i);
 			add(path);
 		}
 		xml.popTag();

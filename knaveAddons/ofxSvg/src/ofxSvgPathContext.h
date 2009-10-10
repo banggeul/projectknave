@@ -7,7 +7,7 @@ class ofxSvgCommand;
 
 class ofxSvgPathContext {
 public:
-	ofxPoint2f lastPoint;
+	ofxPoint2f firstPoint, lastPoint;
 	ofxSvgCommand* lastCommand;
 	ofxSvgPathContext() {
 		lastCommand = NULL;

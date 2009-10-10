@@ -36,15 +36,9 @@ public:
 				control1.x, control1.y,
 				lastPoint.x + control2.x, lastPoint.y + control2.y,
 				lastPoint.x + point.x, lastPoint.y + point.y);
-			/*ofBezier(
-				lastPoint.x, lastPoint.y,
-				control1.x, control1.y,
-				lastPoint.x + control2.x, lastPoint.y + control2.y,
-				lastPoint.x + point.x, lastPoint.y + point.y);*/
 			lastPoint += point;
 		} else {
-			ofBezier(
-				lastPoint.x, lastPoint.y,
+			ofBezierVertex(
 				control1.x, control1.y,
 				control2.x, control2.y,
 				point.x, point.y);

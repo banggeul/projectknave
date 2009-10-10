@@ -13,15 +13,9 @@ public:
 		ofxPoint2f& lastPoint = context.lastPoint;
 		if(relative) {
 			ofVertex(lastPoint.x + point.x, lastPoint.y + point.y);
-			/*
-			ofLine(
-				lastPoint.x, lastPoint.y,
-				lastPoint.x + point.x, lastPoint.y + point.y);*/
 			lastPoint += point;
 		} else {
-			ofLine(
-				lastPoint.x, lastPoint.y,
-				point.x, point.y);
+			ofVertex(point.x, point.y);
 			lastPoint.set(point);
 		}
 	}

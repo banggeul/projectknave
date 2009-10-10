@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ofxSvgCommand.h"
+#include "ofxSvgClosePath.h"
+
+// does not implement multi-path paths
+// (i.e., paths with multiple movetos)
 
 class ofxSvgMoveTo : public ofxSvgCommand {
 public:
@@ -24,6 +28,9 @@ public:
 				offset.y);
 			context.lastPoint.set(offset);
 		}
+		if(context.lastCommand == NULL ||
+			typeid(*(context.lastCommand)) == typeid(ofxSvgClosePath))
+			context.firstPoint = context.lastPoint;
 	}
 	ostream& put(ostream &out) const {
 		if(relative)
