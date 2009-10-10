@@ -87,6 +87,9 @@ void testApp::draw(){
 		info += "\n	[Space] to add new shape";
 		info += "\n	[c] to clear the building";
 		info += "\n	[s] to save the building to xml";
+		info += "\n	[z] to undo last click";
+		if(!FB.bSaved) info += "\n*** building not saved ***";
+		if(FB.bEnable) info +="\n\n Go ahead and add points.";
 	}
 	
 	
