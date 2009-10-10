@@ -6,7 +6,10 @@
 // ------------------------------------ setup
 void FerryBuilding::setupBuilding() {
 	
-	bEnable = false;
+	bSaved		= true;
+	bFirstPoint = true;
+	bEnable		= false;
+	
 	
 	building.loadImage("buildingRefrences/building.jpg");
 	
@@ -63,6 +66,7 @@ void FerryBuilding::saveBuilding() {
 	}
 	xmlSaver.popTag();
 	xmlSaver.saveFile("buildingRefrences/building.xml");
+	bSaved = true;
 	printf("--- building saved ---\n");
 }
 
@@ -102,24 +106,46 @@ void FerryBuilding::clear() {
 // ------------------------------------ mouse/keyboard
 void FerryBuilding::keyPressed(int key) {
 	if(bEnable) {
+		
 		if(key == ' ') { 
+			bSaved		= false;
+			bFirstPoint = false;
 			shapes.push_back(FerryShape());
 		}
 		if(key == 'c') clear();
 		if(key == 's') saveBuilding();
+		
+		// undo the last click
+		if(key == 'z') {
+			if(shapes.size() > 0) {
+				// no points left in shape then erase shape
+				if(shapes.back().pnts.size() == 0) {
+					int lastShape = shapes.size();
+					shapes.erase(shapes.begin() + lastShape);
+				} else {
+					int lastPnt = shapes.back().pnts.size();
+					shapes.back().pnts.erase(shapes.back().pnts.begin() + lastPnt);	
+				}
+			}
+		}
 	}
 	
 	// need to turn me on first
 	if(key == 'e') bEnable = !bEnable;
+	
 }
 
 
 void FerryBuilding::mousePressed(int x, int y, int button) {
 	if(bEnable) {
+		
+		bSaved = false;
+		
 		// we need one to start
-		if(shapes.size() == 0) {
+		if(shapes.size() == 0 || bFirstPoint) {
 			shapes.push_back(FerryShape());
 			shapes.back().pnts.push_back(ofPoint(x,y,0));
+			bFirstPoint = false;
 		}
 		
 		shapes.back().pnts.push_back(ofPoint(x,y,0));

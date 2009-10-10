@@ -18,6 +18,8 @@ class FerryBuilding {
 	
 public:
 	
+	bool					bSaved;
+	bool					bFirstPoint;
 	bool					bEnable;
 	ofImage					building;
 	ofImage					mask;		
