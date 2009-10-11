@@ -3,16 +3,11 @@
 #include "ofxSvgPathContext.h"
 
 class ofxSvgCommand {
-public:
-	ofxSvgCommand() {
-		relative = true;
-	}
-	virtual void draw(ofxSvgPathContext& context) const = 0;
-	virtual ostream& put(ostream& out) const = 0;
+	friend class ofxSvgCommandHandle;
 protected:
 	bool relative;
+	virtual ofxSvgCommand* clone() const = 0;
+public:
+	ofxSvgCommand() : relative(true) {}
+	virtual void draw(ofxSvgPathContext& context) const = 0;
 };
-
-inline ostream& operator<<(ostream &out, const ofxSvgCommand& command) {
-	return command.put(out);
-}

@@ -19,12 +19,7 @@ public:
 			lastPoint.set(point);
 		}
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "l";
-		else
-			out << "L";
-		out << point.x << "," << point.y;
-		return out;
+	ofxSvgLineTo* clone() const {
+		return new ofxSvgLineTo(*this);
 	}
 };

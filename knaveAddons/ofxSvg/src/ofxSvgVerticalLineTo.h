@@ -5,7 +5,6 @@
 class ofxSvgVerticalLineTo : public ofxSvgCommand {
 public:
 	float y;
-	bool relative;
 	ofxSvgVerticalLineTo(float y, bool relative = true) {
 		this->y = y;
 		this->relative = relative;
@@ -20,12 +19,7 @@ public:
 			lastPoint.y = y;
 		}
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "v";
-		else
-			out << "V";
-		out << y;
-		return out;
+	ofxSvgVerticalLineTo* clone() const {
+		return new ofxSvgVerticalLineTo(*this);
 	}
 };

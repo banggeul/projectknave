@@ -4,7 +4,6 @@
 
 class ofxSvgClosePath : public ofxSvgCommand {
 public:
-	bool relative;
 	ofxSvgClosePath(bool relative = true) {
 		this->relative = relative;
 	}
@@ -13,11 +12,7 @@ public:
 		ofVertex(firstPoint.x, firstPoint.y);
 		context.lastPoint = context.firstPoint;
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "z";
-		else
-			out << "Z";
-		return out;
+	ofxSvgClosePath* clone() const {
+		return new ofxSvgClosePath(*this);
 	}
 };

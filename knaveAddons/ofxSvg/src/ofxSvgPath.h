@@ -1,42 +1,17 @@
 #pragma once
 
 #include "ofxColor.h"
-#include "ofxSvgCommand.h"
-#include "ofxSvgPathContext.h"
-#include "ofxSvgMoveTo.h"
-#include "ofxSvgCurveTo.h"
-#include "ofxSvgSmoothCurveTo.h"
-#include "ofxSvgLineTo.h"
-#include "ofxSvgHorizontalLineTo.h"
-#include "ofxSvgVerticalLineTo.h"
 
-inline float readFloat(istringstream& stream) {
-	float x;
-	stream >> x;
-	if(stream.peek() == ',')
-		stream.ignore(1);
-	return x;
-}
+#include "ofxSvgCommandHandle.h"
 
-inline ofPoint readPoint(istringstream& stream) {
-	ofPoint point;
-	point.x = readFloat(stream);
-	point.y = readFloat(stream);
-	return point;
-}
-
-class ofxSvgPath {
-public:
+class ofxSvgPath : public ofxSvgDrawable {
+private:
 	float opacity, strokeWidth;
 	bool hasFill, hasStroke;
 	ofxColor fillColor, strokeColor;
 	string fill, stroke;
-	vector<ofxSvgCommand*> commands;
-	int size() const {
-		return commands.size();
-	}
-	ofxSvgPath() {
-	}
+	vector<ofxSvgCommandHandle> commandHandles;
+public:
 	ofxSvgPath(ofxXmlSettings& xml, int i) {
 		setFill(xml.getAttribute("path", "fill", "none", i));
 		setStroke(xml.getAttribute("path", "stroke", "none", i));
@@ -44,46 +19,30 @@ public:
 		setOpacity(xml.getAttribute("path", "opacity", 1., i));
 
 		string d = xml.getAttribute("path", "d", "", i);
-		istringstream data(d);
-		while(!data.eof()) {
-			char command;
-			data.get(command);
-			if(command == 'm' || command == 'M')
-				add(new ofxSvgMoveTo(readPoint(data), command == 'm'));
-			if(command == 'c' || command == 'C') {
-				ofPoint control1 = readPoint(data);
-				ofPoint control2 = readPoint(data);
-				ofPoint point = readPoint(data);
-				add(new ofxSvgCurveTo(control1, control2, point, command == 'c'));
-			}
-			if(command == 's' || command == 'S') {
-				ofPoint control2 = readPoint(data);
-				ofPoint point = readPoint(data);
-				add(new ofxSvgSmoothCurveTo(control2, point, command == 's'));
-			}
-			if(command == 'l' || command == 'L')
-				add(new ofxSvgLineTo(readPoint(data), command == 'l'));
-			if(command == 'z' || command == 'Z')
-				add(new ofxSvgClosePath());
-			if(command == 'h' || command == 'H')
-				add(new ofxSvgHorizontalLineTo(readFloat(data), command == 'h'));
-			if(command == 'v' || command == 'V')
-				add(new ofxSvgVerticalLineTo(readFloat(data), command == 'v'));
+
+		istringstream handleData(d);
+		while(!handleData.eof()) {
+			char name;
+			handleData.get(name);
+			ofxSvgCommandHandle command(name, handleData);
+			commandHandles.push_back(command);
 		}
 	}
 	ofxSvgPath(const ofxSvgPath& path) {
-		commands = path.commands;
 		opacity = path.opacity;
 		strokeWidth = path.strokeWidth;
-		fill = path.fill;
-		stroke = path.stroke;
 		hasFill = path.hasFill;
 		hasStroke = path.hasStroke;
 		fillColor = path.fillColor;
 		strokeColor = path.strokeColor;
+		fill = path.fill;
+		stroke = path.stroke;
+		commandHandles = path.commandHandles;
 	}
 	void setOpacity(float opacity) {
 		this->opacity = opacity;
+		fillColor.a = opacity * 255;
+		strokeColor.a = opacity * 255;
 	}
 	void setStrokeWidth(float strokeWidth) {
 		this->strokeWidth = strokeWidth;
@@ -113,15 +72,13 @@ public:
 	void drawShape() const {
 		ofxSvgPathContext context;
 		ofBeginShape();
-		for(int i = 0; i < commands.size(); i++) {
-			commands[i]->draw(context);
-			context.lastCommand = commands[i];
-		}
+		for(int i = 0; i < commandHandles.size(); i++)
+			commandHandles[i].draw(context);
 		ofEndShape();
 	}
-	void draw() const {
+	void draw() {
 		ofPushStyle();
-		if(opacity != 1)
+		if(opacity != 1.)
 			ofEnableAlphaBlending();
 		if(hasFill) {
 			ofFill();
@@ -134,16 +91,8 @@ public:
 			ofSetColor(strokeColor);
 			drawShape();
 		}
-		if(opacity != 1)
+		if(opacity != 1.)
 			ofDisableAlphaBlending();
 		ofPopStyle();
-	}
-	void add(ofxSvgCommand* command) {
-		commands.push_back(command);
-	}
-	friend ostream& operator<<(ostream &out, const ofxSvgPath& path) {
-		for(int i = 0; i < path.size(); i++)
-			out << "(" << *(path.commands[i]) << ")";
-		return out;
 	}
 };

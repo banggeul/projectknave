@@ -27,14 +27,7 @@ public:
 			lastPoint.set(point);
 		}
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "c";
-		else
-			out << "C";
-		out << control1.x << "," << control1.y << ",";
-		out << control2.x << "," << control2.y << ",";
-		out << point.x << "," << point.y;
-		return out;
+	ofxSvgCurveTo* clone() const {
+		return new ofxSvgCurveTo(*this);
 	}
 };

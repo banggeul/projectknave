@@ -2,18 +2,14 @@
 
 #include "ofxVectorMath.h"
 #include "ofxXmlSettings.h"
+#include "ofxSvgDrawable.h"
 #include "ofxSvgPath.h"
 
-class ofxSvgDrawable {
-public:
-	virtual void draw() = 0;
-};
-
-class ofxSvg : public ofxSvgDrawable {
+class ofxSvg {
 protected:
 	float width, height;
 	ofxPoint2f anchor;
-	vector<ofxSvgPath> paths;
+	vector<ofxSvgDrawable*> parts;
 
 	GLuint displayList;
 	bool displayListReady;
@@ -24,9 +20,6 @@ public:
 	}
 	~ofxSvg() {
 		glDeleteLists(displayList, 1);
-		for(int i = 0; i < size(); i++)
-			for(int j = 0; j < paths[i].size(); j++)
-				delete paths[i].commands[j];
 	}
 	void loadFile(string filename) {
 		ofxXmlSettings xml;
@@ -40,14 +33,12 @@ public:
 
 		xml.pushTag("svg");
 		int paths = xml.getNumTags("path");
-		for(int i = 0; i < paths; i++) {
-			ofxSvgPath path(xml, i);
-			add(path);
-		}
+		for(int i = 0; i < paths; i++)
+			add(new ofxSvgPath(xml, i));
 		xml.popTag();
 	}
 	int size() const {
-		return paths.size();
+		return parts.size();
 	}
 	float getWidth() {
 		return width;
@@ -80,7 +71,7 @@ public:
 			ofPushStyle();
 			ofTranslate(-anchor.x, -anchor.y);
 			for(int i = 0; i < size(); i++)
-				paths[i].draw();
+				parts[i]->draw();
 			ofPopStyle();
 			ofPopMatrix();
 			glEndList();
@@ -90,12 +81,7 @@ public:
 	void update() {
 		displayListReady = false;
 	}
-	void add(ofxSvgPath& path) {
-		paths.push_back(path);
-	}
-	friend ostream& operator<<(ostream &out, const ofxSvg& svg) {
-		for(int i = 0; i < svg.size(); i++)
-			out << "[" << svg.paths[i] << "]";
-		return out;
+	void add(ofxSvgDrawable* part) {
+		parts.push_back(part);
 	}
 };

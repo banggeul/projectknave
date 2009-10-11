@@ -4,7 +4,6 @@
 
 class ofxSvgSmoothCurveTo : public ofxSvgCommand {
 protected:
-	bool relative;
 	ofxPoint2f control2, point;
 public:
 	ofxSvgSmoothCurveTo(ofPoint control2, ofPoint point, bool relative = true) {
@@ -45,13 +44,7 @@ public:
 			lastPoint.set(point);
 		}
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "s";
-		else
-			out << "S";
-		out << control2.x << "," << control2.y << ",";
-		out << point.x << "," << point.y;
-		return out;
+	ofxSvgSmoothCurveTo* clone() const {
+		return new ofxSvgSmoothCurveTo(*this);
 	}
 };

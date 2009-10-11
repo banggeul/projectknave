@@ -32,12 +32,7 @@ public:
 			typeid(*(context.lastCommand)) == typeid(ofxSvgClosePath))
 			context.firstPoint = context.lastPoint;
 	}
-	ostream& put(ostream &out) const {
-		if(relative)
-			out << "m";
-		else
-			out << "M";
-		out << offset.x << "," << offset.y;
-		return out;
+	ofxSvgMoveTo* clone() const {
+		return new ofxSvgMoveTo(*this);
 	}
 };
