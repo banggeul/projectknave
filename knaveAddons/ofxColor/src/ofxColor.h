@@ -23,6 +23,12 @@ public:
 
 	ofxColor();
 	ofxColor(const ofxColor& x);
+	ofxColor(float x, float y, float z,
+		ofColorMode colorMode = ofxColor::defaultColorMode,
+		float colorRange = ofxColor::defaultColorRange);
+	ofxColor(float x, float y, float z, float a,
+		ofColorMode colorMode = ofxColor::defaultColorMode,
+		float colorRange = ofxColor::defaultColorRange);
 
 	void set(float x, float y, float z);
 	void set(float x, float y, float z, float a);

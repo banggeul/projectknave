@@ -10,6 +10,18 @@ ofxColor::ofxColor() {
 	clear();
 }
 
+ofxColor::ofxColor(float x, float y, float z, ofColorMode colorMode, float colorRange) {
+	this->colorMode = colorMode;
+	this->colorRange = colorRange;
+	set(x, y, z);
+}
+
+ofxColor::ofxColor(float x, float y, float z, float a, ofColorMode colorMode, float colorRange) {
+	this->colorMode = colorMode;
+	this->colorRange = colorRange;
+	set(x, y, z, a);
+}
+
 ofxColor::ofxColor(const ofxColor& x) {
 	(*this) = x;
 }

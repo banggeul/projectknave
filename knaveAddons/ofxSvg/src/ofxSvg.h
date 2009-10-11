@@ -3,23 +3,19 @@
 #include "ofxVectorMath.h"
 #include "ofxXmlSettings.h"
 #include "ofxSvgPath.h"
+#include "ofxDisplayList.h"
+
+enum ofAnchorMode {
+	OF_ANCHOR_CORNER,
+	OF_ANCHOR_CENTER};
 
 class ofxSvg {
 protected:
 	float width, height;
 	ofxPoint2f anchor;
 	vector<ofxSvgPath> paths;
-
-	GLuint displayList;
-	bool displayListReady;
+	ofxDisplayList fullList, plainList;
 public:
-	ofxSvg() {
-		displayList = glGenLists(1);
-		displayListReady = false;
-	}
-	~ofxSvg() {
-		glDeleteLists(displayList, 1);
-	}
 	void loadFile(string filename) {
 		ofxXmlSettings xml;
 		xml.loadFile(filename);
@@ -60,11 +56,24 @@ public:
 	void setAnchor(ofPoint& anchor) {
 		this->anchor = anchor;
 	}
+	void setAnchor(ofAnchorMode mode) {
+		if(mode == OF_ANCHOR_CORNER) {
+			anchor.x = 0;
+			anchor.y = 0;
+		} else if(mode == OF_ANCHOR_CENTER) {
+			anchor.x = width / 2;
+			anchor.y = height / 2;
+		}
+	}
 	ofxPoint2f getAnchor() {
 		return anchor;
 	}
+
 	void draw(float x, float y) {
 		draw(x, y, width, height);
+	}
+	void draw(float scale) {
+		draw(0, 0, width * scale, height * scale);
 	}
 	void draw(float x, float y, float width, float height) {
 		ofPushMatrix();
@@ -74,22 +83,44 @@ public:
 		ofPopMatrix();
 	}
 	void draw() {
-		if(displayListReady) {
-			glCallList(displayList);
-		} else {
-			glNewList(displayList, GL_COMPILE);
+		if(!fullList.draw()) {
+			fullList.begin();
 			ofPushMatrix();
-			ofPushStyle();
 			ofTranslate(-anchor.x, -anchor.y);
 			for(int i = 0; i < size(); i++)
 				paths[i].draw();
-			ofPopStyle();
 			ofPopMatrix();
-			glEndList();
-			displayListReady = true;
+			fullList.end();
 		}
 	}
+
+	void drawPlain(float x, float y) {
+		drawPlain(x, y, width, height);
+	}
+	void drawPlain(float scale) {
+		drawPlain(0, 0, width * scale, height * scale);
+	}
+	void drawPlain(float x, float y, float width, float height) {
+		ofPushMatrix();
+		ofTranslate(x, y);
+		ofScale(width / this->width, height / this->height);
+		drawPlain();
+		ofPopMatrix();
+	}
+	void drawPlain() {
+		if(!plainList.draw()) {
+			plainList.begin();
+			ofPushMatrix();
+			ofTranslate(-anchor.x, -anchor.y);
+			for(int i = 0; i < size(); i++)
+				paths[i].drawShape();
+			ofPopMatrix();
+			plainList.end();
+		}
+	}
+
 	void update() {
-		displayListReady = false;
+		fullList.update();
+		plainList.update();
 	}
 };

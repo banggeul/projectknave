@@ -47,6 +47,7 @@ public:
 	}
 	void setFill(ofxColor fill) {
 		fillColor = fill;
+		hasFill = true;
 	}
 	void setFill(string fill) {
 		this->fill = fill;
@@ -54,8 +55,15 @@ public:
 		if(hasFill)
 			fillColor = fill;
 	}
+	void noFill() {
+		hasFill = false;
+	}
 	void setStroke(ofxColor stroke) {
 		strokeColor = stroke;
+		hasStroke = true;
+	}
+	void noStroke() {
+		hasStroke = false;
 	}
 	void setStroke(string stroke) {
 		this->stroke = stroke;
