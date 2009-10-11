@@ -20,15 +20,3 @@ void testApp::keyPressed  (int key){
 		case 's': ofxDaito::bang(2, "death", .7, .9); break;
 	}
 }
-
-void testApp::mouseMoved(int x, int y ){
-}
-
-void testApp::mouseDragged(int x, int y, int button){
-}
-
-void testApp::mousePressed(int x, int y, int button){
-}
-
-void testApp::mouseReleased(int x, int y, int button){
-}
