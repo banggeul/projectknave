@@ -155,6 +155,21 @@ void testApp::keyPressed(int key){
 			
 		case 'b':
 			bEnableBox2d = !bEnableBox2d;
+			for(int i=0; i<FB.shapes.size(); i++) {
+				
+				box2dBuilding.push_back(ofxBox2dLine());
+				box2dBuilding.back().clear();
+				box2dBuilding.back().setWorld(box2d.getWorld());
+				
+				for(int j=0; j<FB.shapes[i].pnts.size(); j++) {
+					float bx = FB.shapes[i].pnts[j].x;
+					float by = FB.shapes[i].pnts[j].y;
+					ofPoint pos = RM.getPointInPreview(bx, by);
+					box2dBuilding.back().addPoint(bx, by);
+				}
+				box2dBuilding.back().createShape();
+				
+			}
 			break;
 			
 		case 'f':
