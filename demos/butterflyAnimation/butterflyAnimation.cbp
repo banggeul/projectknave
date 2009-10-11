@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="ofxSvgDemo" />
+		<Option title="butterflyAnimation" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -70,6 +70,7 @@
 			<Add directory="..\..\..\addons\ofxVectorMath\src\" />
 			<Add directory="..\..\..\knaveAddons\ofxColor\src" />
 			<Add directory="..\..\..\knaveAddons\ofxSvg\src" />
+			<Add directory="..\..\..\knaveAddons\ofxDisplayList\src" />
 		</Compiler>
 		<Linker>
 			<Add option="../../../libs/freeImage/FreeImage.lib" />
@@ -126,18 +127,15 @@
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVectorMath.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxColor\src\ofxColor.cpp" />
 		<Unit filename="..\..\..\knaveAddons\ofxColor\src\ofxColor.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxDisplayList\src\ofxDisplayList.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvg.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgClosePath.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCommand.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCommandHandle.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCurveTo.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgHorizontalLineTo.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgLineTo.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgMoveTo.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgPath.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgPathContext.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgSmoothCurveTo.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgVerticalLineTo.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.cpp" />
 		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.h" />
 		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
@@ -185,6 +183,8 @@
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoGrabber.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.cpp" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.h" />
+		<Unit filename="src\Butterfly.cpp" />
+		<Unit filename="src\Butterfly.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\testApp.cpp" />
 		<Unit filename="src\testApp.h" />
