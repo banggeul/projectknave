@@ -8,6 +8,8 @@
 #include "FerryBuilding.h"
 #include "renderManager.h"
 
+#include "ofxBox2d.h"
+
 
 enum {
 	
@@ -41,6 +43,12 @@ public:
 	
 	int						drawMode;
 	
+	
+	// this is temp
+	vector <ofxBox2dLine>	box2dBuilding;
+	vector <ofxBox2dCircle>	circles;
+	bool					bEnableBox2d;
+	ofxBox2d				box2d;
 	
 	
 	
