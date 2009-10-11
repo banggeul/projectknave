@@ -4,8 +4,10 @@
 
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
+#include "ofxDirList.h"
 
-// simpe shape holder for points
+
+// simple shape holder for points
 class FerryShape {
 public:
 	int				 num;
@@ -18,24 +20,36 @@ class FerryBuilding {
 	
 public:
 	
+	ofxXmlSettings			xmlSaver;
+	ofxDirList				fileLister;
+	
+	vector <FerryShape>		shapes; 
+	
 	bool					bSaved;
 	bool					bFirstPoint;
 	bool					bEnable;
 	ofImage					building;
 	ofImage					mask;		
-	vector <FerryShape>		shapes; 
-	ofxXmlSettings			xmlSaver;
 	
+	// file saving
+	int						selectedFile;
+	int						fileCount;
+	vector <string>			files;
 	
 	// ------------------------------------
 	void setupBuilding();
+	void loadBuilding(string theFile);
+	
 	void draw();
 	void drawContour();
-	void clear();
+	void drawInfo();
 	
+	void clear();	
 	void saveBuilding();
 	
 	
+	
+	// ------------------------------------
 	void update() {}
 	void keyPressed(int key);
 	void mousePressed(int x, int y, int button);

@@ -6,17 +6,43 @@
 // ------------------------------------ setup
 void FerryBuilding::setupBuilding() {
 	
-	bSaved		= true;
-	bFirstPoint = true;
-	bEnable		= false;
+	selectedFile = 0;
+	fileCount	 = 0;
+	
+	bSaved		 = true;
+	bFirstPoint  = true;
+	bEnable		 = false;
 	
 	
 	building.loadImage("buildingRefrences/building.jpg");
-	
 	mask.loadImage("buildingRefrences/mask_half.png");
 	
-	// load the building from xml
-	if(xmlSaver.loadFile("buildingRefrences/building.xml")) {
+	// list all files for buildings
+	fileLister.allowExt("xml");
+	int numFiles = fileLister.listDir("buildingRefrences/buidlingFiles");
+	if(numFiles > 0) {
+		for(int i=0; i<numFiles; i++) {
+			files.push_back(fileLister.getName(i));
+			fileCount ++;
+		}
+		selectedFile = 0;
+		
+		
+		// load the building from xml
+		loadBuilding(files[0]);
+	}
+	
+}
+
+
+// ------------------------------------ load a building file
+void FerryBuilding::loadBuilding(string theFile) {
+	
+	printf("--- loading: %s ---\n", theFile.c_str());
+	
+	clear();
+	
+	if(xmlSaver.loadFile("buildingRefrences/buidlingFiles/"+theFile)) {
 		
 		int numTags = xmlSaver.getNumTags("building:shape");
 		if(numTags > 0) {
@@ -44,11 +70,12 @@ void FerryBuilding::setupBuilding() {
 		
 	}
 	
-	
 }
 
 // ------------------------------------ save building
 void FerryBuilding::saveBuilding() {
+	
+	string fileToSave = "building_"+ofToString(selectedFile)+".xml";
 	
 	xmlSaver.clear();
 	
@@ -64,10 +91,12 @@ void FerryBuilding::saveBuilding() {
 		}
 		xmlSaver.popTag();
 	}
+	
 	xmlSaver.popTag();
-	xmlSaver.saveFile("buildingRefrences/building.xml");
+	xmlSaver.saveFile("buildingRefrences/buidlingFiles/"+fileToSave);
 	bSaved = true;
-	printf("--- building saved ---\n");
+	
+	printf("--- building saved [%i]---\n", selectedFile);
 }
 
 // ------------------------------------ draw
@@ -92,6 +121,48 @@ void FerryBuilding::drawContour() {
 		ofEndShape(false);
 	}
 	glLineWidth(1.0);
+	
+}
+
+// ------------------------------------ draw info
+void FerryBuilding::drawInfo() {
+	
+	ofSetColor(0, 0, 0);
+	string info		 = "";
+	string filesInfo = "";
+	
+	if(bEnable) {
+		info = "";
+		info = "		FPS: "+ofToString(ofGetFrameRate())+"\n";
+		info += "\n	Click to draw building contour";
+		info += "\n	[e] toggle on and off contours";
+		info += "\n	[Space] to add new shape";
+		info += "\n	[c] to clear the building";
+		info += "\n	[s] to save the building to xml";
+		info += "\n	[z] to undo last click";
+		info += "\n\nWhen adding points always make\nsure to add counter clockwise.";
+
+		if(!bSaved) info += "\n*** building not saved ***";
+		if(bEnable) info +="\nGo ahead and add points.";
+		
+		
+		
+		
+		filesInfo = "\n\nAdd a new file [n]";
+		for(int i=0; i<files.size(); i++) {
+			filesInfo += "\nFile: "+files[i];
+			if(selectedFile == i) {
+				filesInfo += "  <---";	
+			}
+		}
+	}
+	else {
+		info = "To enable drawing press [e]";	
+	}
+	
+	ofDrawBitmapString(info, 20, 15);
+	ofDrawBitmapString(filesInfo, 350, 15);
+	
 	
 }
 
@@ -128,6 +199,35 @@ void FerryBuilding::keyPressed(int key) {
 				}
 			}
 		}
+		
+		// add a new file
+		if(key == 'n') {
+			fileCount ++;
+			selectedFile = fileCount-1;
+			string fileToSave = "building_"+ofToString(selectedFile)+".xml";
+			files.push_back(fileToSave);
+			loadBuilding(files[selectedFile]);
+
+		}
+		
+		
+		// select the file
+		if(key == OF_KEY_DOWN) {
+			selectedFile ++;
+			if(selectedFile > (files.size()-1)) {
+				selectedFile = files.size()-1;
+			}
+			loadBuilding(files[selectedFile]);
+		}
+		if(key == OF_KEY_UP) {
+			selectedFile --;
+			if(selectedFile < 0) {
+				selectedFile = 0;
+			}
+			loadBuilding(files[selectedFile]);
+		}
+		
+		
 	}
 	
 	// need to turn me on first
@@ -135,7 +235,7 @@ void FerryBuilding::keyPressed(int key) {
 	
 }
 
-
+// ------------------------------------ mouse pressed
 void FerryBuilding::mousePressed(int x, int y, int button) {
 	if(bEnable) {
 		
