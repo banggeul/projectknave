@@ -13,6 +13,12 @@
 #include "ofxXmlSettings.h"
 
 
+enum {
+	CV_SENDER, CV_RECEIVER
+};
+
+
+
 class cvManager {
 	
 	public:
@@ -71,13 +77,19 @@ class cvManager {
 	//		* settings * 
 	
 	ofxXmlSettings			XML;
+	int						id;		 // sender?  receiver?
 	
 	
 	//-----------------------------------
 	//		* network * 
 	
+	
+	void					setupReceiver();
 	void					receiveFromNetwork();
+	
+	void					setupSender();
 	void					sendToNetwork();
+	
 	bool					bNetworkSetup;
 	ofxUDPManager			manager;
 	string					IP;

@@ -28,6 +28,15 @@ void testApp::update(){
 	SM.passInFerryBuilding(&FB);
 	SM.passInPacket(CVM.packet);
 	SM.update();
+	
+	/*
+	 // ZACH TESTING NETWORK STUFF
+	 if (CVM.id == 0){
+		CVM.sendToNetwork();
+	} else if (CVM.id == 1){
+		CVM.receiveFromNetwork();
+	}
+	 */
 
 }
 

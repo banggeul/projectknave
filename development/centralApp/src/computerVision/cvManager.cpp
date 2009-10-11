@@ -21,6 +21,20 @@ cvManager::cvManager(){
 	cout << "creating a packet, size = " << endl;
 	cout << sizeof(computerVisionPacket) << endl;
 	
+	
+	XML.loadFile("settings/cvManagerSettings.xml");
+	id = XML.getValue("cvManager:id", 0);		
+	cout << id << endl;
+	//	CV_RECEIVER
+	//	CV_SENDER
+	
+	
+	/* settings/cvManagerSettings.xml
+	 <cvManager>
+	 <!-- 0,1 for server / client -->
+	 <id> 0 </id>
+	 
+	 */
 
 }
 
@@ -135,7 +149,6 @@ void cvManager::setupCV(){
 	PresenceFrameDialate.allocate(width, height);	
 	GreyFrame.allocate(width, height);
 	
-	
 	bSetup = true;
 }
 
@@ -214,9 +227,9 @@ void cvManager::update(){
 	fillPacket();	// THIS IS FOR THE NETWORK COMMUNICATON
 }
 
+
 //---------------------------				
-void cvManager::receiveFromNetwork(){
-	
+void cvManager::setupReceiver(){
 	if (!bNetworkSetup){
 		
 		bool bOk = false;
@@ -245,13 +258,10 @@ void cvManager::receiveFromNetwork(){
 		
 		bNetworkSetup = true;
 	}
-	
-	int recv = manager.Receive((char *)packet, sizeof(computerVisionPacket));
-	cout << "received " << recv << endl;
 }
 
 //---------------------------				
-void cvManager::sendToNetwork(){
+void cvManager::setupSender(){
 	if (!bNetworkSetup){
 		
 		
@@ -264,6 +274,8 @@ void cvManager::sendToNetwork(){
 			return;
 		}
 		
+		
+		
 		// --------------------------------- connect
 		bOk = manager.Connect(IP.c_str(), port);
 		if (!bOk) {   
@@ -273,8 +285,27 @@ void cvManager::sendToNetwork(){
 		
 		bNetworkSetup = true;
 	}
+}
+
+
+//---------------------------				
+void cvManager::receiveFromNetwork(){
 	
-	int sent = manager.Send( (char *) packet, sizeof(computerVisionPacket));
+	if (!bNetworkSetup) setupReceiver();
+	char temp[1000];
+	int recv = manager.Receive(temp, 1000);
+	//int recv = manager.Receive((char *)packet, sizeof(computerVisionPacket));
+	cout << "received " << recv << endl;
+}
+
+//---------------------------				
+void cvManager::sendToNetwork(){
+	
+	
+	if (!bNetworkSetup) setupSender();
+	
+	string test = "test";
+	int sent = manager.Send((char *) packet, sizeof(computerVisionPacket)*0.5f);
 	cout << "sent " << sent << endl;
 	
 }
