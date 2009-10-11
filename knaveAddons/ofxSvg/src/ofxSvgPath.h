@@ -1,12 +1,11 @@
 #pragma once
 
 #include "ofxColor.h"
-
 #include "ofxSvgCommandHandle.h"
 
-class ofxSvgPath : public ofxSvgDrawable {
+class ofxSvgPath {
 private:
-	float opacity, strokeWidth;
+	float strokeWidth;
 	bool hasFill, hasStroke;
 	ofxColor fillColor, strokeColor;
 	string fill, stroke;
@@ -21,15 +20,15 @@ public:
 		string d = xml.getAttribute("path", "d", "", i);
 
 		istringstream handleData(d);
+		handleData.setf(ios::skipws);
 		while(!handleData.eof()) {
 			char name;
-			handleData.get(name);
+			handleData >> name;
 			ofxSvgCommandHandle command(name, handleData);
 			commandHandles.push_back(command);
 		}
 	}
 	ofxSvgPath(const ofxSvgPath& path) {
-		opacity = path.opacity;
 		strokeWidth = path.strokeWidth;
 		hasFill = path.hasFill;
 		hasStroke = path.hasStroke;
@@ -40,7 +39,6 @@ public:
 		commandHandles = path.commandHandles;
 	}
 	void setOpacity(float opacity) {
-		this->opacity = opacity;
 		fillColor.a = opacity * 255;
 		strokeColor.a = opacity * 255;
 	}
@@ -53,10 +51,8 @@ public:
 	void setFill(string fill) {
 		this->fill = fill;
 		hasFill = fill != "none";
-		if(hasFill) {
+		if(hasFill)
 			fillColor = fill;
-			fillColor.a = opacity * 255;
-		}
 	}
 	void setStroke(ofxColor stroke) {
 		strokeColor = stroke;
@@ -64,10 +60,8 @@ public:
 	void setStroke(string stroke) {
 		this->stroke = stroke;
 		hasStroke = stroke != "none";
-		if(hasStroke) {
+		if(hasStroke)
 			strokeColor = stroke;
-			strokeColor.a = opacity * 255;
-		}
 	}
 	void drawShape() const {
 		ofxSvgPathContext context;
@@ -78,21 +72,28 @@ public:
 	}
 	void draw() {
 		ofPushStyle();
-		if(opacity != 1.)
+
+		if(fillColor.a != 255.)
 			ofEnableAlphaBlending();
 		if(hasFill) {
 			ofFill();
 			ofSetColor(fillColor);
 			drawShape();
 		}
+		if(fillColor.a != 255.)
+			ofDisableAlphaBlending();
+
+		if(strokeColor.a != 255.)
+			ofEnableAlphaBlending();
 		if(hasStroke) {
 			glLineWidth(strokeWidth);
 			ofNoFill();
 			ofSetColor(strokeColor);
 			drawShape();
 		}
-		if(opacity != 1.)
+		if(strokeColor.a != 255.)
 			ofDisableAlphaBlending();
+
 		ofPopStyle();
 	}
 };

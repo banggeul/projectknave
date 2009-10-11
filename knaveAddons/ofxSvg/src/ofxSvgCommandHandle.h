@@ -60,6 +60,8 @@ public:
 			ptr = new ofxSvgHorizontalLineTo(readFloat(data), name == 'h');
 		if(name == 'v' || name == 'V')
 			ptr = new ofxSvgVerticalLineTo(readFloat(data), name == 'v');
+		if(ptr == NULL)
+			cout << "error on command '" << name << "'" << endl;
 		return data;
 	}
 	ofxSvgCommandHandle& operator=(const ofxSvgCommandHandle& from) {

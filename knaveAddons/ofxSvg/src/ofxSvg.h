@@ -2,14 +2,13 @@
 
 #include "ofxVectorMath.h"
 #include "ofxXmlSettings.h"
-#include "ofxSvgDrawable.h"
 #include "ofxSvgPath.h"
 
 class ofxSvg {
 protected:
 	float width, height;
 	ofxPoint2f anchor;
-	vector<ofxSvgDrawable*> parts;
+	vector<ofxSvgPath> paths;
 
 	GLuint displayList;
 	bool displayListReady;
@@ -32,13 +31,25 @@ public:
 		anchor.set(xAnchor, yAnchor);
 
 		xml.pushTag("svg");
-		int paths = xml.getNumTags("path");
-		for(int i = 0; i < paths; i++)
-			add(new ofxSvgPath(xml, i));
+		loadPaths(xml);
 		xml.popTag();
 	}
+	void loadPaths(ofxXmlSettings& xml) {
+		int totalPaths = xml.getNumTags("path");
+		for(int i = 0; i < totalPaths; i++)
+			paths.push_back(ofxSvgPath(xml, i));
+		int totalGroups = xml.getNumTags("g");
+		for(int i = 0; i < totalGroups; i++) {
+			xml.pushTag("g", i);
+			loadPaths(xml);
+			xml.popTag();
+		}
+	}
 	int size() const {
-		return parts.size();
+		return paths.size();
+	}
+	ofxSvgPath& getPath(int i) {
+		return paths[i];
 	}
 	float getWidth() {
 		return width;
@@ -71,7 +82,7 @@ public:
 			ofPushStyle();
 			ofTranslate(-anchor.x, -anchor.y);
 			for(int i = 0; i < size(); i++)
-				parts[i]->draw();
+				paths[i].draw();
 			ofPopStyle();
 			ofPopMatrix();
 			glEndList();
@@ -80,8 +91,5 @@ public:
 	}
 	void update() {
 		displayListReady = false;
-	}
-	void add(ofxSvgDrawable* part) {
-		parts.push_back(part);
 	}
 };
