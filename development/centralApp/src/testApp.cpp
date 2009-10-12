@@ -7,6 +7,10 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	
+	
+	ofDisableArbTex();
+	
+	
 	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
 	FB.setupBuilding();
 	SM.setup();
@@ -23,10 +27,11 @@ void testApp::setup(){
 	box2d.checkBounds(true);
 	box2d.setFPS(30.0);
 	
-	
+
 	XML.loadFile("settings/mainAppSettings.xml");
 	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
 	CVM.id = XML.getValue("mainApp:id", 0);
+
 }
 
 //--------------------------------------------------------------
@@ -48,7 +53,7 @@ void testApp::update(){
 	SM.passInFerryBuilding(&FB);
 	SM.passInPacket(CVM.packet);
 	SM.update();
-	
+
 	if(bEnableBox2d) {
 		
 		box2d.update();
@@ -63,8 +68,7 @@ void testApp::update(){
 		}
 	}
 
-	 // ZACH TESTING NETWORK STUFF
-	
+
 	if (bUseNetworking == true){
 		if (CVM.id == 0){
 			CVM.sendToNetwork();

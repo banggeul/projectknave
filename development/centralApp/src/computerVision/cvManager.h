@@ -12,6 +12,8 @@
 
 #include "ofxXmlSettings.h"
 
+#include "ofxControlPanel.h"
+
 //#include "udpChunker.h"	// good bye!
 
 
@@ -42,6 +44,11 @@ class cvManager {
 	void setupCamera(int deviceNumber, int width, int height);
 	void setupVideo(string videoPath);
 	void setupCV();
+	
+	void setupGUI();
+	void updateGUI();
+	
+	ofxControlPanel panel;
 
 	
 	bool isFrameNew();

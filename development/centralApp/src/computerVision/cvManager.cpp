@@ -18,29 +18,32 @@ cvManager::cvManager(){
 	port = 11999;
 	IP = "127.0.0.1";	
 	
-	cout << "creating a packet, size = " << endl;
-	cout << sizeof(computerVisionPacket) << endl;
 	
+	setupGUI();
 	
-		
-	//cout << id << endl;
-	//	CV_RECEIVER
-	//	CV_SENDER
+	//cout << "creating a packet, size = " << endl;
+	//cout << sizeof(computerVisionPacket) << endl;
 	
+	// load XML :
+	printf("--------------------------------------------------------------------------- \n");
+	printf("----------------------------- loading cvManager settings ------------------ \n");
+	printf("--------------------------------------------------------------------------- \n");
+	XML.loadFile("settings/cvManagerSettings.xml");
+	int sceneId = XML.getValue("cvManager:sceneId",0);
+	printf("scene =  %i \n", sceneId);
+	int nVideos = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":nVideoSources", 0);
+	printf("nVideos =  %i \n", nVideos);
+	for (int i = 0; i <  nVideos; i++){
+		string fileName = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":video" + ofToString(i), "..");
+		cout << "fileName: " << fileName << endl;
+	}
+	for (int i = 0; i <  nVideos; i++){
+		int videoGrabberSource = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":videoGrabberSource" + ofToString(i), 100);
+		//cout << "cvManager:sceneInfo:scene" + ofToString(sceneId) + ":videoGrabberSource" + ofToString(i) << endl;
+		cout << "videoGrabberSource: " << videoGrabberSource << endl;
+	}
+	printf("--------------------------------------------------------------------------- \n");
 	
-	/* settings/cvManagerSettings.xml
-	 <cvManager>
-	 <!-- 0,1 for server / client -->
-	 <id> 0 </id>
-	 
-	 */
-	
-	
-	
-	
-	//UDPpacket = new udpPacket();
-	//UDPC.setup(sizeof(computerVisionPacket), CHUNK_SIZE);
-
 }
 
 
@@ -50,6 +53,22 @@ cvManager::~cvManager(){
 		manager.Close();
 	}
 }
+
+
+void cvManager::setupGUI(){
+	panel.setup("cv panel", 700, 20, 300, 450);
+	panel.addPanel("overview", 1, false);
+	panel.addPanel("geometry", 1, false);
+	panel.addPanel("adjustments", 1, false);
+	
+	panel.setWhichPanel("overview");
+	panel.addToggle("live video", "CV_MANAGER_LIVE_VIDEO", false);
+}
+
+void cvManager::updateGUI(){
+	
+}
+
 
 
 void cvManager::fillPacket(){
@@ -182,6 +201,7 @@ void cvManager::update(){
 	//pointer to our incoming video pixels			
 	unsigned char * pixCam;
 	
+	panel.update();
 	
 	if(bUsingVideoGrabber){
 		VG.grabFrame();
@@ -381,7 +401,7 @@ void cvManager::sendToNetwork(){
 //---------------------------				
 void cvManager::draw(float x, float y, int w, int h){
 	ofSetColor(255, 255, 255);
-	VideoFrame.draw(x, y, w, h);
+	//VideoFrame.draw(x, y, w, h);
 	//Contour.draw(x, y, w, h);
 	
 	// draw the packet, to see if it's OK
@@ -399,7 +419,141 @@ void cvManager::draw(float x, float y, int w, int h){
 	}
 	glPopMatrix();
 	
+	
+	panel.draw();
 }
 
+
+
+
+
+//void trackingManager::setupGui(){
+//	
+//	panel.setup("cv panel", 700, 20, 300, 450);
+//	panel.addPanel("image adjustment", 1, false);
+//	panel.addPanel("edge fixer", 1, false);
+//	panel.addPanel("blob detection", 1, false);
+//	panel.addPanel("glint detection", 1, false);
+//	
+//	if (IM.mode == INPUT_VIDEO){
+//		panel.addPanel("video file settings", 1, false);
+//	} else {
+//		panel.addPanel("live video settings", 1, false);
+//	}
+//	
+//	//---- gaze
+//	panel.setWhichPanel("image adjustment");
+//	panel.setWhichColumn(0);
+//	
+//	panel.addToggle("flip horizontal ", "B_RIGHT_FLIP_X", false);
+//	panel.addToggle("flip vertical ", "B_RIGHT_FLIP_Y", false);
+//	
+//	panel.addToggle("use contrast / bri", "B_USE_CONTRAST", true);
+//	panel.addSlider("contrast ", "CONTRAST", 0.28f, 0.0, 1.0f, false);
+//	panel.addSlider("brightness ", "BRIGHTNESS", -0.02f, -1.0, 3.0f, false);
+//	
+//	panel.addToggle("use gamma ", "B_USE_GAMMA", true);
+//	panel.addSlider("gamma ", "GAMMA", 0.57f, 0.01, 3.0f, false);
+//	
+//	panel.addSlider("threshold ", "THRESHOLD_GAZE", threshold, 0, 255, true);
+//	
+//	
+//	
+//	
+//	panel.setWhichPanel("blob detection");
+//	panel.addToggle("use dilate", "B_USE_DILATE", true);
+//	panel.addSlider("dilate num ", "N_DILATIONS", 0, 0, 10, true);
+//    panel.addSlider("min blob","MIN_BLOB",10*10,0,5000,true);
+//    panel.addSlider("max blob","MAX_BLOB",100*100,0,50500,true);
+//	
+//	//---- tracker edges
+//	panel.setWhichPanel("edge fixer");
+//	panel.setWhichColumn(0);
+//	panel.addSlider("x position ", "EDGE_MASK_X", 320, 0, 640, true);
+//	panel.addSlider("y position ", "EDGE_MASK_Y", 240, 0, 640, true);
+//	panel.addSlider("inner radius ", "EDGE_MASK_INNER_RADIUS", 250, 0, 500, true);
+//	panel.addSlider("outer radius ", "EDGE_MASK_OUTER_RADIUS", 350, 0, 600, true);
+//	
+//	
+//	panel.setWhichPanel("glint detection");
+//	panel.setWhichColumn(0);
+//	panel.addSlider("glint threshold ", "GLINT_THRESHOLD", 80,0,255, false);
+//	panel.addSlider("glint min size ", "GLINT_MIN_SIZE", 10,0,1000, true);
+//	panel.addSlider("glint max size ", "GLINT_MAX_SIZE", 1000,0,10000, true);
+//	
+//	
+//	
+//	
+//	if (IM.mode == INPUT_VIDEO){
+//		panel.setWhichPanel("video file settings");
+//		// TODO: add theo's video playing things.... [zach]
+//	} else {
+//		panel.setWhichPanel("live video settings");
+//		panel.addToggle("load video settings", "VIDEO_SETTINGS", false);
+//	}
+//	
+//	
+//	
+//	panel.loadSettings("settings/trackingSettings.xml");
+//	
+//	
+//}
+//
+//void trackingManager::updateGui(){
+//	
+//	tracker.flip(  panel.getValueB("B_RIGHT_FLIP_X"),  panel.getValueB("B_RIGHT_FLIP_Y") );
+//	
+//	minBlob = panel.getValueI("MIN_BLOB");
+//	maxBlob = panel.getValueI("MAX_BLOB");
+//	
+//	threshold				= panel.getValueI("THRESHOLD_GAZE");
+//	
+//	tracker.gamma			= panel.getValueF("GAMMA");
+//	tracker.bUseGamma		= panel.getValueB("B_USE_GAMMA");
+//	
+//	tracker.contrast		= panel.getValueF("CONTRAST");
+//	tracker.brightness		= panel.getValueF("BRIGHTNESS");
+//	tracker.bUseContrast	= panel.getValueB("B_USE_CONTRAST");
+//	
+//	tracker.nDilations		= panel.getValueI("N_DILATIONS");
+//	tracker.bUseDilate		= panel.getValueB("B_USE_DILATE");
+//	
+//	int oldx				= tracker.edgeMaskStartPos.x;
+//	int oldy				= tracker.edgeMaskStartPos.y;
+//	int oldir				= tracker.edgeMaskInnerRadius;
+//	int oldor				= tracker.edgeMaskOuterRadius;
+//	
+//	tracker.edgeMaskStartPos.x		= panel.getValueI("EDGE_MASK_X");
+//	tracker.edgeMaskStartPos.y		= panel.getValueI("EDGE_MASK_Y");
+//	tracker.edgeMaskInnerRadius	= panel.getValueI("EDGE_MASK_INNER_RADIUS");
+//	tracker.edgeMaskOuterRadius	= panel.getValueI("EDGE_MASK_OUTER_RADIUS");
+//	
+//	tracker.glintThreshold = panel.getValueI("GLINT_THRESHOLD");
+//	tracker.minGlintSize = panel.getValueI("GLINT_MIN_SIZE");
+//	tracker.maxGlintSize = panel.getValueI("GLINT_MAX_SIZE");
+//	
+//	if (	oldx	!= tracker.edgeMaskStartPos.x  ||
+//		oldy	!= tracker.edgeMaskStartPos.y  ||
+//		oldir	!= tracker.edgeMaskInnerRadius ||
+//		oldor	!= tracker.edgeMaskOuterRadius	){		
+//		
+//		tracker.calculateEdgePixels();
+//		
+//	}
+//	
+//	if (IM.mode != INPUT_VIDEO){
+//		panel.setWhichPanel("live video settings");
+//		if (panel.getValueB("VIDEO_SETTINGS") == true){
+//			
+//#ifdef TARGET_OSX
+//			// since macs fuck up bad fullscreen with video settings
+//			ofSetFullscreen(false);
+//#endif
+//			IM.vidGrabber.videoSettings();
+//			panel.setValueB("VIDEO_SETTINGS", false);
+//		}
+//	}
+//	
+//}
 
 
