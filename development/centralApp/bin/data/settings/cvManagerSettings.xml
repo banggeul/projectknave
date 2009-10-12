@@ -1,7 +1,34 @@
 <cvManager>
 
-	<!-- NOT USED -- USE MAIN APP SETTINGS  -->
 
-	<id> 0 </id>
+
+	<!--   0 = HANDS   1 = PEOPLE    2 = STARS    -->
+
+	<sceneId>0</sceneId>
+	
+	<sceneInfo>
+
+		<scene0>
+			<nVideoSources>1</nVideoSources>
+			<video0>testMovies/hand-silhouettes2-sorenson.mov</video0>
+			<videoGrabberSource0>0</videoGrabberSource0>
+		</scene0>	
+
+		<scene1>
+			<nVideoSources>2</nVideoSources>
+			<video0>testMovies/silhouettes_01.mov</video0>
+			<video1>testMovies/silhouettes_02.mov</video1>
+			<videoGrabberSource0>0</videoGrabberSource0>
+			<videoGrabberSource1>1</videoGrabberSource1>
+		</scene1>
+
+		<scene2>
+			<nVideoSources>1</nVideoSources>
+			<video0>testMovies/silhouettes-sorenson.mov</video0>
+			<videoGrabberSource0>0</videoGrabberSource0>
+		</scene2>
+
+	</sceneInfo>
+
 
 </cvManager>
