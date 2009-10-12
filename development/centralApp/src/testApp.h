@@ -9,6 +9,7 @@
 #include "renderManager.h"
 
 #include "ofxBox2d.h"
+#include "ofxXmlSettings.h"
 
 
 enum {
@@ -43,6 +44,8 @@ public:
 	
 	int						drawMode;
 	
+	ofxXmlSettings XML;
+	
 	
 	// this is temp
 	vector <ofxBox2dLine>	box2dBuilding;
@@ -50,6 +53,7 @@ public:
 	bool					bEnableBox2d;
 	ofxBox2d				box2d;
 	
+	bool					bUseNetworking;
 	
 	
 };

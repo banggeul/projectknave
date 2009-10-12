@@ -24,13 +24,24 @@ void testApp::setup(){
 	box2d.setFPS(30.0);
 	
 	
+	XML.loadFile("settings/mainAppSettings.xml");
+	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
+	CVM.id = XML.getValue("mainApp:id", 0);
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
 	
 	
-	CVM.update();
+	if (bUseNetworking){
+		if (CVM.id == 0){
+			CVM.update();
+			//CVM.receiveFromNetwork();
+		}	
+	} else {
+		CVM.update();
+	}
+	
 	
 	RM.update();
 	
@@ -53,17 +64,29 @@ void testApp::update(){
 	}
 
 	 // ZACH TESTING NETWORK STUFF
-	if (CVM.id == 0){
-		if (ofGetFrameNum() % 10 == 0) CVM.sendToNetwork();
-	} else if (CVM.id == 1){
-		CVM.receiveFromNetwork();
-	}
 	
+	if (bUseNetworking == true){
+		if (CVM.id == 0){
+			CVM.sendToNetwork();
+		} else if (CVM.id == 1){
+			CVM.receiveFromNetwork();
+		}
+	}
 	
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
+	
+	if (bUseNetworking == true){
+		if (CVM.id == 0){
+			ofBackground(255,0,255);
+			CVM.draw(0,0,900,300);
+			return;
+		}
+	}
+	
+	
 	
 	ofSetColor(0, 0, 0);
 	string info = "	FPS: "+ofToString(ofGetFrameRate());

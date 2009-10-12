@@ -12,7 +12,7 @@
 
 #include "ofxXmlSettings.h"
 
-#include "udpChunker.h"
+//#include "udpChunker.h"	// good bye!
 
 
 
@@ -106,9 +106,23 @@ class cvManager {
 	unsigned short			port;
 	unsigned char *			packetData;
 	
+	ofxTCPServer TCPServer;
+	ofxTCPClient tcpClient;
 	
-	udpChunker				UDPC;
-	udpPacket				* UDPpacket;
+	
+	
+	
+	
+	
+	int connectTime;
+	int deltaTime;
+	bool weConnected;
+	
+	
+	
+	
+	//udpChunker				UDPC;
+	//udpPacket				* UDPpacket;
 	
 	
 	

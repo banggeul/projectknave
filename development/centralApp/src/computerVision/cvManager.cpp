@@ -22,9 +22,8 @@ cvManager::cvManager(){
 	cout << sizeof(computerVisionPacket) << endl;
 	
 	
-	XML.loadFile("settings/cvManagerSettings.xml");
-	id = XML.getValue("cvManager:id", 0);		
-	cout << id << endl;
+		
+	//cout << id << endl;
 	//	CV_RECEIVER
 	//	CV_SENDER
 	
@@ -38,8 +37,9 @@ cvManager::cvManager(){
 	
 	
 	
-	UDPpacket = new udpPacket();
-	UDPC.setup(sizeof(computerVisionPacket), CHUNK_SIZE);
+	
+	//UDPpacket = new udpPacket();
+	//UDPC.setup(sizeof(computerVisionPacket), CHUNK_SIZE);
 
 }
 
@@ -238,7 +238,7 @@ void cvManager::setupReceiver(){
 	if (!bNetworkSetup){
 		
 		bool bOk = false;
-		
+		/*
 		// --------------------------------- create
 		bOk = manager.Create();
 		if (!bOk) {   
@@ -260,6 +260,8 @@ void cvManager::setupReceiver(){
 			return;
 		}
 		
+		*/
+		TCPServer.setup(11999);
 		
 		bNetworkSetup = true;
 	}
@@ -269,7 +271,7 @@ void cvManager::setupReceiver(){
 void cvManager::setupSender(){
 	if (!bNetworkSetup){
 		
-		
+		/*
 		bool bOk = false;
 		
 		// --------------------------------- create
@@ -289,6 +291,11 @@ void cvManager::setupSender(){
 		}
 		
 		bNetworkSetup = true;
+		*/
+		bNetworkSetup = true;
+		weConnected = tcpClient.setup("127.0.0.1", 11999);
+		connectTime = 0;
+		deltaTime = 0;
 	}
 }
 
@@ -299,16 +306,28 @@ void cvManager::receiveFromNetwork(){
 	if (!bNetworkSetup) setupReceiver();
 	
 	
+	//for each client lets send them a message letting them know what port they are connected on
+	for(int i = 0; i < TCPServer.getNumClients(); i++){
+		TCPServer.send(i, "hello client - you are connected on port - "+ofToString(TCPServer.getClientPort(i)) );
+	}
+	
+	for(int i = 0; i < TCPServer.getNumClients(); i++){
+		
+		int nGot = TCPServer.receiveRawBytes(i, (char *)packet, sizeof(computerVisionPacket));
+		//printf("got %i bytes from %i \n", nGot, i);
+		
+	}
+	
 	///char temp[1000];
 	
-	int recv;
+	/*int recv;
 	while (recv = manager.Receive((char *) UDPpacket, sizeof(udpPacket)) > 0){
 		int chunk = UDPpacket->whichChunk;
 		int packetId = UDPpacket->packetId;
 		printf("received %i bytes of  chunk %i, of packet %i  \n", chunk, packetId);
 		UDPC.receiveDataChunk(UDPpacket->data, chunk, packetId);
 		UDPC.update();
-	}
+	}*/
 	
 	
 }
@@ -319,7 +338,7 @@ void cvManager::sendToNetwork(){
 	
 	if (!bNetworkSetup) setupSender();
 	
-	UDPC.convertToChunkedPacketForSending((unsigned char * )packet, sizeof(computerVisionPacket));
+	/*UDPC.convertToChunkedPacketForSending((unsigned char * )packet, sizeof(computerVisionPacket));
 	
 	for (int i = 0; i < UDPC.nChunks; i++){
 		dataChunk * DC = UDPC.getChunk(i);
@@ -329,7 +348,31 @@ void cvManager::sendToNetwork(){
 		int sent = manager.Send((char *) UDPpacket, sizeof(udpPacket));
 		printf("sent %i bytes of chunk %i, of packet %i  \n", sent, i,  (int)UDPpacket->packetId);
 	}
+	*/
 	
+	//we are connected - lets send our text and check what we get back
+	if(weConnected){
+		
+		
+		tcpClient.sendRawBytes((char *)packet, sizeof(computerVisionPacket));
+		
+		
+		//if data has been sent lets update our text
+		string str = tcpClient.receive();
+		
+		/*if( str.length() > 0 ){
+			msgRx = str;
+		}*/
+	}else{
+		//if we are not connected lets try and reconnect every 5 seconds
+		deltaTime = ofGetElapsedTimeMillis() - connectTime;
+		
+		if( deltaTime > 5000 ){
+			weConnected = tcpClient.setup("127.0.0.1", 11999);
+			connectTime = ofGetElapsedTimeMillis();
+		}
+		
+	}
 	
 	
 }
