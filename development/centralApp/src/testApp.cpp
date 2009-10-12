@@ -15,7 +15,6 @@ void testApp::setup(){
 	
 	drawMode = DRAW_SCENE;
 
->>>>>>> .r106
 	// box2d
 	bEnableBox2d = false;
 	box2d.init();
