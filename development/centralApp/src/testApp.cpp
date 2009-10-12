@@ -15,6 +15,7 @@ void testApp::setup(){
 	
 	drawMode = DRAW_SCENE;
 
+>>>>>>> .r106
 	// box2d
 	bEnableBox2d = false;
 	box2d.init();
@@ -123,7 +124,7 @@ void testApp::draw(){
 		// The Ferry Building
 		FB.drawContour();
 		
-			
+		
 		
 		
 		RM.swapOutFBO();
