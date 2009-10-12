@@ -1,6 +1,6 @@
 <cvManager>
 
-	<!-- 0,1 for server / client -->
+	<!-- NOT USED -- USE MAIN APP SETTINGS  -->
 
 	<id> 0 </id>
 
