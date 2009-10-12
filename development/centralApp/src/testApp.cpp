@@ -14,11 +14,7 @@ void testApp::setup(){
 	RM.setup();
 	
 	drawMode = DRAW_SCENE;
-	
-<<<<<<< .mine
 
-	
-=======
 	// box2d
 	bEnableBox2d = false;
 	box2d.init();
@@ -28,7 +24,6 @@ void testApp::setup(){
 	box2d.setFPS(30.0);
 	
 	
->>>>>>> .r103
 }
 
 //--------------------------------------------------------------
@@ -43,9 +38,6 @@ void testApp::update(){
 	SM.passInPacket(CVM.packet);
 	SM.update();
 	
-<<<<<<< .mine
-
-=======
 	if(bEnableBox2d) {
 		
 		box2d.update();
@@ -59,23 +51,13 @@ void testApp::update(){
 			}
 		}
 	}
-	
-	/*
->>>>>>> .r103
+
 	 // ZACH TESTING NETWORK STUFF
-<<<<<<< .mine
 	if (CVM.id == 0){
 		if (ofGetFrameNum() % 10 == 0) CVM.sendToNetwork();
 	} else if (CVM.id == 1){
 		CVM.receiveFromNetwork();
 	}
-=======
-	 if (CVM.id == 0){
-	 CVM.sendToNetwork();
-	 } else if (CVM.id == 1){
-	 CVM.receiveFromNetwork();
-	 }
->>>>>>> .r103
 	
 	
 }
