@@ -12,11 +12,21 @@
 
 #include "ofxXmlSettings.h"
 
+#include "udpChunker.h"
+
+
 
 enum {
 	CV_SENDER, CV_RECEIVER
 };
 
+#define CHUNK_SIZE	8000		// 8kb
+
+typedef struct {
+	long long	packetId;
+	int			whichChunk;
+	unsigned char data[CHUNK_SIZE];
+} udpPacket;
 
 
 class cvManager {
@@ -95,6 +105,12 @@ class cvManager {
 	string					IP;
 	unsigned short			port;
 	unsigned char *			packetData;
+	
+	
+	udpChunker				UDPC;
+	udpPacket				* UDPpacket;
+	
+	
 	
 
 };

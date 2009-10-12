@@ -9,9 +9,7 @@ void TreeScene::setup() {
 // ------------------------------------------
 
 void TreeScene::mousePressed(int x, int y, int button) {
-	
 	stems[curStem].initStem(x, y);
-	
 	curStem ++;
 	curStem %= MAX_STEMS;
 }

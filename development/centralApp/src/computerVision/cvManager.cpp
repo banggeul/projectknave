@@ -35,6 +35,11 @@ cvManager::cvManager(){
 	 <id> 0 </id>
 	 
 	 */
+	
+	
+	
+	UDPpacket = new udpPacket();
+	UDPC.setup(sizeof(computerVisionPacket), CHUNK_SIZE);
 
 }
 
@@ -292,10 +297,20 @@ void cvManager::setupSender(){
 void cvManager::receiveFromNetwork(){
 	
 	if (!bNetworkSetup) setupReceiver();
-	char temp[1000];
-	int recv = manager.Receive(temp, 1000);
-	//int recv = manager.Receive((char *)packet, sizeof(computerVisionPacket));
-	cout << "received " << recv << endl;
+	
+	
+	///char temp[1000];
+	
+	int recv;
+	while (recv = manager.Receive((char *) UDPpacket, sizeof(udpPacket)) > 0){
+		int chunk = UDPpacket->whichChunk;
+		int packetId = UDPpacket->packetId;
+		printf("received %i bytes of  chunk %i, of packet %i  \n", chunk, packetId);
+		UDPC.receiveDataChunk(UDPpacket->data, chunk, packetId);
+		UDPC.update();
+	}
+	
+	
 }
 
 //---------------------------				
@@ -304,9 +319,18 @@ void cvManager::sendToNetwork(){
 	
 	if (!bNetworkSetup) setupSender();
 	
-	string test = "test";
-	int sent = manager.Send((char *) packet, sizeof(computerVisionPacket)*0.5f);
-	cout << "sent " << sent << endl;
+	UDPC.convertToChunkedPacketForSending((unsigned char * )packet, sizeof(computerVisionPacket));
+	
+	for (int i = 0; i < UDPC.nChunks; i++){
+		dataChunk * DC = UDPC.getChunk(i);
+		UDPpacket->packetId = ofGetFrameNum();
+		UDPpacket->whichChunk = i;
+		memcpy(UDPpacket->data, DC->data, DC->length);			// this doesn't have to be a memcpy....
+		int sent = manager.Send((char *) UDPpacket, sizeof(udpPacket));
+		printf("sent %i bytes of chunk %i, of packet %i  \n", sent, i,  (int)UDPpacket->packetId);
+	}
+	
+	
 	
 }
 
