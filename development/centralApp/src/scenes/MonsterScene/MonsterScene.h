@@ -22,4 +22,5 @@ public:
 	
 	int tempC;
 	
+	float cw, ch;
 };
