@@ -104,7 +104,7 @@ void cvManager::setupGUI(){
 	
 	//Slider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
 	
-	panel.loadSettings("settings/panels/cvManagerPanel.xml");
+	panel.loadSettings("settings/panels_xml/cvManagerPanel.xml");
 }
 
 void cvManager::updateGUI(){
