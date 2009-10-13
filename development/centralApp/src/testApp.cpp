@@ -7,6 +7,9 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	
+<<<<<<< .mine
+	CVM.setupVideo("testMovies/silhouettes-sorenson.mov");
+=======
 	
 	//ofDisableArbTex();
 	
@@ -16,6 +19,7 @@ void testApp::setup(){
 	
 	
 	
+>>>>>>> .r133
 	FB.setupBuilding();
 	SM.setup();
 	SM.gotoScene(MONSTER_SCENE);
