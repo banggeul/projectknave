@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="daitoDemo" />
+		<Option title="fernDemo" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -57,9 +57,6 @@
 			<Add directory="..\..\..\addons\ofxOpenCv" />
 			<Add directory="..\..\..\addons\ofxOpenCv\src" />
 			<Add directory="..\..\..\addons\ofxOpenCv\libs\opencv\include" />
-			<Add directory="..\..\..\addons\ofxOsc\libs\oscpack\include\ip" />
-			<Add directory="..\..\..\addons\ofxOsc\libs\oscpack\include\osc" />
-			<Add directory="..\..\..\addons\ofxOsc\src" />
 			<Add directory="..\..\..\addons\ofxThread\src" />
 			<Add directory="..\..\..\addons\ofxVectorMath\src" />
 			<Add directory="..\..\..\addons\ofxVectorGraphics\src" />
@@ -123,24 +120,6 @@
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.cpp" />
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.h" />
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVectorMath.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxDaito.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxDaito.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOsc.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscArg.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscBundle.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscBundle.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscMessage.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscMessage.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscReceiver.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscReceiver.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscSender.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxOsc\src\ofxOscSender.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.h" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
-		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\src\ofxXmlSettings.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppBaseWindow.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.cpp" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.h" />
@@ -182,6 +161,8 @@
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoGrabber.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.cpp" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.h" />
+		<Unit filename="src\Fern.cpp" />
+		<Unit filename="src\Fern.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\testApp.cpp" />
 		<Unit filename="src\testApp.h" />
