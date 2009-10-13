@@ -1,7 +1,7 @@
 #pragma once
 
 class ofxDisplayList {
-protected:
+private:
 	GLuint _id;
 	bool _ready;
 	int* _references;

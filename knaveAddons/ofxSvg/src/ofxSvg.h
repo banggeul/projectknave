@@ -65,7 +65,7 @@ public:
 			anchor.y = height / 2;
 		}
 	}
-	ofxPoint2f getAnchor() {
+	ofxPoint2f& getAnchor() {
 		return anchor;
 	}
 
