@@ -1,9 +1,10 @@
 <cvManager>
 
-
+	
+	<bUseLiveVideo>0</bUseLiveVideo>
 
 	<!--   0 = HANDS   1 = PEOPLE    2 = STARS    -->
-
+	
 	<sceneId>0</sceneId>
 	
 	<sceneInfo>
