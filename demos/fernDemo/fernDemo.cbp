@@ -66,6 +66,10 @@
 			<Add directory="..\..\..\knaveAddons\ofxXmlSettings\libs" />
 			<Add directory="..\..\..\addons\ofxVectorMath\src\" />
 			<Add directory="..\..\..\knaveAddons\ofxOsc\src" />
+			<Add directory="..\..\..\knaveAddons\ofxSvg\src" />
+			<Add directory="..\..\..\knaveAddons\ofxDisplayList\src" />
+			<Add directory="..\..\..\knaveAddons\ofxColor\src" />
+			<Add directory="..\..\..\knaveAddons\Fern" />
 		</Compiler>
 		<Linker>
 			<Add option="../../../libs/freeImage/FreeImage.lib" />
@@ -120,6 +124,32 @@
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.cpp" />
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.h" />
 		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVectorMath.h" />
+		<Unit filename="..\..\..\knaveAddons\Fern\Fern.cpp" />
+		<Unit filename="..\..\..\knaveAddons\Fern\Fern.h" />
+		<Unit filename="..\..\..\knaveAddons\Fern\FernStyle.h" />
+		<Unit filename="..\..\..\knaveAddons\Fern\RandomFern.cpp" />
+		<Unit filename="..\..\..\knaveAddons\Fern\RandomFern.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxColor\src\ofxColor.cpp" />
+		<Unit filename="..\..\..\knaveAddons\ofxColor\src\ofxColor.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxDisplayList\src\ofxDisplayList.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvg.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgClosePath.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCommand.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCommandHandle.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgCurveTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgHorizontalLineTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgLineTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgMoveTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgPath.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgPathContext.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgSmoothCurveTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxSvg\src\ofxSvgVerticalLineTo.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.cpp" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxml.h" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+		<Unit filename="..\..\..\knaveAddons\ofxXmlSettings\src\ofxXmlSettings.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppBaseWindow.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.cpp" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.h" />
@@ -161,8 +191,6 @@
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoGrabber.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.cpp" />
 		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.h" />
-		<Unit filename="src\Fern.cpp" />
-		<Unit filename="src\Fern.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\testApp.cpp" />
 		<Unit filename="src\testApp.h" />
