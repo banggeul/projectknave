@@ -8,14 +8,18 @@
 void testApp::setup(){
 	
 	
-	ofDisableArbTex();
+	//ofDisableArbTex();
+	
+	XML.loadFile("settings/mainAppSettings.xml");
+	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
+	CVM.id = XML.getValue("mainApp:id", 0);
 	
 	
 	
 	FB.setupBuilding();
 	SM.setup();
 	SM.gotoScene(MONSTER_SCENE);
-	RM.setup();
+	//RM.setup();
 	
 	drawMode = DRAW_SCENE;
 
@@ -28,10 +32,7 @@ void testApp::setup(){
 	box2d.setFPS(30.0);
 	
 
-	XML.loadFile("settings/mainAppSettings.xml");
-	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
-	CVM.id = XML.getValue("mainApp:id", 0);
-	
+		
 	CVM.setupNonCV();	// this order is all wonky now. 
 
 }
@@ -50,12 +51,14 @@ void testApp::update(){
 	}
 	
 	
-	RM.update();
+	//RM.update();
 	
-	SM.passInFerryBuilding(&FB);
-	SM.passInPacket(CVM.packet);
-	SM.update();
-
+	if (drawMode == DRAW_SCENE) {
+		SM.passInFerryBuilding(&FB);
+		SM.passInPacket(CVM.packet);
+		SM.update();
+	}
+		
 	if(bEnableBox2d) {
 		
 		box2d.update();
@@ -106,7 +109,7 @@ void testApp::draw(){
 		
 	} else if (drawMode == DRAW_SCENE) {
 		
-		RM.swapInFBO();
+		//RM.swapInFBO();
 		SM.draw();
 		
 		ofEnableAlphaBlending();
@@ -122,15 +125,15 @@ void testApp::draw(){
 		ofSetColor(255,255,255);
 		SM.drawTop();
 		
-		RM.swapOutFBO();
+		//RM.swapOutFBO();
 		ofSetColor(255,255,255);
-		RM.drawForPreview();
+		//RM.drawForPreview();
 		
 		
 	}
 	else if(drawMode == DRAW_FERRY) {
 		
-		RM.swapInFBO();
+		//RM.swapInFBO();
 		ofEnableAlphaBlending();
 		ofSetColor(255,255,255, 210);
 		
@@ -152,9 +155,9 @@ void testApp::draw(){
 		// The Ferry Building
 		FB.drawContour();
 
-		RM.swapOutFBO();
+		//RM.swapOutFBO();
 		ofSetColor(255,255,255);
-		RM.drawForPreview();
+		//RM.drawForPreview();
 		
 		info = "";
 		FB.drawInfo();
