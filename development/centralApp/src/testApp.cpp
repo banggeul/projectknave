@@ -11,7 +11,7 @@ void testApp::setup(){
 	ofDisableArbTex();
 	
 	
-	CVM.setupVideo("testMovies/crowd-motionTest-wide-960pixelby240.mov");
+	
 	FB.setupBuilding();
 	SM.setup();
 	SM.gotoScene(MONSTER_SCENE);
@@ -31,6 +31,8 @@ void testApp::setup(){
 	XML.loadFile("settings/mainAppSettings.xml");
 	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
 	CVM.id = XML.getValue("mainApp:id", 0);
+	
+	CVM.setupNonCV();	// this order is all wonky now. 
 
 }
 
@@ -85,7 +87,7 @@ void testApp::draw(){
 	if (bUseNetworking == true){
 		if (CVM.id == 0){
 			ofBackground(255,0,255);
-			CVM.draw(0,0,900,300);
+			CVM.draw();
 			return;
 		}
 	}
@@ -100,7 +102,7 @@ void testApp::draw(){
 	
 	
 	if (drawMode == DRAW_CV){
-		CVM.draw(0,0,900,300);
+		CVM.draw();
 		
 	} else if (drawMode == DRAW_SCENE) {
 		
@@ -149,10 +151,7 @@ void testApp::draw(){
 		
 		// The Ferry Building
 		FB.drawContour();
-		
-		
-		
-		
+
 		RM.swapOutFBO();
 		ofSetColor(255,255,255);
 		RM.drawForPreview();
@@ -160,14 +159,7 @@ void testApp::draw(){
 		info = "";
 		FB.drawInfo();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 	ofDrawBitmapString(info, 20, 20);
 }
 
@@ -254,6 +246,10 @@ void testApp::mouseDragged(int x, int y, int button) {
 	ofPoint pos = RM.getPointInPreview(x, y);
 	SM.mouseDragged(pos.x, pos.y, button);
 	
+	if (drawMode == DRAW_CV){
+		CVM.mouseDragged(x, y, button);
+	}
+	
 	
 	if(bEnableBox2d) {
 		float r = ofRandom(2, 27);
@@ -270,12 +266,21 @@ void testApp::mousePressed(int x, int y, int button) {
 	SM.mousePressed(pos.x, pos.y, button);
 	FB.mousePressed(pos.x, pos.y, button);
 	
+	if (drawMode == DRAW_CV){
+		CVM.mousePressed(x, y, button);
+	}
+	
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button) {
 	ofPoint pos = RM.getPointInPreview(x, y);
 	SM.mouseReleased(pos.x, pos.y, button);
+	
+	if (drawMode == DRAW_CV){
+		CVM.mouseReleased();
+	}
 }
 
 //--------------------------------------------------------------

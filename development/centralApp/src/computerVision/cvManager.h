@@ -45,8 +45,14 @@ class cvManager {
 	void setupVideo(string videoPath);
 	void setupCV();
 	
+	
+	void setupNonCV();
 	void setupGUI();
 	void updateGUI();
+	
+	void mouseDragged(int x, int y, int button);
+	void mousePressed(int x, int y, int button);
+	void mouseReleased();
 	
 	ofxControlPanel panel;
 
@@ -61,22 +67,27 @@ class cvManager {
 	
 	void update();
 	
-	void draw(float x, float y, int w = 640, int h = 480);
+	void draw();
 
 	//-------------
 	//-------------	
-	ofVideoPlayer  	VP;
-	ofVideoGrabber 	VG;
+	ofVideoPlayer  	VP[2];
+	ofVideoGrabber 	VG[2];
 	
-	int						threshold;
-	int						maxBlobSize, minBlobSize;
+	
+	ofPoint		warpFrom[4];
+	ofPoint		warpTo[4];
+	
+	//int					threshold;
+	//int					maxBlobSize, minBlobSize;
 	
 	bool					bUsingVideoGrabber;
 	bool					bSetup;	
-	int						width, height;
+	int					width, height;
 	
 	ofxCvColorImage			VideoFrame;
 	ofxCvGrayscaleImage		GreyFrame;
+	ofxCvGrayscaleImage		GreyFramePostWarp;
 	ofxCvGrayscaleImage		PresenceFrame;
 	ofxCvGrayscaleImage		PresenceFrameDialate;
 	ofxCvContourFinder		Contour;
@@ -87,14 +98,19 @@ class cvManager {
 	
 	void					fillPacket();
 	cvStrokeResampler		SR;
-	computerVisionPacket	* packet;
+	computerVisionPacket	*	packet;
 	
 	
 	//-----------------------------------
 	//		* settings * 
 	
 	ofxXmlSettings			XML;
-	int						id;		 // sender?  receiver?
+	int					id;		 // sender?  receiver?
+	bool					bLive;
+	int					nVideos;
+	int					videoSource[2];
+	string				videoFile[2];
+	
 	
 	
 	//-----------------------------------
