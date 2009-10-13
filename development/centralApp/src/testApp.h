@@ -44,7 +44,7 @@ public:
 	
 	int						drawMode;
 	
-	ofxXmlSettings XML;
+	ofxXmlSettings			XML;
 	
 	
 	// this is temp

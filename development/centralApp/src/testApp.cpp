@@ -19,7 +19,7 @@ void testApp::setup(){
 	FB.setupBuilding();
 	SM.setup();
 	SM.gotoScene(MONSTER_SCENE);
-	//RM.setup();
+	RM.setup();
 	
 	drawMode = DRAW_SCENE;
 
@@ -41,6 +41,20 @@ void testApp::setup(){
 void testApp::update(){
 	
 	
+	// if we are using networking, send / recv network data: 
+	if (bUseNetworking == true){
+		if (CVM.id == 0){
+			// TODO: check the isFrameNew here...
+			//if (CVM.isFrameNew()){
+				CVM.sendToNetwork();
+			//}
+		} else if (CVM.id == 1){
+			CVM.receiveFromNetwork();
+		}
+	}
+	
+	
+	
 	if (bUseNetworking){
 		if (CVM.id == 0){
 			CVM.update();
@@ -51,14 +65,18 @@ void testApp::update(){
 	}
 	
 	
+
+	//nothing in RM update at the moment. 
 	//RM.update();
+
 	
-	if (drawMode == DRAW_SCENE) {
+
+	if ((drawMode == DRAW_SCENE)){
 		SM.passInFerryBuilding(&FB);
 		SM.passInPacket(CVM.packet);
 		SM.update();
 	}
-		
+
 	if(bEnableBox2d) {
 		
 		box2d.update();
@@ -74,13 +92,7 @@ void testApp::update(){
 	}
 
 
-	if (bUseNetworking == true){
-		if (CVM.id == 0){
-			CVM.sendToNetwork();
-		} else if (CVM.id == 1){
-			CVM.receiveFromNetwork();
-		}
-	}
+	
 	
 }
 
@@ -109,7 +121,7 @@ void testApp::draw(){
 		
 	} else if (drawMode == DRAW_SCENE) {
 		
-		//RM.swapInFBO();
+		RM.swapInFBO();
 		SM.draw();
 		
 		ofEnableAlphaBlending();
@@ -125,15 +137,15 @@ void testApp::draw(){
 		ofSetColor(255,255,255);
 		SM.drawTop();
 		
-		//RM.swapOutFBO();
+		RM.swapOutFBO();
 		ofSetColor(255,255,255);
-		//RM.drawForPreview();
+		RM.drawForPreview();
 		
 		
 	}
 	else if(drawMode == DRAW_FERRY) {
 		
-		//RM.swapInFBO();
+		RM.swapInFBO();
 		ofEnableAlphaBlending();
 		ofSetColor(255,255,255, 210);
 		
@@ -150,14 +162,14 @@ void testApp::draw(){
 		}	
 		
 		
-		FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+		//FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 		
 		// The Ferry Building
 		FB.drawContour();
 
-		//RM.swapOutFBO();
+		RM.swapOutFBO();
 		ofSetColor(255,255,255);
-		//RM.drawForPreview();
+		RM.drawForPreview();
 		
 		info = "";
 		FB.drawInfo();

@@ -30,7 +30,7 @@ void cvManager::setupNonCV(){
 
 	bLive = (bool) XML.getValue("cvManager:bUseLiveVideo", 0);
 	printf("bLive =  %i \n", (int)bLive == true ? 1 : 0);
-	int sceneId = XML.getValue("cvManager:sceneId",0);
+	sceneId = XML.getValue("cvManager:sceneId",0);
 	printf("scene =  %i \n", sceneId);
 	nVideos = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":nVideoSources", 0);
 	printf("nVideos =  %i \n", nVideos);
@@ -88,6 +88,8 @@ void cvManager::setupGUI(){
 	panel.addSlider2D("ptc", "CV_MANAGER_PANEL_VIDEO_PTC", VideoFrame.width, VideoFrame.height, 0, VideoFrame.width, 0, VideoFrame.height, true);
 	panel.addSlider2D("ptd", "CV_MANAGER_PANEL_VIDEO_PTD", 0, VideoFrame.height, 0, VideoFrame.width, 0, VideoFrame.height, true);
 	
+	
+	panel.addSlider("scale",  "CV_MANAGER_SCALE", 1,0.8, 1.4, false);
 	
 	warpFrom[0].set(0, 0);
 	warpFrom[1].set(VideoFrame.width, 0);
@@ -148,11 +150,18 @@ void cvManager::fillPacket(){
 	memset( (char *)(packet), 0, sizeof(computerVisionPacket));
 	
 	int nBlobs = MIN(Contour.nBlobs, MAX_N_BLOBS);
+	
+	packet->myId = sceneId;
+	packet->frameNumber = ofGetFrameNum();
+	packet->width = VideoFrame.width;						// TODO: is videoFrame the right measurement here
+	packet->height = VideoFrame.height;
 	packet->nBlobs = nBlobs;
 	
 	for (int i = 0; i < nBlobs; i++){
 		
 		int nPts = Contour.blobs[i].nPts;
+		
+		packet->bAmInner[i] = !Contour.blobs[i].hole;
 		
 		if (nPts < MAX_BLOB_LENGTH){
 			
@@ -179,9 +188,14 @@ void cvManager::fillPacket(){
 		}
 		
 	}
+	
+	packet->checkSum = packet->myId + packet->frameNumber + packet->nBlobs;		
+	
 }
 
 
+ 
+ 
 
 //changing cameras or switching from/to the camera mode
 //requires the app to be restarted - mabe we can change this?
@@ -319,6 +333,16 @@ void cvManager::update(){
 	}
 	
 	if (bAnyDifferent)	GreyFramePostWarp.warpIntoMe(GreyFrame, warpFrom, warpTo);
+	else GreyFramePostWarp = GreyFrame;
+	
+	float scale = panel.getValueF("CV_MANAGER_SCALE");
+	if (fabs(scale - 1) > 0.05){
+		//GreyFramePostWarp.translate(-GreyFramePostWarp.width/2, -GreyFramePostWarp.height/2);
+		GreyFramePostWarp.scale(scale, scale);
+		if (scale > 1) ; //GreyFramePostWarp.translate(-GreyFramePostWarp.width*(1-scale)*0.5, -GreyFramePostWarp.height*(1-scale)*0.5);
+		else GreyFramePostWarp.translate(GreyFramePostWarp.width*(1-scale)*0.5, GreyFramePostWarp.height*(1-scale)*0.5);
+		//GreyFramePostWarp.translate(GreyFramePostWarp.width/2, GreyFramePostWarp.height/2);
+	}
 	//else GreyFramePostWarp = GreyFrame;
 													 
 													 
@@ -351,7 +375,7 @@ void cvManager::update(){
 	int minBlobSize = panel.getValueF("CV_MANAGER_PANEL_MIN_BLOB") * nPixels;
 	int maxBlobSize = panel.getValueF("CV_MANAGER_PANEL_MAX_BLOB") * nPixels;
 												
-	Contour.findContours(PresenceFrameDialate, minBlobSize, maxBlobSize, 50, false, false);  
+	Contour.findContours(PresenceFrameDialate, minBlobSize, maxBlobSize, 50, true, true);  
 	
 	fillPacket();	// THIS IS FOR THE NETWORK COMMUNICATON
 }

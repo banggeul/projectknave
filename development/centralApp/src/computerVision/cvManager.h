@@ -105,7 +105,8 @@ class cvManager {
 	//		* settings * 
 	
 	ofxXmlSettings			XML;
-	int					id;		 // sender?  receiver?
+	int						id;		 // sender?  receiver?
+	int						sceneId;
 	bool					bLive;
 	int					nVideos;
 	int					videoSource[2];
