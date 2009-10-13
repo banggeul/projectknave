@@ -69,7 +69,7 @@ void cvManager::setupGUI(){
 	panel.addPanel("binary / blob", 1, false);
 
 	panel.addPanel("geometry", 1, false);
-	panel.addPanel("adjustments", 1, false);
+	panel.addPanel("adjust ments", 1, false);
 	
 	panel.setWhichPanel("binary / blob");
 	panel.addToggle("flip horiz", "CV_MANAGER_PANEL_VIDEO_FLIP_HORIZ", false);
