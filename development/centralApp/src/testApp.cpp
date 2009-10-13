@@ -7,7 +7,7 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	
-	CVM.setupVideo("testMovies/silhouettes-sorenson.mov");
+	//CVM.setupVideo("testMovies/silhouettes-sorenson.mov");
 	
 	//ofDisableArbTex();
 	
@@ -262,7 +262,7 @@ void testApp::mouseDragged(int x, int y, int button) {
 	ofPoint pos = RM.getPointInPreview(x, y);
 	SM.mouseDragged(pos.x, pos.y, button);
 	
-	if (drawMode == DRAW_CV){
+	if (drawMode == DRAW_CV || bUseNetworking){
 		CVM.mouseDragged(x, y, button);
 	}
 	
@@ -282,7 +282,7 @@ void testApp::mousePressed(int x, int y, int button) {
 	SM.mousePressed(pos.x, pos.y, button);
 	FB.mousePressed(pos.x, pos.y, button);
 	
-	if (drawMode == DRAW_CV){
+	if (drawMode == DRAW_CV || bUseNetworking){
 		CVM.mousePressed(x, y, button);
 	}
 	
@@ -294,7 +294,7 @@ void testApp::mouseReleased(int x, int y, int button) {
 	ofPoint pos = RM.getPointInPreview(x, y);
 	SM.mouseReleased(pos.x, pos.y, button);
 	
-	if (drawMode == DRAW_CV){
+	if (drawMode == DRAW_CV || bUseNetworking){
 		CVM.mouseReleased();
 	}
 }

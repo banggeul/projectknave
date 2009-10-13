@@ -22,13 +22,13 @@ enum {
 	CV_SENDER, CV_RECEIVER
 };
 
-#define CHUNK_SIZE	8000		// 8kb
 
+
+// this is for partial reads, take care of stuff, PER CLIENT (stored in a vector);
 typedef struct {
-	long long	packetId;
-	int			whichChunk;
-	unsigned char data[CHUNK_SIZE];
-} udpPacket;
+	computerVisionPacket packet;
+	int nBytesRead;
+} partialReadObject;			
 
 
 class cvManager {
@@ -83,7 +83,7 @@ class cvManager {
 	
 	bool					bUsingVideoGrabber;
 	bool					bSetup;	
-	int					width, height;
+	int						width, height;
 	
 	ofxCvColorImage			VideoFrame;
 	ofxCvGrayscaleImage		GreyFrame;
@@ -108,9 +108,9 @@ class cvManager {
 	int						id;		 // sender?  receiver?
 	int						sceneId;
 	bool					bLive;
-	int					nVideos;
-	int					videoSource[2];
-	string				videoFile[2];
+	int						nVideos;
+	int						videoSource[2];
+	string					videoFile[2];
 	
 	
 	
@@ -130,8 +130,9 @@ class cvManager {
 	unsigned short			port;
 	unsigned char *			packetData;
 	
-	ofxTCPServer TCPServer;
-	ofxTCPClient tcpClient;
+	ofxTCPServer					TCPServer;
+	ofxTCPClient					tcpClient;
+	vector < partialReadObject * >	partialReadObjects;
 	
 	
 	
@@ -144,9 +145,6 @@ class cvManager {
 	
 	
 	
-	
-	//udpChunker				UDPC;
-	//udpPacket				* UDPpacket;
 	
 	
 	

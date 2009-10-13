@@ -363,9 +363,6 @@ void cvManager::update(){
 	//panel.addSlider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
 
 	PresenceFrame.threshold(threshold);
-	
-	
-	
 	PresenceFrame.invert();
 	PresenceFrameDialate = PresenceFrame;
 	PresenceFrameDialate.dilate_3x3();
@@ -454,16 +451,75 @@ void cvManager::receiveFromNetwork(){
 	if (!bNetworkSetup) setupReceiver();
 	
 	
-	//for each client lets send them a message letting them know what port they are connected on
-	for(int i = 0; i < TCPServer.getNumClients(); i++){
-		TCPServer.send(i, "hello client - you are connected on port - "+ofToString(TCPServer.getClientPort(i)) );
+	// ok, figure out if we have more clients then readObjects, allocate more (since people might disconnect and reconnect they get new IDs, etc)
+	
+	if (partialReadObjects.size() != TCPServer.getNumClients()){
+			
+		if (partialReadObjects.size() < TCPServer.getNumClients()){
+			int nToMake = TCPServer.getNumClients() - partialReadObjects.size() ;
+			for (int i = 0; i < nToMake; i++){
+				partialReadObjects.push_back(new partialReadObject());
+				partialReadObjects[partialReadObjects.size()-1]->nBytesRead = 0;
+				memset((char *) &(partialReadObjects[partialReadObjects.size()-1]->packet), 0, sizeof(computerVisionPacket));
+			}
+		}
 	}
+	
+	if (partialReadObjects.size() != TCPServer.getNumClients()){
+		printf("error in recv -- some size issues with readers vs. clients");
+	}	
+	
+	//for each client lets send them a message letting them know what port they are connected on
+	/*
+	 // helpful ????
+	 for(int i = 0; i < TCPServer.getNumClients(); i++){
+		TCPServer.send(i, "hello client - you are connected on port - "+ofToString(TCPServer.getClientPort(i)) );
+	}*/
 	
 	for(int i = 0; i < TCPServer.getNumClients(); i++){
 		
-		int nGot = TCPServer.receiveRawBytes(i, (char *)packet, sizeof(computerVisionPacket));
-		//printf("got %i bytes from %i \n", nGot, i);
+		int nToRead =  sizeof(computerVisionPacket) - partialReadObjects[i]->nBytesRead;
+		int nGot = TCPServer.receiveRawBytes(i, (char *)&partialReadObjects[i]->packet, nToRead);
 		
+		
+		
+		if (nGot >= 0){
+			if (nGot == nToRead){
+				
+				
+				// NOTE -- 
+				// THIS IS WHERE WE WOULD BREAK INTO TWO PACKETS (ie, L / R) FOR THE TWO PACKET RECV SCENES
+				// ie: 
+				
+				// int whichCVdata = partialReadObjects[i].myId
+				// if (whichCVdata == 2){
+					// memcpy to right
+				//} else {
+					// memcpy to left...
+				//}
+				partialReadObjects[i]->nBytesRead += nGot;
+				//printf( "copying w/ %i \n", partialReadObjects[i]->nBytesRead);
+				//printf( "copying frameNumber %i \n", partialReadObjects[i]->packet.frameNumber);
+				
+				// TODO: checksums and stuff here
+				if (partialReadObjects[i]->packet.frameNumber != 0){
+					memcpy( (char *)packet, (char *)&partialReadObjects[i]->packet, sizeof(computerVisionPacket));
+				}
+				// reset the reader! 
+				memset((char *) &(partialReadObjects[partialReadObjects.size()-1]->packet), 0, sizeof(computerVisionPacket));
+				partialReadObjects[i]->nBytesRead = 0;
+				
+			} else {
+				printf("partial read \n");
+				//cout << partialReadObjects[i]->packet.frameNumber << endl;
+				//partialReadObjects[i]->nBytesRead += nGot;
+			}
+		} else {
+			//printf("trouble with client %i \n", i);
+		}
+		//int nGot = TCPServer.receiveRawBytes(i, (char *)packet, sizeof(computerVisionPacket));
+		//printf("got %i bytes from %i \n", nGot, i);
+
 	}
 	
 	///char temp[1000];
