@@ -16,6 +16,9 @@
 
 //#include "udpChunker.h"	// good bye!
 
+// fbo stricher
+#include "stricherRenderManager.h"
+
 
 
 enum {
@@ -41,10 +44,11 @@ class cvManager {
 		
 	//changing cameras or switching from/to the camera mode
 	//requires the app to be restarted - mabe we can change this?
-	void setupCamera(int deviceNumber, int width, int height);
+	void setupCamera(int which, int deviceNumber, int width, int height);
 	void setupVideo(string videoPath);
 	void setupCV();
 	
+	void setFBOStich(int fboW, int fboH);
 	
 	void setupNonCV();
 	void setupGUI();
@@ -63,7 +67,7 @@ class cvManager {
 	//---------------------------		
 		
 	//good for adjusting the color balance, brightness etc
-	void openCameraSettings();
+	void openCameraSettings(int which=0);
 	
 	void update();
 	
@@ -83,7 +87,12 @@ class cvManager {
 	
 	bool					bUsingVideoGrabber;
 	bool					bSetup;	
+<<<<<<< .mine
 	int						width, height;
+	int						inputW, inputH;
+=======
+	int						width, height;
+>>>>>>> .r139
 	
 	ofxCvColorImage			VideoFrame;
 	ofxCvGrayscaleImage		GreyFrame;
@@ -92,6 +101,11 @@ class cvManager {
 	ofxCvGrayscaleImage		PresenceFrameDialate;
 	ofxCvContourFinder		Contour;
 	
+	//-----------------------------------
+	//		* fbo stiching * 
+	stricherRenderManager	stichManger;
+	ofRectangle				stichGui;
+	ofImage					dualImage;
 	
 	//-----------------------------------
 	//		* packet * 
