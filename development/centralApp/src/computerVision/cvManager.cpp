@@ -2,6 +2,7 @@
 
 cvManager::cvManager(){
 	bSetup				= false;
+	bUseFBOSticher      = false;
 }
 
 void cvManager::setupNonCV(){
@@ -65,15 +66,22 @@ void cvManager::setupNonCV(){
 		}
 	}
 	
+	// if we have more than one
+	// video then lets use the sticher
+	if(nVideos > 1) {
+		bUseFBOSticher = true;
+	}
+	
+	
+	if(bUseFBOSticher) setFBOStich(width, height);
+	setupCV();
+	setupGUI();
+
 	
 	if(bLive) printf("\ncamera - w:%i h:%i\n", inputW, inputH);
 	else 	  printf("\nvideo - w:%i h:%i\n", inputW, inputH);
 	
 	printf("cv - w:%i h:%i\n", width, height);
-	
-	setFBOStich(width, height);
-	setupCV();
-	setupGUI();
 }
 
 //------------------------------------------------------------------
@@ -84,7 +92,7 @@ cvManager::~cvManager(){
 	}
 }
 
-
+//------------------------------------------------------------------
 void cvManager::setupGUI() {
 	
 	panel.setup("cv panel", 700, 10, 300, 750);
@@ -290,13 +298,14 @@ void cvManager::setupVideo(string videoPath){
 //--------------------------- fbo strich		
 void cvManager::setFBOStich(int fboW, int fboH) {
 	
-	if(bSetup) return;
+	if(bSetup || !bUseFBOSticher) return;
 	
     stichManger.allocateForNScreens(nVideos, fboW, fboH);
     stichManger.loadFromXml("settings/fboStichSettings.xml");
     stichGui   = ofRectangle(0, 0, fboW, fboH);
 	dualImage.allocate(fboW, fboH, OF_IMAGE_COLOR);
 	
+	printf("fbo sticher allocated\n");
 	
 }
 
@@ -321,6 +330,8 @@ void cvManager::setupCV(){
 	PresenceFrameDialate.allocate(width, height);	
 	GreyFrame.allocate(width, height);
 	GreyFramePostWarp.allocate(width, height);
+	
+	printf("cv allocated\n");
 	
 	bSetup = true;
 }
@@ -348,60 +359,80 @@ void cvManager::update(){
 	
 	
 	// open video settings
-	if(bUsingVideoGrabber) {
-		bool bCamSettings_0 = panel.getValueB("CAMERA_0_SETTING");
-		bool bCamSettings_1 = panel.getValueB("CAMERA_1_SETTING");
-		
-		if(bCamSettings_0) {
-			VG[0].videoSettings();
-			panel.setValueB("CAMERA_0_SETTING", false);	
-		}
-		if(bCamSettings_1) {
-			VG[1].videoSettings();
-			panel.setValueB("CAMERA_1_SETTING", false);	
-		}
+	bool bCamSettings_0 = panel.getValueB("CAMERA_0_SETTING");
+	bool bCamSettings_1 = panel.getValueB("CAMERA_1_SETTING");
+	
+	if(bCamSettings_0) {
+		VG[0].videoSettings();
+		panel.setValueB("CAMERA_0_SETTING", false);	
 	}
+	if(bCamSettings_1) {
+		VG[1].videoSettings();
+		panel.setValueB("CAMERA_1_SETTING", false);	
+	}
+	
 	
 	///////////////////////////////////////////////////////////
 	// Part 1 - get the video data [based on number of inputs]
 	///////////////////////////////////////////////////////////
 	
 	//pointer to our incoming video pixels			
-	// unsigned char * pixCam;
-	
+	unsigned char * pixCam;
 	
 	// are we using a video grabber
 	if(bUsingVideoGrabber) {
 		
-		for(int i=0; i<nVideos; i++) {
-			VG[i].grabFrame();
+		if(bUseFBOSticher) {
+			for(int i=0; i<nVideos; i++) {
+				VG[i].grabFrame();
+			}
+			
+			// return if we do not have a new frame
+			bool bNewFrame = false;
+			for(int i=0; i<nVideos; i++) {
+				if(VG[i].isFrameNew()) bNewFrame = true;
+			}
+			if(!bNewFrame) return;
 		}
 		
-		// return if we do not have a new frame
-		bool bNewFrame = false;
-		for(int i=0; i<nVideos; i++) {
-			if(VG[i].isFrameNew()) bNewFrame = true;
+		else {
+			
+			pixCam 	= VG[0].getPixels();	
+			
 		}
-		if(!bNewFrame) return;
-		
-		// pixCam 	= VG[0].getPixels();	
 		
 	} 
 	
 	
 	// or are we using a video file
 	else {
-		for(int i=0; i<nVideos; i++) {
-			VP[i].idleMovie();	
+		
+		// if we have more than 1 video 
+		// use the fbo love
+		if(bUseFBOSticher) {
 			
-			bool bNewFrame = false;
+		
 			for(int i=0; i<nVideos; i++) {
-				if(VG[i].isFrameNew()) bNewFrame = true;
+				VP[i].idleMovie();	
+				
+				bool bNewFrame = false;
+				for(int i=0; i<nVideos; i++) {
+					if(VP[i].isFrameNew()) bNewFrame = true;
+				}
+				if(!bNewFrame) return;
+				
 			}
-			if(!bNewFrame) return;
-			
-			//pixCam 	= VP[0].getPixels();
 		}
+		
+		// just work with one video
+		else {
+			VP[0].idleMovie();	
+			pixCam 	= VP[0].getPixels();			
+			if(!VP[0].isFrameNew()) return;	
+			
+			printf("ads");
+		}
+		
 	}
 	
 	
@@ -410,38 +441,40 @@ void cvManager::update(){
 	///////////////////////////////////////////////////////////
 	// Part 2a - draw the fbo and seam them together
 	///////////////////////////////////////////////////////////
-	
-	// -------------- draw the camera image
-	ofSetColor(0xffffff);
-	stichManger.startOffscreenDraw();
-	ofSetColor(0xffffff);
-	for(int i=0; i<nVideos; i++) {			
+	if(bUseFBOSticher) {
+		// -------------- draw the camera image
 		ofSetColor(0xffffff);
-		VG[i].draw(i*inputW, 0);
+		stichManger.startOffscreenDraw();
+		ofSetColor(0xffffff);
+		for(int i=0; i<nVideos; i++) {			
+			ofSetColor(0xffffff);
+			if(bUsingVideoGrabber) VG[i].draw(i*inputW, 0);
+			else VP[i].draw(i*inputW, 0);
+
+		}
+		stichManger.endOffscreenDraw();
+		
+		// -------------- draw the sceamed image
+		glPushMatrix();
+		glTranslatef(0, 0, 0);
+		ofSetColor(0xffffff);
+		for(int i=0; i<nVideos; i++) {
+			stichManger.drawScreen(i);
+		}
+		// opencv grabbing
+		dualImage.grabScreen(0, 0, width, height);
+		glPopMatrix();
+		
+		
+		
+		
+		bool bSaveStichCoords = panel.getValueB("STICH_COORDS");	
+		if(bSaveStichCoords) {
+			panel.setValueB("STICH_COORDS", false);	
+			stichManger.saveToXml();
+			printf("saved stich coords\n");
+		}
 	}
-	stichManger.endOffscreenDraw();
-	
-	// -------------- draw the sceamed image
-	glPushMatrix();
-	glTranslatef(0, inputH, 0);
-	ofSetColor(0xffffff);
-	for(int i=0; i<nVideos; i++) {
-		stichManger.drawScreen(i);
-	}
-	// opencv grabbing
-	dualImage.grabScreen(0, inputH, width, height);
-	glPopMatrix();
-	
-	
-	
-	
-	bool bSaveStichCoords = panel.getValueB("STICH_COORDS");	
-	if(bSaveStichCoords) {
-		panel.setValueB("STICH_COORDS", false);	
-		stichManger.saveToXml();
-		printf("saved stich coords\n");
-	}
-	
 	
 	///////////////////////////////////////////////////////////
 	// Part 2 - load into openCV and make greyscale
@@ -460,9 +493,13 @@ void cvManager::update(){
 	 */
 	
 	
-	//VideoFrame.setFromPixels(pixCam,width,height); // just get pixels from dual image now
+	if(bUseFBOSticher) {
+		VideoFrame.setFromPixels(dualImage.getPixels(), width, height);
+	}
+	else {
+		VideoFrame.setFromPixels(pixCam, width, height); 
+	}
 	
-	VideoFrame.setFromPixels(dualImage.getPixels(), width, height);
 	GreyFrame.setFromColorImage(VideoFrame);
 	
 	
@@ -596,7 +633,7 @@ void cvManager::receiveFromNetwork(){
 	// ok, figure out if we have more clients then readObjects, allocate more (since people might disconnect and reconnect they get new IDs, etc)
 	
 	if (partialReadObjects.size() != TCPServer.getNumClients()){
-			
+		
 		if (partialReadObjects.size() < TCPServer.getNumClients()){
 			int nToMake = TCPServer.getNumClients() - partialReadObjects.size() ;
 			for (int i = 0; i < nToMake; i++){
@@ -615,8 +652,8 @@ void cvManager::receiveFromNetwork(){
 	/*
 	 // helpful ????
 	 for(int i = 0; i < TCPServer.getNumClients(); i++){
-		TCPServer.send(i, "hello client - you are connected on port - "+ofToString(TCPServer.getClientPort(i)) );
-	}*/
+	 TCPServer.send(i, "hello client - you are connected on port - "+ofToString(TCPServer.getClientPort(i)) );
+	 }*/
 	
 	for(int i = 0; i < TCPServer.getNumClients(); i++){
 		
@@ -635,9 +672,9 @@ void cvManager::receiveFromNetwork(){
 				
 				// int whichCVdata = partialReadObjects[i].myId
 				// if (whichCVdata == 2){
-					// memcpy to right
+				// memcpy to right
 				//} else {
-					// memcpy to left...
+				// memcpy to left...
 				//}
 				partialReadObjects[i]->nBytesRead += nGot;
 				//printf( "copying w/ %i \n", partialReadObjects[i]->nBytesRead);
@@ -661,7 +698,7 @@ void cvManager::receiveFromNetwork(){
 		}
 		//int nGot = TCPServer.receiveRawBytes(i, (char *)packet, sizeof(computerVisionPacket));
 		//printf("got %i bytes from %i \n", nGot, i);
-
+		
 	}
 	
 	///char temp[1000];
@@ -733,25 +770,43 @@ void cvManager::draw() {
 	if(panel.getSelectedPanel() == 0) {
 		
 		
-		for(int i=0; i<nVideos; i++) {
+		if(bUseFBOSticher) {
+			
+			for(int i=0; i<nVideos; i++) {
+				
+				ofSetColor(0xffffff);
+				VG[i].draw(i*inputW, 0);
+				ofSetColor(255, 0, 255);
+				ofDrawBitmapString("input "+ofToString(i), (i*inputW)+10, inputH+20);
+				
+			}
 			
 			ofSetColor(0xffffff);
-			VG[i].draw(i*inputW, 0);
-			ofSetColor(255, 0, 255);
-			ofDrawBitmapString("input "+ofToString(i), (i*inputW)+10, inputH+20);
+			dualImage.draw(0, height+20);
+			stichManger.drawInputDiagnostically(stichGui.x, 
+												stichGui.y, 
+												stichGui.width, 
+												stichGui.height);
+			ofSetColor(0xffffff);
+			VideoFrame.draw(0, (height*2) + 30);
 			
 		}
 		
-		ofSetColor(0xffffff);
-		dualImage.draw(0, height+20);
-		stichManger.drawInputDiagnostically(stichGui.x, 
-											stichGui.y, 
-											stichGui.width, 
-											stichGui.height);
-		ofSetColor(0xffffff);
-		PresenceFrame.draw(0, (height*2) + 30);
+		else {
+			
+			
+			// just working with one video
+			ofSetColor(0xffffff);
+			PresenceFrame.draw(0, 50);
+			Contour.draw(0, 50);
+			
+		}
 		
 	}
+	
+	
+	
+	
 	
 	
 	if (panel.getSelectedPanel() == 2){

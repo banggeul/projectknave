@@ -100,6 +100,7 @@ class cvManager {
 	
 	//-----------------------------------
 	//		* fbo stiching * 
+	bool					bUseFBOSticher;
 	stricherRenderManager	stichManger;
 	ofRectangle				stichGui;
 	ofImage					dualImage;
