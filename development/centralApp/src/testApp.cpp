@@ -6,8 +6,9 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-	
+
 	ofBackground(90, 90, 90);
+
 	
 	building.loadImage("buildingRefrences/building.jpg");
 	mask.loadImage("buildingRefrences/mask_half.png");

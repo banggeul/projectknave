@@ -101,7 +101,7 @@ void HandScene::update(){
 	
 	for (int i = 0; i < BSM.shapes.size(); i++){
 		
-		ofSetColor(255, 0, 255, 10 * BSM.shapes[i]->energy);
+		ofSetColor(255, 0, 255, 10 * powf(BSM.shapes[i]->energy, 1.4));
 		
 		if (BSM.shapes[i]->trail.size() > 2){
 			ofPoint pta = BSM.shapes[i]->trail[BSM.shapes[i]->trail.size()-2];
@@ -127,7 +127,7 @@ void HandScene::update(){
 	FBO.setupScreenForThem();
 	
 	
-	box2d.update();
+	//box2d.update();
 	
 	
 	if (lastFrameRendered !=  packet.frameNumber){
@@ -161,14 +161,15 @@ void HandScene::update(){
 		
 	
 		// clear out the shape
-		for(int i=0; i<box2dBuilding.size(); i++) {
+		/*for(int i=0; i<box2dBuilding.size(); i++) {
 			box2dBuilding[i].destroyShape();
 		}	
 		box2dBuilding.clear();
-		
+		*/
 		float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
 		float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 		
+		/*
 		for (int i = 0; i < packet.nBlobs; i++){
 			
 			box2dBuilding.push_back(ofxBox2dLine());
@@ -184,10 +185,11 @@ void HandScene::update(){
 			box2dBuilding.back().createShape();
 
 		}
+		 */
 	
 	}
 	
-	
+
 	BSM.update();
 	
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
@@ -276,46 +278,16 @@ void HandScene::draw(){
 	}
 	
 	
-	bool bOn[contourFinder.nBlobs];
-	for (int i = 0; i < contourFinder.nBlobs; i++){
-		bOn[i] = false;
-	}
-	
-	for (int k = 0; k < contourFinder.nBlobs; k++){
-		
-		// let's pass bounding rectangles thrus this is a pain! 
-		for (int i = 0; i < packet.nBlobs; i++){
-			for (int j = 0; j < packet.nPts[i]; j+=5){	
-				
-				float x = packet.pts[i][j].x * scalex;
-				float y = packet.pts[i][j].y * scaley;
-				
-				if ((x > contourFinder.blobs[k].boundingRect.x) && (x < (contourFinder.blobs[k].boundingRect.x + contourFinder.blobs[k].boundingRect.width)) &&
-					(y > contourFinder.blobs[k].boundingRect.y) && (y < (contourFinder.blobs[k].boundingRect.y + contourFinder.blobs[k].boundingRect.height))){
-					
-					
-					bOn[k] = true;
-					
-				}
-			}
-		}
-	}
-	
-	for (int i = 0; i < contourFinder.nBlobs; i++){
-		if (bOn[i] == true){
-			//contourFinder.blobs[i].draw();
-		}
-	}
-	
+
 	
 	
 	// draw some new stuff. 
 	for(int i=0; i<balls.size(); i++) {
-		balls[i].draw();	
+		//balls[i].draw();	
 	}
 	
 	for(int i=0; i<box2dHandShape.size(); i++) {
-		box2dHandShape[i].draw();	
+		//box2dHandShape[i].draw();	
 	}
 	
 	
@@ -327,7 +299,7 @@ void HandScene::draw(){
 void HandScene::drawTop(){
 	
 	
-	
+	/*
 	for (int i = 0; i < packet.nBlobs; i++){
 		ofFill();
 		ofSetColor(255, 0, 0);
@@ -340,7 +312,7 @@ void HandScene::drawTop(){
 	
 	ofSetColor(255, 255, 255);
 	//handImageTemporallyBlurred.draw(0,400);
-	
+	*/
 }
 
 

@@ -10,7 +10,7 @@
 #pragma once
 
 #include "ofMain.h"
-
+#include "ofxDisplayList.h"
 
 class buildingShape {
 	
@@ -26,6 +26,8 @@ public:
 	ofRectangle boundingRect;
 	int nPts;
 	ofPoint * pts;
+	
+	float length;
 	float energy;
 	
 	ofImage * spot;
@@ -34,4 +36,9 @@ public:
 	void draw();
 	void update();
 	void checkInside(float x, float y);
+	
+	void setupList();
+	bool			bSetupList;
+	ofxDisplayList DL;
+	
 };

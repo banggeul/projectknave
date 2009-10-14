@@ -68,15 +68,21 @@ void buildingShapeManager::parseShapesFromFile(string fileName){
 			
 			shapes[shapes.size()-1]->pts = new ofPoint[ shapes[shapes.size()-1]->nPts];
 			
-			
+			float length = 0;
 			for (int j = 0; j < nPts; j++){
 				
 				checkfile.read ((char*) &ptx, sizeof (int));
 				checkfile.read ((char*) &pty, sizeof (int));
 				shapes[shapes.size()-1]->pts[j].set(ptx, pty, 0);
+				if (j > 0){
+					float dx = ptx - shapes[shapes.size()-1]->pts[j-1].x;
+					float dy = pty - shapes[shapes.size()-1]->pts[j-1].y;
+					length += sqrt (dx*dx + dy*dy);
+				}
 				//printf("blob# -- %i, Pt# -- %i, ptx, pty -- %i, %i \n", i, j, ptx,pty);	
 				
 			}
+			shapes[shapes.size()-1]->length = length;
 		}
 	}
 	
