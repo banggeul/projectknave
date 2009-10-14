@@ -22,7 +22,7 @@ void ofxDaito::setup(string settings, bool verbose) {
 
 void ofxDaito::start(int scene) {
 	ofxOscMessage msg;
-	msg.setAddress("start");
+	msg.setAddress("/start");
 	msg.addIntArg(scene);
 	send(msg);
 }
@@ -33,7 +33,7 @@ void ofxDaito::sendCustom(ofxOscMessage &msg){
 
 void ofxDaito::stop(int scene) {
 	ofxOscMessage msg;
-	msg.setAddress("stop");
+	msg.setAddress("/stop");
 	msg.addIntArg(scene);
 	send(msg);
 }
@@ -43,7 +43,7 @@ void ofxDaito::bang(int scene,
 		float energy,
 		float pan) {
 	ofxOscMessage msg;
-	msg.setAddress("bang");
+	msg.setAddress("/bang");
 	msg.addStringArg(eventName);
 	msg.addIntArg(scene);
 	msg.addFloatArg(energy);
