@@ -87,12 +87,9 @@ class cvManager {
 	
 	bool					bUsingVideoGrabber;
 	bool					bSetup;	
-<<<<<<< .mine
 	int						width, height;
 	int						inputW, inputH;
-=======
-	int						width, height;
->>>>>>> .r139
+
 	
 	ofxCvColorImage			VideoFrame;
 	ofxCvGrayscaleImage		GreyFrame;
