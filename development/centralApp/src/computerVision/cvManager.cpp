@@ -97,9 +97,7 @@ void cvManager::setupGUI() {
 	
 	panel.setup("cv panel", 700, 10, 300, 750);
 	panel.addPanel("input", 1, false);
-	
-	panel.addPanel("video stiching", 1, false);
-	
+		
 	panel.addPanel("binary / blob", 1, false);
 	
 	panel.addPanel("geometry", 1, false);
@@ -430,7 +428,6 @@ void cvManager::update(){
 			pixCam 	= VP[0].getPixels();			
 			if(!VP[0].isFrameNew()) return;	
 			
-			printf("ads");
 		}
 		
 	}
@@ -510,7 +507,11 @@ void cvManager::update(){
 		}
 	}
 	
-	if (bAnyDifferent)	GreyFramePostWarp.warpIntoMe(GreyFrame, warpFrom, warpTo);
+	// i think that we only need a warper for one video
+	if(!bUseFBOSticher) {
+		if (bAnyDifferent)	GreyFramePostWarp.warpIntoMe(GreyFrame, warpFrom, warpTo);
+	}
+		
 	else GreyFramePostWarp = GreyFrame;
 	
 	float scale = panel.getValueF("CV_MANAGER_SCALE");
