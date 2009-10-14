@@ -15,29 +15,58 @@
 // the funky monsters
 #include "BubbleMonster.h"
 #include "ofxContourAnalysis.h"
+#include "MonsterParticles.h"
+#include "ofxBox2d.h"
 
+
+#define MAX_MONSTER_PARTICLES 20
 
 class MonsterScene : public baseScene {
 	
 public: 
 	
+	// ---------------------- 
 	void setup();
 	void update();
 	void draw();
 
-	
+	// ---------------------- mouse & keyboard
+	void mousePressed(int x, int y, int button);
+	void keyPressed(int key);
+
+	// ---------------------- blob tracking
 	void blobOn( int x, int y, int bid, int order );
     void blobMoved( int x, int y, int bid, int order );    
     void blobOff( int x, int y, int bid, int order );
 	
+	// get a monster here
 	BubbleMonster&  getMonsterById( int monsterId );
 	
 	
+	// ---------------------- utils
+	void createBuildingContour();
+	
+	
+	// ---------------------- settings
+	bool						bGotMyFirstPacket;
+	
+	// ---------------------- 
+	// Ferry Building
+	FerryBuilding				ferryBuilding;
+	vector <ofxBox2dLine>		box2dBuilding;
+
+	
 	// tracking
-	int						lastFrameRendered;
+	int							lastFrameRendered;
+	
+	// particles
+	ofxBox2d					box2d;
+	int							particleCount;
+	vector <MonsterParticles>	monsterParticles;
+	
 	
 	// monsters
-	ofxContourAnalysis	    contourAnalysis;
-	vector <BubbleMonster>	monsters;
+	ofxContourAnalysis			contourAnalysis;
+	vector <BubbleMonster>		monsters;
 	
 };
