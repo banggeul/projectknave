@@ -16,10 +16,14 @@ public:
 
 
 
+
 class FerryBuilding {
 	
 public:
+
 	
+	
+	string					file;
 	ofxXmlSettings			xmlSaver;
 	ofxDirList				fileLister;
 	
@@ -28,8 +32,7 @@ public:
 	bool					bSaved;
 	bool					bFirstPoint;
 	bool					bEnable;
-	ofImage					building;
-	ofImage					mask;		
+		
 	
 	// file saving
 	int						selectedFile;
@@ -37,7 +40,7 @@ public:
 	vector <string>			files;
 	
 	// ------------------------------------
-	void setupBuilding();
+	void setupBuilding(string fileToLoad);
 	void loadBuilding(string theFile);
 	
 	void draw();

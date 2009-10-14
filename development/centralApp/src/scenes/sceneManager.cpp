@@ -12,7 +12,6 @@
 
 void sceneManager::setup(){
 	
-	
 	currentScene	= 0;
 	numScenes		= 5;
 	
@@ -28,6 +27,7 @@ void sceneManager::setup(){
 	for (int i = 0; i < numScenes; i++){
 		scenes[i]->setup();
 	}
+	
 }
 
 
@@ -51,9 +51,6 @@ void sceneManager::passInPacket(computerVisionPacket * packet){
 	memcpy(&(scenes[currentScene]->packet), packet, sizeof(computerVisionPacket));
 }
 
-void sceneManager::passInFerryBuilding(FerryBuilding * ferry) {
-	scenes[currentScene]->building = (*ferry);
-}
 
 
 void sceneManager::update(){

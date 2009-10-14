@@ -21,6 +21,8 @@
 #include "PaintScene.h"
 
 #include "FerryBuilding.h"
+#include "ofxBox2d.h"
+
 
 enum {
 	HAND_SCENE, TREE_SCENE, PAINT_SCENE, MONSTER_SCENE, STAR_SCENE
@@ -41,7 +43,7 @@ class sceneManager {
 	void gotoScene(int theScene);
 	
 	void passInPacket(computerVisionPacket * packet);
-	void passInFerryBuilding(FerryBuilding * ferry);
+	
 	
 	// keyboard and mouse
 	void keyPressed(int key);

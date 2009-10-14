@@ -7,33 +7,23 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 	
-	//CVM.setupVideo("testMovies/silhouettes-sorenson.mov");
 	
+	building.loadImage("buildingRefrences/building.jpg");
+	mask.loadImage("buildingRefrences/mask_half.png");
 	
-	//ofDisableArbTex();
 	
 	XML.loadFile("settings/mainAppSettings.xml");
 	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);	
 	CVM.id = XML.getValue("mainApp:id", 0);
 	
-	
-	
-	FB.setupBuilding();
+
 	SM.setup();
-	SM.gotoScene(MONSTER_SCENE);
+	SM.gotoScene(HAND_SCENE);
+	
+	
 	RM.setup();
 	
-	drawMode = DRAW_CV;
-
-	// box2d
-	bEnableBox2d = false;
-	box2d.init();
-	box2d.setGravity(0, 10);
-	//box2d.createFloor();
-	box2d.checkBounds(true);
-	box2d.setFPS(30.0);
-	
-
+	drawMode = DRAW_SCENE;
 		
 	CVM.setupNonCV();	// this order is all wonky now. 
 
@@ -74,28 +64,10 @@ void testApp::update(){
 	
 
 	if ((drawMode == DRAW_SCENE)){
-		SM.passInFerryBuilding(&FB);
 		SM.passInPacket(CVM.packet);
 		SM.update();
 	}
 
-	if(bEnableBox2d) {
-		
-		box2d.update();
-		
-		// kill if bellow ground
-		for(int i=0; i<circles.size(); i++) {
-			ofPoint pos = circles[i].getPosition();
-			if(pos.y > ofGetHeight()+400) {
-				circles[i].destroyShape();	
-				circles.erase(circles.begin() + i);
-			}
-		}
-	}
-
-
-	
-	
 }
 
 //--------------------------------------------------------------
@@ -129,12 +101,7 @@ void testApp::draw(){
 		ofEnableAlphaBlending();
 		ofSetColor(255,255,255, 210);
 		
-		ofSetColor(255, 0, 0);
-		ofPoint pos = RM.getPointInPreview(mouseX, mouseY);
-		ofFill();
-		ofCircle(pos.x, pos.y, 50);
-		
-		FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+		mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 		
 		ofSetColor(255,255,255);
 		SM.drawTop();
@@ -144,37 +111,7 @@ void testApp::draw(){
 		RM.drawForPreview();
 		
 		
-	}
-	else if(drawMode == DRAW_FERRY) {
 		
-		RM.swapInFBO();
-		ofEnableAlphaBlending();
-		ofSetColor(255,255,255, 210);
-		
-		// box2d stuff temp
-		if(bEnableBox2d) {
-			//box2d.draw();
-			for(int i=0; i<box2dBuilding.size(); i++) {
-				box2dBuilding[i].draw();
-			}
-			for(int i=0; i<circles.size(); i++) {
-				ofSetColor(0x2388ff);
-				circles[i].draw();
-			}
-		}	
-		
-		
-		//FB.mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-		
-		// The Ferry Building
-		FB.drawContour();
-
-		RM.swapOutFBO();
-		ofSetColor(255,255,255);
-		RM.drawForPreview();
-		
-		info = "";
-		FB.drawInfo();
 	}
 
 	ofDrawBitmapString(info, 20, 20);
@@ -184,28 +121,8 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 	
 	SM.keyPressed(key);
-	FB.keyPressed(key);
 	
 	switch (key){
-			
-		case 'b':
-			bEnableBox2d = !bEnableBox2d;
-			for(int i=0; i<FB.shapes.size(); i++) {
-				
-				box2dBuilding.push_back(ofxBox2dLine());
-				box2dBuilding.back().clear();
-				box2dBuilding.back().setWorld(box2d.getWorld());
-				
-				for(int j=0; j<FB.shapes[i].pnts.size(); j++) {
-					float bx = FB.shapes[i].pnts[j].x;
-					float by = FB.shapes[i].pnts[j].y;
-					ofPoint pos = RM.getPointInPreview(bx, by);
-					box2dBuilding.back().addPoint(bx, by);
-				}
-				box2dBuilding.back().createShape();
-				
-			}
-			break;
 			
 		case 'f':
 			ofToggleFullscreen();
@@ -225,25 +142,7 @@ void testApp::keyPressed(int key){
 		case OF_KEY_DOWN:
 			SM.prevScene();
 			break;
-			
-			// set building box2d contour
-		case '1':
-			for(int i=0; i<FB.shapes.size(); i++) {
-				
-				box2dBuilding.push_back(ofxBox2dLine());
-				box2dBuilding.back().clear();
-				box2dBuilding.back().setWorld(box2d.getWorld());
-				
-				for(int j=0; j<FB.shapes[i].pnts.size(); j++) {
-					float bx = FB.shapes[i].pnts[j].x;
-					float by = FB.shapes[i].pnts[j].y;
-					ofPoint pos = RM.getPointInPreview(bx, by);
-					box2dBuilding.back().addPoint(bx, by);
-				}
-				box2dBuilding.back().createShape();
-				
-			}
-			break;
+		
 	}
 }
 
@@ -266,22 +165,13 @@ void testApp::mouseDragged(int x, int y, int button) {
 	if (drawMode == DRAW_CV || bUseNetworking){
 		CVM.mouseDragged(x, y, button);
 	}
-	
-	
-	if(bEnableBox2d) {
-		float r = ofRandom(2, 27);
-		ofxBox2dCircle bub;
-		bub.setPhysics(3.0, 0.53, 0.1);
-		bub.setup(box2d.getWorld(), pos.x, pos.y, r);
-		circles.push_back(bub);
-	}
+
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button) {
 	ofPoint pos = RM.getPointInPreview(x, y);
 	SM.mousePressed(pos.x, pos.y, button);
-	FB.mousePressed(pos.x, pos.y, button);
 	
 	if (drawMode == DRAW_CV || bUseNetworking){
 		CVM.mousePressed(x, y, button);

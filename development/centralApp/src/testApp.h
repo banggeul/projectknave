@@ -14,7 +14,7 @@
 
 enum {
 	
-	DRAW_SCENE, DRAW_CV, DRAW_FERRY
+	DRAW_SCENE, DRAW_CV
 	
 };
 
@@ -37,22 +37,16 @@ public:
 	void mouseReleased(int x, int y, int button);
 	void resized(int w, int h);
 	
+	ofImage					building;
+	ofImage					mask;	
+	
 	cvManager				CVM;
 	sceneManager			SM;
-	FerryBuilding			FB;
 	renderManager			RM;
 	
 	int						drawMode;
 	
-	ofxXmlSettings			XML;
-	
-	
-	// this is temp
-	vector <ofxBox2dLine>	box2dBuilding;
-	vector <ofxBox2dCircle>	circles;
-	bool					bEnableBox2d;
-	ofxBox2d				box2d;
-	
+	ofxXmlSettings			XML;	
 	bool					bUseNetworking;
 	
 	
