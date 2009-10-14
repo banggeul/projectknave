@@ -3,9 +3,11 @@
 	
 	<bUseLiveVideo>0</bUseLiveVideo>
 
-	<!--   0 = HANDS   1 = PEOPLE    2 = STARS    -->
-	
-	<sceneId>0</sceneId>
+	<!--   0 = HANDS   
+           1 = PEOPLE    
+           2 = STARS    -->
+
+	<sceneId>1</sceneId>
 	
 	<sceneInfo>
 
@@ -17,10 +19,10 @@
 
 		<scene1>
 			<nVideoSources>2</nVideoSources>
-			<video0>testMovies/silhouettes_01.mov</video0>
-			<video1>testMovies/silhouettes_02.mov</video1>
-			<videoGrabberSource0>0</videoGrabberSource0>
-			<videoGrabberSource1>1</videoGrabberSource1>
+			<video0>testMovies/silhouettes_0_320.mov</video0>
+			<video1>testMovies/silhouettes_0_320.mov</video1>
+			<videoGrabberSource0>6</videoGrabberSource0>
+			<videoGrabberSource1>8</videoGrabberSource1>
 		</scene1>
 
 		<scene2>
@@ -28,6 +30,7 @@
 			<video0>testMovies/silhouettes-sorenson.mov</video0>
 			<videoGrabberSource0>0</videoGrabberSource0>
 		</scene2>
+   
 
 	</sceneInfo>
 
