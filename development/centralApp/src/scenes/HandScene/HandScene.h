@@ -14,6 +14,10 @@
 #include "ofxCvGrayscaleAdvanced.h"
 #include "HandBall.h"
 
+#include "buildingShapeManager.h"
+#include "ofxFBOTexture.h"
+
+
 
 
 class HandScene : public baseScene {
@@ -39,7 +43,7 @@ public:
 	// Ferry Building
 	FerryBuilding						ferryBuilding;
 	
-	
+	ofxFBOTexture						FBO;
 	
 	
 	int	handImgW, handImgH;
@@ -51,6 +55,9 @@ public:
 
 	
 	int lastFrameRendered;
+	
+	
+	buildingShapeManager			BSM;
 	
 	
 	/*

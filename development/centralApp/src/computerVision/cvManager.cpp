@@ -325,9 +325,14 @@ void cvManager::setupCV(){
 	//our openCV inits
 	VideoFrame.allocate(width, height);
 	PresenceFrame.allocate(width, height);
+	
+	PresenceFrameDialate.setUseTexture(false);
 	PresenceFrameDialate.allocate(width, height);	
+	GreyFrame.setUseTexture(false);
 	GreyFrame.allocate(width, height);
+	GreyFramePostWarp.setUseTexture(false);
 	GreyFramePostWarp.allocate(width, height);
+	
 	
 	printf("cv allocated\n");
 	
@@ -545,8 +550,8 @@ void cvManager::update(){
 	PresenceFrame.threshold(threshold);
 	PresenceFrame.invert();
 	PresenceFrameDialate = PresenceFrame;
-	PresenceFrameDialate.dilate_3x3();
-	PresenceFrameDialate.erode_3x3();
+	//PresenceFrameDialate.dilate_3x3();
+	//PresenceFrameDialate.erode_3x3();
 	
 	int nPixels = PresenceFrame.width * PresenceFrame.height;
 	int minBlobSize = panel.getValueF("CV_MANAGER_PANEL_MIN_BLOB") * nPixels;

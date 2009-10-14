@@ -16,7 +16,7 @@ void HandScene::setup(){
 	box2d.init();
 	box2d.setGravity(0, 30);
 	box2d.checkBounds(true);
-	box2d.setFPS(30.0);
+	box2d.setFPS(16.0);
 	printf("box2d allocated\n");
 	
 	// the ferry building contour
@@ -29,7 +29,6 @@ void HandScene::setup(){
 	bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
 	bub.setup(box2d.getWorld(), OFFSCREEN_WIDTH/2, 120, 50);
 	balls.push_back(bub);
-	
 	floor.setup(box2d.getWorld(), 0, OFFSCREEN_HEIGHT-20, OFFSCREEN_WIDTH, 20, true);
 	
 	// ----------
@@ -60,14 +59,73 @@ void HandScene::setup(){
 	contourFinder.findContours(grayImage, 20, width*height, 100, false);	// find holes
 	
 	
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/2WindowsOnly.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Clock-Clock.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/ClockOnly.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Columns.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof1.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof2.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea1.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea2.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Wall1.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowFrames.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowTop_Only.bin");
+	
+	/*
+	for (int i = nShapes; i < nShapes2; i++){
+
+		ofxBox2dRect temp;
+		temp.setup(box2d.getWorld(),  BSM.shapes[i]->boundingRect.x,  BSM.shapes[i]->boundingRect.y, BSM.shapes[i]->boundingRect.width/2, BSM.shapes[i]->boundingRect.height/2, true);
+		
+	}*/
 	
 	
+	FBO.allocate(OFFSCREEN_WIDTH/5,OFFSCREEN_HEIGHT/5, false);	// fixed?
 	
 	
 }
 
 //--------------------------------------------------------------
 void HandScene::update(){
+	
+	ofFill();
+	FBO.swapIn();
+	FBO.setupScreenForMe();
+	ofEnableAlphaBlending();
+	
+	ofSetColor(0, 0, 0, 15);
+	ofRect(0,0,640,480);
+	
+	
+	
+	
+	for (int i = 0; i < BSM.shapes.size(); i++){
+		
+		ofSetColor(255, 0, 255, 10 * BSM.shapes[i]->energy);
+		
+		if (BSM.shapes[i]->trail.size() > 2){
+			ofPoint pta = BSM.shapes[i]->trail[BSM.shapes[i]->trail.size()-2];
+			ofPoint ptb = BSM.shapes[i]->trail[BSM.shapes[i]->trail.size()-2];
+			
+			ofPoint diff;
+			diff.x = ptb.x - pta.x;
+			diff.y = ptb.y - pta.y;
+			
+			for (int j = 0; j < 10; j++){
+				pta.x += diff.x/9.0f;
+				pta.x  += diff.x/9.0f;
+				BSM.spot.draw(pta.x/5-4, pta.y/5-4, 8,8);
+			}
+		}
+		
+	}
+	/*
+	ofSetColor(255, 255, 255);
+	ofRect(ofRandom(0,640), ofRandom(0,480), 33,33);
+	*/
+	FBO.swapOut();
+	FBO.setupScreenForThem();
+	
 	
 	box2d.update();
 	
@@ -101,7 +159,7 @@ void HandScene::update(){
 		handImageTemporallyBlurredInvert.invert();
 		
 		
-		
+	
 		// clear out the shape
 		for(int i=0; i<box2dBuilding.size(); i++) {
 			box2dBuilding[i].destroyShape();
@@ -117,7 +175,7 @@ void HandScene::update(){
 			box2dBuilding.back().clear();
 			box2dBuilding.back().setWorld(box2d.getWorld());
 			
-			for (int j = packet.nPts[i]-1; j>0 ; j--){	
+			for (int j = packet.nPts[i]-1; j>0 ; j-=5){	
 				float bx = packet.pts[i][j].x * scalex;
 				float by = packet.pts[i][j].y * scaley;
 				box2dBuilding.back().addPoint(bx, by);
@@ -130,6 +188,23 @@ void HandScene::update(){
 	}
 	
 	
+	BSM.update();
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	for (int i = 0; i < packet.nBlobs; i++){
+		
+		for (int j = packet.nPts[i]-1; j>0 ; j-=10){	
+			float bx = packet.pts[i][j].x * scalex;
+			float by = packet.pts[i][j].y * scaley;
+			BSM.checkShapesForPoint(bx, by);
+			
+		}
+		
+	}
+	
+
 	lastFrameRendered = packet.frameNumber;
 	
 	
@@ -139,15 +214,23 @@ void HandScene::update(){
 void HandScene::draw(){
 	
 	
+	
 	ofSetColor(255, 0, 0);
-	ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-	ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
+	//ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	//ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
+	
+	BSM.draw();
 	
 	
+	ofEnableAlphaBlending();
+	ofSetColor(50,50,50);
+	glBlendFunc(GL_ONE, GL_ONE);
+	FBO.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	ofEnableAlphaBlending();
 	
 	
-	ferryBuilding.drawContour();
-	ferryBuilding.drawInfo();
+	//ferryBuilding.drawContour();
+	//ferryBuilding.drawInfo();
 	
 	
 	
@@ -155,6 +238,10 @@ void HandScene::draw(){
 	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 	ofSetColor(255, 255, 255);
 	handImageTemporallyBlurredInvert.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	
+	
+	
+	
 	
 	ofEnableAlphaBlending();
 	
@@ -174,18 +261,18 @@ void HandScene::draw(){
 		ofSetColor(255, 255, 255, 100);
 		ofNoFill();
 		ofEnableSmoothing();
-		ofBeginShape();
+		glBegin(GL_LINE_LOOP);
 		for (int j = 0; j < packet.nPts[i]; j++){	
-			ofVertex(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
+			glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
 		}
-		ofEndShape(true);
+		glEnd();
 		
 		ofSetColor(255, 255, 255, 85);
-		ofBeginShape();
+		/*ofBeginShape();
 		for (int j = 1; j < packet.nPts[i]; j+=3){	
 			ofCurveVertex(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
 		}
-		ofEndShape(true);
+		ofEndShape(true);*/
 	}
 	
 	
@@ -210,14 +297,13 @@ void HandScene::draw(){
 					bOn[k] = true;
 					
 				}
-				
 			}
 		}
 	}
 	
 	for (int i = 0; i < contourFinder.nBlobs; i++){
 		if (bOn[i] == true){
-			contourFinder.blobs[i].draw();
+			//contourFinder.blobs[i].draw();
 		}
 	}
 	
@@ -233,12 +319,15 @@ void HandScene::draw(){
 	}
 	
 	
-	floor.draw();
+	//floor.draw();
 	//box2d.draw();
 }
 
 //--------------------------------------------------------------
 void HandScene::drawTop(){
+	
+	
+	
 	for (int i = 0; i < packet.nBlobs; i++){
 		ofFill();
 		ofSetColor(255, 0, 0);
