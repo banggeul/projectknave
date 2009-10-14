@@ -12,6 +12,13 @@
 #include "ofxXmlSettings.h"
 
 
+// ----------------------------------------- new Render Manager
+
+#include "megaRenderManager.h"
+
+
+
+
 enum {
 	
 	DRAW_SCENE, DRAW_CV
@@ -49,6 +56,12 @@ public:
 	ofxXmlSettings			XML;	
 	bool					bUseNetworking;
 	
+	
+	// mega fbo rendering
+	megaRenderManager		MRM;
+	int						nScreens;
+	ofRectangle				guiIn;
+	ofRectangle				guiOut;
 	
 };
 
