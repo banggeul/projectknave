@@ -17,9 +17,15 @@
 #include "ofxContourAnalysis.h"
 #include "MonsterParticles.h"
 #include "ofxBox2d.h"
+#include "MonsterSVGParts.h"
+
+
+
 
 
 #define MAX_MONSTER_PARTICLES 20
+
+
 
 class MonsterScene : public baseScene {
 	
@@ -30,6 +36,7 @@ public:
 	void update();
 	void draw();
 
+	
 	// ---------------------- mouse & keyboard
 	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
@@ -45,6 +52,7 @@ public:
 	
 	// ---------------------- utils
 	void createBuildingContour();
+	void drawTop();
 	
 	
 	// ---------------------- settings
@@ -66,6 +74,7 @@ public:
 	
 	
 	// monsters
+	MonsterSVGParts				parts;
 	ofxContourAnalysis			contourAnalysis;
 	vector <BubbleMonster>		monsters;
 	

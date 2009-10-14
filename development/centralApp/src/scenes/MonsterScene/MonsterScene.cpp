@@ -23,6 +23,9 @@ void MonsterScene::setup(){
 	particleCount = 0;
 	
 	
+	// load all the svg parts
+	parts.loadAllParts();
+	
 }
 
 //-------------------------------------------------------------- update
@@ -153,10 +156,25 @@ void MonsterScene::blobOff( int x, int y, int bid, int order ) {
 }
 
 
+//-------------------------------------------------------------- debug drawing
+void MonsterScene::drawTop() {
+	
+	glPushMatrix();
+	glTranslatef(0, 100, 0);
+	
+	// for debuging draw all the parts
+	parts.drawAllParts();
+	
+	ofSetColor(255, 0, 0);
+	string info = "Monsters Rule!\n";
+	info += "Num Eyes: "+ofToString((int)parts.eyes.size())+"\n";
+	ofDrawBitmapString(info, 20, 20);
+	glPopMatrix();
+}
+
 
 //-------------------------------------------------------------- draw
 void MonsterScene::draw(){
-	
 	
 	
 	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
