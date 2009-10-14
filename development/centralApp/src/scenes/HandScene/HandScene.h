@@ -12,6 +12,9 @@
 #include "ofMain.h"
 #include "baseScene.h"
 #include "ofxCvGrayscaleAdvanced.h"
+#include "HandBall.h"
+
+
 
 class HandScene : public baseScene {
 	
@@ -21,8 +24,23 @@ public:
 	void update();
 	void draw();
 	void drawTop();
+	void mousePressed(int x, int y, int button);
+	void keyPressed(int key);
+
 	
-	int tempC;
+	// Box2d
+	ofxBox2d							box2d;
+	vector <ofxBox2dLine>				box2dHandShape;
+	vector <ofxBox2dLine>				box2dBuilding;
+	vector <ofxBox2dCircle>				circles;
+	vector <HandBall>					balls;	
+	ofxBox2dRect						floor;
+	
+	// Ferry Building
+	FerryBuilding						ferryBuilding;
+	
+	
+	
 	
 	int	handImgW, handImgH;
 	

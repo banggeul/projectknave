@@ -22,6 +22,65 @@ void MonsterScene::update(){
 
 void MonsterScene::draw(){
 	
+	ofSetColor(255, 0, 0);
+	ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
+	
+	
+	
+	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
+	
+	ofEnableAlphaBlending();
+	
+	// ---------- v1
+	glPushMatrix();
+	glTranslatef(0, packet.height, 0);
+	
+	ofFill();
+	ofSetColor(255, 0, 0, 20);
+	ofRect(0, 0, packet.width, packet.height);
+	
+	for(int i=0; i<packet.nBlobs; i++) {
+		ofSetColor(255, 255, 255, 100);
+		ofNoFill();
+		ofEnableSmoothing();
+		ofBeginShape();
+		for (int j = 0; j < packet.nPts[i]; j++){	
+			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
+		}
+		ofEndShape(true);
+	}
+	glPopMatrix();
+
+	
+	// ---------- v2
+	glPushMatrix();
+	glTranslatef(packet.width, packet.height, 0);
+	
+	ofFill();
+	ofSetColor(255, 0, 0, 20);
+	ofRect(0, 0, packet.width, packet.height);
+	
+	for(int i=0; i<packet.nBlobs; i++) {
+		ofSetColor(255, 255, 255, 100);
+		ofNoFill();
+		ofEnableSmoothing();
+		ofBeginShape();
+		for (int j = 0; j < packet.nPts[i]; j++){	
+			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
+		}
+		ofEndShape(true);
+	}
+	glPopMatrix();
+	
+	ofDisableAlphaBlending();
+	
+	
+	
+	return;
 	
 	ofFill();
 	ofSetColor(tempC, tempC, 255);
