@@ -9,6 +9,13 @@ buildingShape::buildingShape(){
 	animator = ofRandom(0,1);
 	direction = (ofRandom(0,1) > 0.5) ? -1 : 1;
 	bSetupList = false;
+	bHasPeakedWhileTouched = false;
+	bAnyInsideMeFromLastFrame = false;
+	peakEnergy = 0;
+	peakMakeStuffSick = 0;
+	bPeakedThisFrame = false;
+	nFramesSinceTrigger = 0;
+	type = 0;
 }
 
 void buildingShape::setupList(){
@@ -32,7 +39,7 @@ void buildingShape::draw(){
 	
 	if (energy < 0.01f) return;
 	
-	ofSetColor(255, 0, 255, powf(energy,3)*255*0.25);
+	ofSetColor(255, 0, 255, powf(energy,3)*255*(0.25 + peakEnergy*0.65));
 	/*ofFill();
 	//ofRect(boundingRect.x, boundingRect.y, boundingRect.width, boundingRect.height);
 	ofBeginShape();
@@ -78,7 +85,7 @@ void buildingShape::update(){
 	if (lengthPct < 0) lengthPct = 0;
 	if (lengthPct > 1) lengthPct = 1;
 	
-	animator += energy * (0.02f - 0.015f*lengthPct) * 2 * direction;
+	animator += (energy + peakMakeStuffSick*0.3) * (0.02f - 0.015f*lengthPct) * 2 * direction;
 	
 	while (animator < 0) animator += 1;
 	while (animator > 1) animator -= 1;
@@ -102,13 +109,35 @@ void buildingShape::update(){
 		trail.erase(trail.begin());
 	}
 	
+	
+	if (bAnyInsideMeFromLastFrame == false){
+		bHasPeakedWhileTouched = false;	
+	}
+	bAnyInsideMeFromLastFrame = false;
+	
+	if (nFramesSinceTrigger > 15 && energy > 0.94f){
+		
+		//cout << "peaking ! \n" << endl;
+		peakEnergy = 1;
+		peakMakeStuffSick = 1;
+		bHasPeakedWhileTouched = true;
+		bPeakedThisFrame = true;
+		nFramesSinceTrigger = 0;
+	}
+	
+	peakEnergy *= 0.96f;
+	peakMakeStuffSick *= 0.99;
+	
+	nFramesSinceTrigger ++;
+	
+	
 }
 
 void buildingShape::checkInside(float x, float y){
 	if (x > boundingRect.x && x < (boundingRect.x + boundingRect.width)){
 		if (y > boundingRect.y && y < (boundingRect.y + boundingRect.height)){
-			
 			energy = MIN(energy+0.04, 1);
+			bAnyInsideMeFromLastFrame = true;
 		}
 	}
 }

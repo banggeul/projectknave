@@ -16,6 +16,7 @@ class buildingShape {
 	
 public: 
 
+	int type;
 	
 	float animator;			// between 0 and 1
 	float direction;		// -1 or 1
@@ -31,6 +32,14 @@ public:
 	float energy;
 	
 	ofImage * spot;
+	
+	bool	bHasPeakedWhileTouched;
+	float	peakEnergy;
+	
+	bool	bPeakedThisFrame;
+	float	peakMakeStuffSick;
+	bool	bAnyInsideMeFromLastFrame;
+	int		nFramesSinceTrigger;
 	
 	buildingShape();
 	void draw();

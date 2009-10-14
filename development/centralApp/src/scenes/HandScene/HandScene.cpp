@@ -59,17 +59,17 @@ void HandScene::setup(){
 	contourFinder.findContours(grayImage, 20, width*height, 100, false);	// find holes
 	
 	
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/2WindowsOnly.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Clock-Clock.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/ClockOnly.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Columns.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof1.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof2.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea1.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea2.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Wall1.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowFrames.bin");
-	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowTop_Only.bin");
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/2WindowsOnly.bin", 0);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Clock-Clock.bin", 1);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/ClockOnly.bin", 2);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Columns.bin", 3);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof1.bin", 4);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Roof2.bin",5);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea1.bin",6);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/StripeArea2.bin",7);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/Wall1.bin",8);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowFrames.bin",9);
+	BSM.parseShapesFromFile("buildingRefrences/itoBinaryData/WindowTop_Only.bin",10);
 	
 	/*
 	for (int i = nShapes; i < nShapes2; i++){
@@ -81,6 +81,11 @@ void HandScene::setup(){
 	
 	
 	FBO.allocate(OFFSCREEN_WIDTH/5,OFFSCREEN_HEIGHT/5, false);	// fixed?
+	
+	
+	//DAITO ofxDaito -- see the setup there. 
+	//DAITO.setup("...", "...");
+	
 	
 	
 }
@@ -209,6 +214,35 @@ void HandScene::update(){
 
 	lastFrameRendered = packet.frameNumber;
 	
+	
+	// for DAITO :
+	
+		
+	
+	for (int i = 0; i < BSM.shapes.size(); i++){
+		if (BSM.shapes[i]->bPeakedThisFrame){
+			
+			printf("%i peaked at %f %f \n", BSM.shapes[i]->type, BSM.shapes[i]->centroid.x, BSM.shapes[i]->centroid.y);
+			BSM.shapes[i]->bPeakedThisFrame = false;
+			
+			ofxOscMessage msg;		
+			msg.setAddress("bang");								//	bang
+			msg.addStringArg("handTrigger");					//	handTrigger
+			msg.addIntArg(0);									//	SCENE 0
+			msg.addIntArg(BSM.shapes[i]->type);					//	type of object (column, etc) see the list in setup "BSM.parseShapesFromFile"
+			msg.addIntArg((int)(BSM.shapes[i]->centroid.x));	// centroid x 
+			msg.addIntArg((int)(BSM.shapes[i]->centroid.y));	// centroid y
+			msg.addIntArg((int)(BSM.shapes[i]->boundingRect.width * BSM.shapes[i]->boundingRect.height / 100.0));	
+			
+																// area (w*h / 100) of the object (how big)
+			
+			//   /bang /handTrigger /0 /type /centroidx /centroidy /size
+			
+			//DAITO.sendCustom(msg);
+			
+			
+		}
+	}
 	
 }
 

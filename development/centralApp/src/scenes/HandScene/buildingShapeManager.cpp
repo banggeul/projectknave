@@ -3,7 +3,7 @@
 #include "buildingShapeManager.h"
 
 
-void buildingShapeManager::parseShapesFromFile(string fileName){
+void buildingShapeManager::parseShapesFromFile(string fileName, int _type){
 	
 	fileName = ofToDataPath(fileName);
 	
@@ -33,6 +33,7 @@ void buildingShapeManager::parseShapesFromFile(string fileName){
 			
 			
 			shapes.push_back( new buildingShape());
+			shapes[shapes.size()-1]->type = _type;
 			
 			shapes[shapes.size()-1]->spot = &spot;
 			

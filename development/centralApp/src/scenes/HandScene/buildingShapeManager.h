@@ -21,7 +21,7 @@ public:
 	buildingShapeManager(){
 		spot.loadImage("images/spot.png");
 	}
-	void parseShapesFromFile(string fileName);
+	void parseShapesFromFile(string fileName, int type=0);
 	
 	void draw(){
 		for (int i = 0; i < shapes.size(); i++){

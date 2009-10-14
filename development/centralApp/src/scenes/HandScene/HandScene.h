@@ -17,7 +17,7 @@
 #include "buildingShapeManager.h"
 #include "ofxFBOTexture.h"
 
-
+#include "ofxDaito.h"
 
 
 class HandScene : public baseScene {
@@ -72,5 +72,9 @@ public:
 	ofxCvContourFinder 	contourFinder;
 	int 				threshold;
 	bool				bLearnBakground;
+	
+	
+	ofxDaito			DAITO;
+	
 	
 };
