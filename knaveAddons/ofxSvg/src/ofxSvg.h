@@ -17,11 +17,12 @@ protected:
 	ofxDisplayList fullList, plainList;
 	bool useDisplayList;
 public:
-	void loadFile(string filename) {
+	bool loadFile(string filename) {
+		bool bLoaded = false;
 		useDisplayList = true;
 
 		ofxXmlSettings xml;
-		xml.loadFile(filename);
+		bLoaded = xml.loadFile(filename);
 
 		width = xml.getAttribute("svg", "width", 0., 0);
 		height = xml.getAttribute("svg", "height", 0., 0);
@@ -32,6 +33,8 @@ public:
 		xml.pushTag("svg");
 		loadPaths(xml);
 		xml.popTag();
+		
+		return bLoaded;
 	}
 	void loadPaths(ofxXmlSettings& xml) {
 		int totalPaths = xml.getNumTags("path");
