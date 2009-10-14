@@ -6,11 +6,13 @@ cvManager::cvManager(){
 
 void cvManager::setupNonCV(){
 	
+	inputW					= 320;
+	inputH					= 240;
 	
-	//threshold			= 80;
+	//threshold				= 80;
 	//maxBlobSize			= 320*240*3;
 	//minBlobSize			= 100;
-
+	
 	
 	packet = new computerVisionPacket();
 	packetData = new unsigned char [sizeof(computerVisionPacket)];
@@ -21,36 +23,56 @@ void cvManager::setupNonCV(){
 	
 	
 	// load XML :
-	printf("--------------------------------------------------------------------------- \n");
-	printf("----------------------------- loading cvManager settings ------------------ \n");
-	printf("--------------------------------------------------------------------------- \n");
+	printf("----------------------------------------- \n");
+	printf("------ loading cvManager settings ------- \n");
+	printf("----------------------------------------- \n");
 	XML.loadFile("settings/cvManagerSettings.xml");
 	
 	
-
+	
 	bLive = (bool) XML.getValue("cvManager:bUseLiveVideo", 0);
 	printf("bLive =  %i \n", (int)bLive == true ? 1 : 0);
 	sceneId = XML.getValue("cvManager:sceneId",0);
 	printf("scene =  %i \n", sceneId);
 	nVideos = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":nVideoSources", 0);
 	printf("nVideos =  %i \n", nVideos);
+	
 	for (int i = 0; i <  nVideos; i++){
 		string fileName = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":video" + ofToString(i), "..");
 		videoFile[i] = fileName;
 		cout << "fileName: " << fileName << endl;
 	}
+	
 	for (int i = 0; i <  nVideos; i++){
 		int videoGrabberSource = XML.getValue("cvManager:sceneInfo:scene" + ofToString(sceneId) + ":videoGrabberSource" + ofToString(i), 100);
 		//cout << "cvManager:sceneInfo:scene" + ofToString(sceneId) + ":videoGrabberSource" + ofToString(i) << endl;
 		videoSource[i] = videoGrabberSource;
 		cout << "videoGrabberSource: " << videoGrabberSource << endl;
 	}
-	printf("--------------------------------------------------------------------------- \n");
+	printf("----------------------------------------- \n");
 	
 	if (!bLive){
-		setupVideo(videoFile[0]);
+		// load all the videos need	
+		for(int i=0; i< nVideos; i++) {
+			setupVideo(videoFile[i]);
+		}
+	}
+	else {
+		for(int i=0; i< nVideos; i++) {
+			
+			printf("setup camera input - %i\n", videoSource[i]);	
+			setupCamera(i, videoSource[i], inputW, inputH);
+		}
 	}
 	
+	
+	if(bLive) printf("\ncamera - w:%i h:%i\n", inputW, inputH);
+	else 	  printf("\nvideo - w:%i h:%i\n", inputW, inputH);
+	
+	printf("cv - w:%i h:%i\n", width, height);
+	
+	setFBOStich(width, height);
+	setupCV();
 	setupGUI();
 }
 
@@ -63,13 +85,27 @@ cvManager::~cvManager(){
 }
 
 
-void cvManager::setupGUI(){
+void cvManager::setupGUI() {
+	
 	panel.setup("cv panel", 700, 10, 300, 750);
 	panel.addPanel("input", 1, false);
+	
+	panel.addPanel("video stiching", 1, false);
+	
 	panel.addPanel("binary / blob", 1, false);
-
+	
 	panel.addPanel("geometry", 1, false);
 	panel.addPanel("adjust ments", 1, false);
+	
+	
+	
+	
+	panel.setWhichPanel("input");
+	panel.addToggle("Video 0 Settings", "CAMERA_0_SETTING", false);
+	panel.addToggle("Video 1 Settings", "CAMERA_1_SETTING", false);
+	panel.addToggle("save coords", "STICH_COORDS", false);
+	
+	
 	
 	panel.setWhichPanel("binary / blob");
 	panel.addToggle("flip horiz", "CV_MANAGER_PANEL_VIDEO_FLIP_HORIZ", false);
@@ -80,7 +116,7 @@ void cvManager::setupGUI(){
 	
 	panel.addSlider("min blob size (pct of video)",  "CV_MANAGER_PANEL_MIN_BLOB", 0.01, 0,0.25, false);
 	panel.addSlider("max blob size (pct of video)",  "CV_MANAGER_PANEL_MAX_BLOB", 0.5, 0,1, false);
-
+	
 	
 	panel.setWhichPanel("geometry");
 	panel.addSlider2D("pta", "CV_MANAGER_PANEL_VIDEO_PTA", 0, 0, 0, VideoFrame.width, 0, VideoFrame.height, true);
@@ -100,11 +136,12 @@ void cvManager::setupGUI(){
 	warpTo[2].set(VideoFrame.width, VideoFrame.height);
 	warpTo[3].set(0, VideoFrame.height);
 	
-
+	
 	
 	//Slider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
 	
 	panel.loadSettings("settings/panels_xml/cvManagerPanel.xml");
+	
 }
 
 void cvManager::updateGUI(){
@@ -116,22 +153,21 @@ void cvManager::updateGUI(){
 	warpFrom[2].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTC", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTC", 1));
 	warpFrom[3].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTD", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTD", 1));
 	
-					
+	
 }
 
 
 
 //--------------------------------------------------------------
 void cvManager::mouseDragged(int x, int y, int button){
-	
-	
+	stichManger.mouseDragInputPoint(stichGui, ofPoint(x, y));
 	panel.mouseDragged(x, y, button);
 	
 }
 
 //--------------------------------------------------------------
 void cvManager::mousePressed(int x, int y, int button){
-	
+	stichManger.mouseSelectInputPoint(stichGui, ofPoint(x, y));
 	panel.mousePressed(x, y, button);
 }
 
@@ -143,7 +179,7 @@ void cvManager::mouseReleased(){
 }
 
 
-
+//--------------------------------------------------------------
 void cvManager::fillPacket(){
 	
 	
@@ -194,28 +230,28 @@ void cvManager::fillPacket(){
 }
 
 
- 
- 
+
+
 
 //changing cameras or switching from/to the camera mode
 //requires the app to be restarted - mabe we can change this?
 //---------------------------		
-void cvManager::setupCamera(int deviceNumber, int _width, int _height){
+void cvManager::setupCamera(int which, int deviceNumber, int _width, int _height){
 	
 	bSetup				= false;
 	
-	VG[0].setVerbose(true);
-	//VG[0].setDeviceID(deviceNumber);
+	VG[which].setVerbose(true);
+	VG[which].setDeviceID(deviceNumber);
 	
 	
-	VG[0].setDeviceID(deviceNumber);
-	VG[0].initGrabber(_width, _height);
-	width = VG[0].width;
-	height = VG[0].height;	
+	VG[which].setDeviceID(deviceNumber);
+	VG[which].initGrabber(_width, _height);
+	width  = VG[which].width * nVideos;
+	height = VG[which].height;	
 	bUsingVideoGrabber = true;
 	
+	//setupCV(); // setupNonCV
 	
-	setupCV();
 }
 
 //same as above - from/to using test movies
@@ -225,22 +261,49 @@ void cvManager::setupVideo(string videoPath){
 	
 	bSetup				= false;
 	
-	VP[0].loadMovie(videoFile[0]);	// from XML 
-	VP[0].play(); 
-	VP[0].setPosition(0.0);
-	VP[0].setSpeed(0.90);
-	VP[0].setUseTexture(true);
-	width = VP[0].width;
-	height = VP[0].height;
+	for(int i=0; i<nVideos; i++) {
+		VP[i].loadMovie(videoPath);	// from XML 
+		VP[i].play(); 
+		VP[i].setPosition(0.0);
+		VP[i].setSpeed(0.90);
+		VP[i].setUseTexture(true);
+	}
+	
+	
 	bUsingVideoGrabber = false;
 	
-	setupCV();
+	// if we are loading video files
+	// set the inputW/inputH to the
+	// video we are loading (assmuing they are the same size)
+	
+	inputW = VP[0].width;
+	inputH = VP[0].height;
+	
+	// how big is the fbo texture 
+	width  = inputW * nVideos;
+	height = inputH;
+	
+	//setupCV(); // move to setupNonCV
+}
+
+
+//--------------------------- fbo strich		
+void cvManager::setFBOStich(int fboW, int fboH) {
+	
+	if(bSetup) return;
+	
+    stichManger.allocateForNScreens(nVideos, fboW, fboH);
+    stichManger.loadFromXml("settings/fboStichSettings.xml");
+    stichGui   = ofRectangle(0, 0, fboW, fboH);
+	dualImage.allocate(fboW, fboH, OF_IMAGE_COLOR);
+	
+	
 }
 
 //good for adjusting the color balance, brightness etc
 //---------------------------		
-void cvManager::openCameraSettings(){
-	if(bUsingVideoGrabber)VG[0].videoSettings();			
+void cvManager::openCameraSettings(int which){
+	if(bUsingVideoGrabber) VG[which].videoSettings();			
 }
 
 
@@ -279,27 +342,105 @@ bool cvManager::isFrameNew(){
 void cvManager::update(){
 	
 	
+	
 	panel.update();
 	updateGUI();
 	
+	
+	// open video settings
+	if(bUsingVideoGrabber) {
+		bool bCamSettings_0 = panel.getValueB("CAMERA_0_SETTING");
+		bool bCamSettings_1 = panel.getValueB("CAMERA_1_SETTING");
+		
+		if(bCamSettings_0) {
+			VG[0].videoSettings();
+			panel.setValueB("CAMERA_0_SETTING", false);	
+		}
+		if(bCamSettings_1) {
+			VG[1].videoSettings();
+			panel.setValueB("CAMERA_1_SETTING", false);	
+		}
+	}
+	
 	///////////////////////////////////////////////////////////
-	// Part 1 - get the video data
+	// Part 1 - get the video data [based on number of inputs]
 	///////////////////////////////////////////////////////////
 	
 	//pointer to our incoming video pixels			
-	unsigned char * pixCam;
-
+	// unsigned char * pixCam;
 	
-	if(bUsingVideoGrabber){
-		VG[0].grabFrame();
-		if (!VG[0].isFrameNew())  return;
-		pixCam 	= VG[0].getPixels();		
-	} else {
-		VP[0].idleMovie();	
-		if (!VP[0].isFrameNew())return;
-		pixCam 	= VP[0].getPixels();
+	
+	// are we using a video grabber
+	if(bUsingVideoGrabber) {
+		
+		for(int i=0; i<nVideos; i++) {
+			VG[i].grabFrame();
+		}
+		
+		// return if we do not have a new frame
+		bool bNewFrame = false;
+		for(int i=0; i<nVideos; i++) {
+			if(VG[i].isFrameNew()) bNewFrame = true;
+		}
+		if(!bNewFrame) return;
+		
+		// pixCam 	= VG[0].getPixels();	
+		
+	} 
+	
+	
+	// or are we using a video file
+	else {
+		for(int i=0; i<nVideos; i++) {
+			VP[i].idleMovie();	
+			
+			bool bNewFrame = false;
+			for(int i=0; i<nVideos; i++) {
+				if(VG[i].isFrameNew()) bNewFrame = true;
+			}
+			if(!bNewFrame) return;
+			
+			//pixCam 	= VP[0].getPixels();
+		}
 	}
 	
+	
+	
+	
+	///////////////////////////////////////////////////////////
+	// Part 2a - draw the fbo and seam them together
+	///////////////////////////////////////////////////////////
+	
+	// -------------- draw the camera image
+	ofSetColor(0xffffff);
+	stichManger.startOffscreenDraw();
+	ofSetColor(0xffffff);
+	for(int i=0; i<nVideos; i++) {			
+		ofSetColor(0xffffff);
+		VG[i].draw(i*inputW, 0);
+	}
+	stichManger.endOffscreenDraw();
+	
+	// -------------- draw the sceamed image
+	glPushMatrix();
+	glTranslatef(0, inputH, 0);
+	ofSetColor(0xffffff);
+	for(int i=0; i<nVideos; i++) {
+		stichManger.drawScreen(i);
+	}
+	// opencv grabbing
+	dualImage.grabScreen(0, inputH, width, height);
+	glPopMatrix();
+	
+	
+	
+	
+	bool bSaveStichCoords = panel.getValueB("STICH_COORDS");	
+	if(bSaveStichCoords) {
+		panel.setValueB("STICH_COORDS", false);	
+		stichManger.saveToXml();
+		printf("saved stich coords\n");
+	}
 	
 	
 	///////////////////////////////////////////////////////////
@@ -307,21 +448,21 @@ void cvManager::update(){
 	///////////////////////////////////////////////////////////
 	
 	/*
-	// this is a hack for this video. 
-	// masking (live) would be helpful !! (draw out regions we dont' care about).
-	for (int i = 0; i < width; i++){
-		for (int j = 0; j < height/2; j++){
-			pixCam[(j*width + i) * 3    ] = 255;
-			pixCam[(j*width + i) * 3 + 1] = 255;
-			pixCam[(j*width + i) * 3 + 2] = 255;
-		}
-	}
+	 // this is a hack for this video. 
+	 // masking (live) would be helpful !! (draw out regions we dont' care about).
+	 for (int i = 0; i < width; i++){
+	 for (int j = 0; j < height/2; j++){
+	 pixCam[(j*width + i) * 3    ] = 255;
+	 pixCam[(j*width + i) * 3 + 1] = 255;
+	 pixCam[(j*width + i) * 3 + 2] = 255;
+	 }
+	 }
 	 */
 	
 	
-	VideoFrame.setFromPixels(pixCam,width,height);
+	//VideoFrame.setFromPixels(pixCam,width,height); // just get pixels from dual image now
 	
-	//VideoFrame.setFromPixels(pixCam, W, H);
+	VideoFrame.setFromPixels(dualImage.getPixels(), width, height);
 	GreyFrame.setFromColorImage(VideoFrame);
 	
 	
@@ -344,8 +485,8 @@ void cvManager::update(){
 		//GreyFramePostWarp.translate(GreyFramePostWarp.width/2, GreyFramePostWarp.height/2);
 	}
 	//else GreyFramePostWarp = GreyFrame;
-													 
-													 
+	
+	
 	bool bFlipHoriz = panel.getValueB("CV_MANAGER_PANEL_VIDEO_FLIP_HORIZ");
 	bool bFlipVert = panel.getValueB("CV_MANAGER_PANEL_VIDEO_FLIP_VERT");
 	bool bInvert	= panel.getValueB("CV_MANAGER_PANEL_VIDEO_INVERT");
@@ -354,6 +495,7 @@ void cvManager::update(){
 		GreyFramePostWarp.invert();
 	}
 	
+	
 	///////////////////////////////////////////////////////////
 	// Part 3 - do thresholding
 	///////////////////////////////////////////////////////////
@@ -361,7 +503,7 @@ void cvManager::update(){
 	
 	int threshold = panel.getValueI("CV_MANAGER_PANEL_VIDEO_THRESHOLD");
 	//panel.addSlider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
-
+	
 	PresenceFrame.threshold(threshold);
 	PresenceFrame.invert();
 	PresenceFrameDialate = PresenceFrame;
@@ -371,7 +513,7 @@ void cvManager::update(){
 	int nPixels = PresenceFrame.width * PresenceFrame.height;
 	int minBlobSize = panel.getValueF("CV_MANAGER_PANEL_MIN_BLOB") * nPixels;
 	int maxBlobSize = panel.getValueF("CV_MANAGER_PANEL_MAX_BLOB") * nPixels;
-												
+	
 	Contour.findContours(PresenceFrameDialate, minBlobSize, maxBlobSize, 50, true, true);  
 	
 	fillPacket();	// THIS IS FOR THE NETWORK COMMUNICATON
@@ -384,28 +526,28 @@ void cvManager::setupReceiver(){
 		
 		bool bOk = false;
 		/*
-		// --------------------------------- create
-		bOk = manager.Create();
-		if (!bOk) {   
-			printf("network, create failed \n");
-			return;
-		}
-		
-		// --------------------------------- set non blocking
-		bOk = manager.Bind( port);
-		if (!bOk) {   
-			printf("network, setNonBlocking failed \n");
-			return;
-		}
-		
-		// --------------------------------- set non blocking
-		bOk = manager.SetNonBlocking(true);
-		if (!bOk) {   
-			printf("network, setNonBlocking failed \n");
-			return;
-		}
-		
-		*/
+		 // --------------------------------- create
+		 bOk = manager.Create();
+		 if (!bOk) {   
+		 printf("network, create failed \n");
+		 return;
+		 }
+		 
+		 // --------------------------------- set non blocking
+		 bOk = manager.Bind( port);
+		 if (!bOk) {   
+		 printf("network, setNonBlocking failed \n");
+		 return;
+		 }
+		 
+		 // --------------------------------- set non blocking
+		 bOk = manager.SetNonBlocking(true);
+		 if (!bOk) {   
+		 printf("network, setNonBlocking failed \n");
+		 return;
+		 }
+		 
+		 */
 		TCPServer.setup(11999);
 		
 		bNetworkSetup = true;
@@ -417,26 +559,26 @@ void cvManager::setupSender(){
 	if (!bNetworkSetup){
 		
 		/*
-		bool bOk = false;
-		
-		// --------------------------------- create
-		bOk = manager.Create();
-		if (!bOk) {   
-			printf("network, create failed \n");
-			return;
-		}
-		
-		
-		
-		// --------------------------------- connect
-		bOk = manager.Connect(IP.c_str(), port);
-		if (!bOk) {   
-			printf("network, Connect failed \n");
-			return;
-		}
-		
-		bNetworkSetup = true;
-		*/
+		 bool bOk = false;
+		 
+		 // --------------------------------- create
+		 bOk = manager.Create();
+		 if (!bOk) {   
+		 printf("network, create failed \n");
+		 return;
+		 }
+		 
+		 
+		 
+		 // --------------------------------- connect
+		 bOk = manager.Connect(IP.c_str(), port);
+		 if (!bOk) {   
+		 printf("network, Connect failed \n");
+		 return;
+		 }
+		 
+		 bNetworkSetup = true;
+		 */
 		bNetworkSetup = true;
 		weConnected = tcpClient.setup("127.0.0.1", 11999);
 		connectTime = 0;
@@ -525,13 +667,13 @@ void cvManager::receiveFromNetwork(){
 	///char temp[1000];
 	
 	/*int recv;
-	while (recv = manager.Receive((char *) UDPpacket, sizeof(udpPacket)) > 0){
-		int chunk = UDPpacket->whichChunk;
-		int packetId = UDPpacket->packetId;
-		printf("received %i bytes of  chunk %i, of packet %i  \n", chunk, packetId);
-		UDPC.receiveDataChunk(UDPpacket->data, chunk, packetId);
-		UDPC.update();
-	}*/
+	 while (recv = manager.Receive((char *) UDPpacket, sizeof(udpPacket)) > 0){
+	 int chunk = UDPpacket->whichChunk;
+	 int packetId = UDPpacket->packetId;
+	 printf("received %i bytes of  chunk %i, of packet %i  \n", chunk, packetId);
+	 UDPC.receiveDataChunk(UDPpacket->data, chunk, packetId);
+	 UDPC.update();
+	 }*/
 	
 	
 }
@@ -543,16 +685,16 @@ void cvManager::sendToNetwork(){
 	if (!bNetworkSetup) setupSender();
 	
 	/*UDPC.convertToChunkedPacketForSending((unsigned char * )packet, sizeof(computerVisionPacket));
-	
-	for (int i = 0; i < UDPC.nChunks; i++){
-		dataChunk * DC = UDPC.getChunk(i);
-		UDPpacket->packetId = ofGetFrameNum();
-		UDPpacket->whichChunk = i;
-		memcpy(UDPpacket->data, DC->data, DC->length);			// this doesn't have to be a memcpy....
-		int sent = manager.Send((char *) UDPpacket, sizeof(udpPacket));
-		printf("sent %i bytes of chunk %i, of packet %i  \n", sent, i,  (int)UDPpacket->packetId);
-	}
-	*/
+	 
+	 for (int i = 0; i < UDPC.nChunks; i++){
+	 dataChunk * DC = UDPC.getChunk(i);
+	 UDPpacket->packetId = ofGetFrameNum();
+	 UDPpacket->whichChunk = i;
+	 memcpy(UDPpacket->data, DC->data, DC->length);			// this doesn't have to be a memcpy....
+	 int sent = manager.Send((char *) UDPpacket, sizeof(udpPacket));
+	 printf("sent %i bytes of chunk %i, of packet %i  \n", sent, i,  (int)UDPpacket->packetId);
+	 }
+	 */
 	
 	//we are connected - lets send our text and check what we get back
 	if(weConnected){
@@ -565,8 +707,8 @@ void cvManager::sendToNetwork(){
 		string str = tcpClient.receive();
 		
 		/*if( str.length() > 0 ){
-			msgRx = str;
-		}*/
+		 msgRx = str;
+		 }*/
 	}else{
 		//if we are not connected lets try and reconnect every 5 seconds
 		deltaTime = ofGetElapsedTimeMillis() - connectTime;
@@ -583,12 +725,36 @@ void cvManager::sendToNetwork(){
 
 
 //---------------------------				
-void cvManager::draw(){
+void cvManager::draw() {
+	
 	ofSetColor(255, 255, 255);
 	
 	
-	if (panel.getSelectedPanel() == 2){
+	if(panel.getSelectedPanel() == 0) {
 		
+		
+		for(int i=0; i<nVideos; i++) {
+			
+			ofSetColor(0xffffff);
+			VG[i].draw(i*inputW, 0);
+			ofSetColor(255, 0, 255);
+			ofDrawBitmapString("input "+ofToString(i), (i*inputW)+10, inputH+20);
+			
+		}
+		
+		ofSetColor(0xffffff);
+		dualImage.draw(0, height+20);
+		stichManger.drawInputDiagnostically(stichGui.x, 
+											stichGui.y, 
+											stichGui.width, 
+											stichGui.height);
+		ofSetColor(0xffffff);
+		PresenceFrame.draw(0, (height*2) + 30);
+		
+	}
+	
+	
+	if (panel.getSelectedPanel() == 2){
 		
 		float scalef = 768.0f / (VideoFrame.height * 2 + 50);
 		
@@ -599,7 +765,7 @@ void cvManager::draw(){
 		Contour.draw(0,VideoFrame.height+50);
 		
 		if (panel.getSelectedPanel() == 2){
-				
+			
 			ofSetColor(255, 0, 0);
 			ofBeginShape();
 			ofNoFill();
@@ -613,6 +779,7 @@ void cvManager::draw(){
 	}
 	
 	if (panel.getSelectedPanel() == 1){
+		
 		
 		float scalef = 768.0f / (VideoFrame.height * 2 + 50);
 		
@@ -644,10 +811,10 @@ void cvManager::draw(){
 	}
 	
 	/*
-	// draw the packet, to see if it's OK
-	
+	 // draw the packet, to see if it's OK
+	 
 	 */
-		
+	
 	panel.draw();
 }
 
