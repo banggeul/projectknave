@@ -12,6 +12,11 @@
 #include "ofMain.h"
 #include "baseScene.h"
 
+// the funky monsters
+#include "BubbleMonster.h"
+#include "ofxContourAnalysis.h"
+
+
 class MonsterScene : public baseScene {
 	
 public: 
@@ -19,8 +24,20 @@ public:
 	void setup();
 	void update();
 	void draw();
+
 	
-	int tempC;
+	void blobOn( int x, int y, int bid, int order );
+    void blobMoved( int x, int y, int bid, int order );    
+    void blobOff( int x, int y, int bid, int order );
 	
-	float cw, ch;
+	BubbleMonster&  getMonsterById( int monsterId );
+	
+	
+	// tracking
+	int						lastFrameRendered;
+	
+	// monsters
+	ofxContourAnalysis	    contourAnalysis;
+	vector <BubbleMonster>	monsters;
+	
 };

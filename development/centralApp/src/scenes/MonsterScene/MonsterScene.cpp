@@ -1,25 +1,113 @@
-/*
- *  simpleScene.cpp
- *  openFrameworks
- *
- *  Created by Zach Lieberman on 9/23/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+
 
 #include "MonsterScene.h"
 #include "ofxVectorMath.h"
 
+//-------------------------------------------------------------- setup
 void MonsterScene::setup(){
-	tempC = (int)ofRandom(0, 255);
-	cw = 640;
-	ch = 480;
-}
-
-void MonsterScene::update(){
+	
+	
 	
 }
 
+//-------------------------------------------------------------- update
+void MonsterScene::update(){
+	
+	
+	contourAnalysis.setSize(packet.width, packet.height);
+
+	// --------------------- Monsters
+	for(int i = 0; i < monsters.size(); i++) {
+		monsters[i].update();
+	}
+	
+	
+	
+	// update the pnts to the blob and monser
+	/*for(int i=0; i<tracker->blobs.size(); i++) {
+	 for(int j=0; j<monsters.size(); j++) {
+	 if(tracker->blobs[i].id == monsters[j].id) {
+	 monsters[j].updateContourPnts(tracker->blobs[i].pts);
+	 }
+	 }
+	 }
+	 */
+	for(int i=0; i<tracker->blobs.size(); i++) {
+		
+		int lookID = tracker->blobs[i].id;
+		
+		for(int j=monsters.size()-1; j>=0; j--) {
+			
+			// yes we match
+			if(monsters[j].monsterID == lookID) {
+				
+				monsters[j].pos = tracker->blobs[i].centroid;
+				monsters[j].updateContourPnts(tracker->blobs[i].pts);
+				
+				monsters[j].contourSimple.assign(tracker->blobs[i].pts.size(), ofPoint());
+				contourAnalysis.simplify(tracker->blobs[i].pts, monsters[j].contourSimple, 0.50);
+
+				monsters[j].contourSmooth.assign(monsters[j].contourSimple.size(), ofPoint());
+				contourAnalysis.smooth(monsters[j].contourSimple, monsters[j].contourSmooth, 0.2);
+				
+								
+			}
+		}
+	}
+	
+	
+}
+
+//-------------------------------------------------------------- get monster by id
+BubbleMonster&  MonsterScene::getMonsterById( int monsterId ) {
+	
+	for( int i=0; i<monsters.size(); i++ ) {
+		if( monsters[i].monsterID == monsterId ) {
+			return monsters[i];
+		}
+	}
+	
+}
+
+//-------------------------------------------------------------- blob events
+void MonsterScene::blobOn( int x, int y, int bid, int order ) {
+	printf("monster on - %i\n", bid);
+	
+	BubbleMonster monster;
+	monster.monsterID = bid;
+	monster.init( tracker->getById(bid) );
+	monsters.push_back(monster);
+	
+	//monsters.push_back(BubbleMonster());
+	//monsters.back().init( tracker->getById(id) );
+	
+}
+
+void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
+	
+	for(int i=monsters.size()-1; i>=0; i--) {
+		if(monsters[i].monsterID == bid) {
+			//ofCvTrackedBlob tempB = tracker->getById(id);
+			//monsters[i].updateContourPnts(tracker->getById(id).pts);
+			monsters[i].genNewRadius();
+		}
+	}
+	
+}
+
+void MonsterScene::blobOff( int x, int y, int bid, int order ) {	
+	
+	printf("monster off - %i\n", bid);
+	for(int i=monsters.size()-1; i>=0; i--) {
+		if(monsters[i].monsterID == bid) {
+			monsters.erase(monsters.begin() + i);
+		}
+	}
+}
+
+
+
+//-------------------------------------------------------------- draw
 void MonsterScene::draw(){
 	
 	ofSetColor(255, 0, 0);
@@ -35,98 +123,45 @@ void MonsterScene::draw(){
 	
 	ofEnableAlphaBlending();
 	
-	// ---------- v1
+	// --------------------- People
 	glPushMatrix();
-	glTranslatef(0, packet.height, 0);
+	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
 	
-	ofFill();
-	ofSetColor(255, 0, 0, 20);
-	ofRect(0, 0, packet.width, packet.height);
+	bool bDrawPeople = false;
 	
-	for(int i=0; i<packet.nBlobs; i++) {
-		ofSetColor(255, 255, 255, 100);
-		ofNoFill();
-		ofEnableSmoothing();
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
+	if(bDrawPeople) {
+		for(int i=0; i<packet.nBlobs; i++) {
+			ofSetColor(255, i*20, 255-(i*40), 100);
+			ofFill();
+			ofEnableSmoothing();
+			ofBeginShape();
+			for (int j = 0; j < packet.nPts[i]; j++) {
+				
+				float x = packet.pts[i][j].x;
+				float y = packet.pts[i][j].y;
+				
+				ofVertex(x, y);
+			}
+			ofEndShape(true);
 		}
-		ofEndShape(true);
 	}
-	glPopMatrix();
-
 	
-	// ---------- v2
-	glPushMatrix();
-	glTranslatef(packet.width, packet.height, 0);
 	
-	ofFill();
-	ofSetColor(255, 0, 0, 20);
-	ofRect(0, 0, packet.width, packet.height);
-	
-	for(int i=0; i<packet.nBlobs; i++) {
-		ofSetColor(255, 255, 255, 100);
-		ofNoFill();
-		ofEnableSmoothing();
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
-		}
-		ofEndShape(true);
+	// --------------------- Monsters
+	for(int i = 0; i < monsters.size(); i++) {
+		monsters[i].draw();
 	}
+	
+	
+	// --------------------- tracker
+	ofSetColor(255, 0, 0);
+	//tracker->draw(0, 0);
+	
+	
 	glPopMatrix();
+	
+	
 	
 	ofDisableAlphaBlending();
 	
-	
-	
-	return;
-	
-	ofFill();
-	ofSetColor(tempC, tempC, 255);
-	ofRect(0,0,320,240);
-	
-	
-	for (int i = 0; i < packet.nBlobs; i++){
-		ofNoFill();
-		ofSetColor(255, 0, 0);
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			
-			float x = packet.pts[i][j].x;
-			float y = packet.pts[i][j].y;
-			
-			ofVertex(x, y);
-		}
-		ofEndShape(true);
-	}
-	
-	
-	
-	
-	for (int i = 0; i < packet.nBlobs; i++){
-		ofSetColor(255, 0, 255);
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			
-			float x = (packet.pts[i][j].x / cw) * (float)OFFSCREEN_WIDTH;
-			float y = (packet.pts[i][j].y / ch) * (float)OFFSCREEN_HEIGHT;
-			
-			if(j > 0 && packet.pts[i][j].y < 220.0) {
-				
-				ofxVec2f p1, p2;
-				p1.x = (packet.pts[i][j].x / cw) * (float)OFFSCREEN_WIDTH;
-				p1.y = (packet.pts[i][j].y / ch) * (float)OFFSCREEN_HEIGHT;
-				p2.x = (packet.pts[i][j-1].x / cw) * (float)OFFSCREEN_WIDTH;
-				p2.y = (packet.pts[i][j-1].y / ch) * (float)OFFSCREEN_HEIGHT;
-				
-				ofxVec2f mid = p1 - p2;
-				mid.normalize();
-				
-				ofxVec2f norml(-mid.y, mid.x);
-				ofxVec2f p3 = p1 + (norml * 30.0);
-				
-				ofLine(x, y, p3.x, p3.y);
-			}
-		}
-	}
 }
