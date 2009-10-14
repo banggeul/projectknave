@@ -32,7 +32,7 @@ public:
 		ofSetColor(0xffffff);
 		ofCircle(pos.x, pos.y, size);
 		ofSetColor(0x000000);
-		ofCircle(pos.x, pos.y+10, size/3.5);
+		ofCircle(pos.x, pos.y+10, size/3.5	);
 				
 	}
 	

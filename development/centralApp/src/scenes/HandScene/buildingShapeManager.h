@@ -23,7 +23,7 @@ public:
 	}
 	void parseShapesFromFile(string fileName);
 	
-	void buildingShapeManager::draw(){
+	void draw(){
 		for (int i = 0; i < shapes.size(); i++){
 			shapes[i]->draw();
 		}

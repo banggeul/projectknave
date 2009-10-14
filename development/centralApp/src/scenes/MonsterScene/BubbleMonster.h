@@ -2,12 +2,13 @@
 
 #pragma once
 #include "BaseMonster.h"
-#include "ofxMSASpline.h"
+//#include "ofxMSASpline.h"
 #include "MonsterEye.h"
 
 
 #define NUM_CONTOUR_PNTS 20
 #define MAX_NUM_EYS		 8
+#define MAX_NUM_SPIKES   60
 
 enum {
 	
@@ -52,12 +53,15 @@ public:
 	vector <ofPoint>	contourSimple;
 	vector <ofPoint>	contourSmooth;
 	vector <ofPoint>	contourConvex;
-	ofxMSASpline2D		spline2D;
+	//ofxMSASpline2D		spline2D;
 	
 	
 	// eyes
 	int					numEyes;
 	MonsterEye			eyes[MAX_NUM_EYS];
+	
+	// spikes
+	float				spikeLength[MAX_NUM_SPIKES];
 	
 	//-------------------------------------------------------------- init
 	BubbleMonster() {
@@ -84,6 +88,10 @@ public:
 			bubbles[i].radiusD = ofRandom(16.0, 50.0);
 			bubbles[i].radiusV = 0;
 			
+		}
+		
+		for(int i=0; i<MAX_NUM_SPIKES; i++) {
+			spikeLength[i] = ofRandom(10.0, 60.0);
 		}
 	}
 	
@@ -283,13 +291,22 @@ public:
 				
 				normlIn.set(-diff.y, diff.x);
 				
-				normalScaled  = contourConvex[k] + (norml * 40);				
+				normalScaled  = contourConvex[k] + (norml * spikeLength[k]);				
 				normalScaleIn = (normlIn * 40);		
 				
-				glLineWidth(10.0);
-				ofLine(contourConvex[k].x, contourConvex[k].y,
-					   normalScaled.x, normalScaled.y);
-				glLineWidth(1.0);
+				//glLineWidth(10.0);
+				//ofLine(contourConvex[k].x, contourConvex[k].y,
+				//	   normalScaled.x, normalScaled.y);
+				//glLineWidth(1.0);
+				
+				float offset = 10;
+				if(normalScaled.x > pos.x) offset = -10;
+				
+				ofTriangle(contourConvex[k].x+offset, contourConvex[k].y-20,
+						   normalScaled.x, normalScaled.y,
+						   contourConvex[k].x+offset, contourConvex[k].y+20);
+					
+				
 				/*
 				 ofxVec2f pt = bubbles[k-1].pos;
 				 float ang = pt.angle(normalScaled);
