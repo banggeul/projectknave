@@ -10,17 +10,30 @@ public:
 	}
 
 	void save(ostream& out) const {
-		binaryWrite(out, points);
-		cout << "saving " << points.size() << " to file" << endl;
+		out << points.size() << ',';
+		for(int i = 0; i < points.size(); i++)
+			out << points[i].x << ',' << points[i].y << ',';
+
+		cout << "just saved " << points.size() << " points" << endl;
 		for(int i = 0; i < points.size(); i++)
 			cout << points[i].x << " " << points[i].y << endl;
 	}
 
 	void load(istream& in) {
-		binaryRead(in, points);
-		cout << "loaded " << points.size() << " points:" << endl;
-		for(int i = 0; i < points.size(); i++) {
-			cout << points[i].x << " " << points[i].y << endl;
+		int size;
+		in >> size;
+		in.ignore();
+		for(int i = 0; i < size; i++) {
+			float x, y;
+			in >> x;
+			in.ignore();
+			in >> y;
+			in.ignore();
+			points.push_back(ofPoint(x, y));
 		}
+
+		cout << "just loaded " << points.size() << " points" << endl;
+		for(int i = 0; i < points.size(); i++)
+			cout << points[i].x << " " << points[i].y << endl;
 	}
 };

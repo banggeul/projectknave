@@ -9,14 +9,14 @@ void testApp::setup() {
 	string filename = settings.getValue("filename", "shared.bin");
 	mode = settings.getValue("mode", "client");
 
-	if(mode == "server")
+	if(mode == "server" || mode == "both")
 		dataServer.setup(filename, port);
-	else if(mode == "client")
+	if(mode == "client" || mode == "both")
 		dataClient.setup(filename, server, port);
 }
 
 void testApp::update() {
-	if(mode == "client")
+	if(mode == "client" || mode == "both")
 		dataClient.update();
 }
 
@@ -24,11 +24,10 @@ void testApp::draw() {
 }
 
 void testApp::keyPressed(int key) {
-	if(mode == "server") {
+	if(mode == "server" || mode == "both") {
 		ExamplePacket packet;
-		packet.points.push_back(ofPoint(5, 10));
-		packet.points.push_back(ofPoint(15, 20));
-		packet.points.push_back(ofPoint(25, 30));
+		for(int i = 0; i < 32; i++)
+			packet.points.push_back(ofPoint(ofRandomuf(), ofRandomuf()));
 		dataServer.send(packet);
 	}
 }
