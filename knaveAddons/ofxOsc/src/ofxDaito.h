@@ -25,4 +25,5 @@ public:
 	static void start(int scene);
 	static void stop(int scene);
 	static void bang(int scene,	string eventName,	float energy = 1.0f, float pan = 0.5f);
+	static void sendCustom(ofxOscMessage &msg);
 };

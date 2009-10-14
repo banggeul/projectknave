@@ -27,6 +27,10 @@ void ofxDaito::start(int scene) {
 	send(msg);
 }
 
+void ofxDaito::sendCustom(ofxOscMessage &msg){
+	send(msg);
+}
+
 void ofxDaito::stop(int scene) {
 	ofxOscMessage msg;
 	msg.setAddress("stop");
