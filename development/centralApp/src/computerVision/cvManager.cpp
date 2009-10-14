@@ -204,7 +204,7 @@ void cvManager::fillPacket(){
 		int nPts = Contour.blobs[i].nPts;
 		
 		packet->bAmInner[i] = !Contour.blobs[i].hole;
-		
+		packet->centroid[i] = Contour.blobs[i].centroid; // added blob centroids
 		if (nPts < MAX_BLOB_LENGTH){
 			
 			packet->nPts[i] = nPts;
