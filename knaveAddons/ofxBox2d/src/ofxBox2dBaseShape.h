@@ -12,6 +12,7 @@ public:
 	b2BodyDef	bodyDef;
 	b2Body*		body;
 	
+	bool		bCreated;
 	bool		dead;
 	bool		alive;
 	bool		bIsFixed;
@@ -22,8 +23,9 @@ public:
 	
 	ofxBox2dBaseShape() {
 		
-		dead  = false;
-		alive = false;
+		bCreated = false;
+		dead	 = false;
+		alive    = false;
 		bIsFixed = false;
 		
 		world = NULL;
@@ -105,8 +107,10 @@ public:
 	}
 	//------------------------------------------------ 
 	virtual void setPosition(float x, float y) {
-		body->SetXForm(b2Vec2(b2dNum(x), b2dNum(y)), 0);
-		body->WakeUp();
+		if(body != NULL) {
+			body->SetXForm(b2Vec2(b2dNum(x), b2dNum(y)), 0);
+			body->WakeUp();
+		}
 	}
 	virtual void setPosition(ofPoint p) {
 		setPosition(p.x, p.y);

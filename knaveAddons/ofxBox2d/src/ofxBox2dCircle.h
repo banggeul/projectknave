@@ -18,6 +18,10 @@ public:
 	//------------------------------------------------
 	void setup(b2World * b2dworld, float x, float y, float size, bool isFixed=false) {
 		
+		if(bCreated) { 
+			printf("- already created -\n");
+			return;
+		}
 		if(b2dworld == NULL) {
 			ofLog(OF_LOG_NOTICE, "- must have a valid world -");
 			return;
@@ -43,6 +47,8 @@ public:
 		body->SetLinearVelocity(b2Vec2(0.0, 0.0));
 		body->CreateShape(&circle);
 		body->SetMassFromShapes();
+		
+		bCreated = true;
 		
 	}
 	
