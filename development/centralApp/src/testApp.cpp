@@ -19,7 +19,7 @@ void testApp::setup(){
 	
 
 	SM.setup();
-	SM.gotoScene(HAND_SCENE);
+	SM.gotoScene(MONSTER_SCENE);
 	
 	
 	RM.setup();

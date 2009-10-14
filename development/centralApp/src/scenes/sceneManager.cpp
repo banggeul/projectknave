@@ -24,9 +24,16 @@ void sceneManager::setup(){
 	scenes[4]		= new StarScene();
 	
 	
+	// set the blob listener
+	tracker.setListener(this);
+	
 	for (int i = 0; i < numScenes; i++){
 		scenes[i]->setup();
+		scenes[i]->tracker = &tracker;		// <--- ref to the tracker - werd
 	}
+	
+	
+	
 	
 }
 
@@ -48,11 +55,37 @@ void sceneManager::prevScene(){
 }
 
 void sceneManager::passInPacket(computerVisionPacket * packet){
+	
 	memcpy(&(scenes[currentScene]->packet), packet, sizeof(computerVisionPacket));
+	
+	
+	// this is where we update the blob tracker
+	networkBlobs.clear();
+	networkBlobs.assign(packet->nBlobs, ofxCvBlob());
+	
+	for(int i=0; i<packet->nBlobs; i++) {
+		
+		networkBlobs[i].centroid = packet->centroid[i];
+		networkBlobs[i].nPts = 33;
+		networkBlobs[i].pts.assign(packet->nPts[i], ofPoint());
+				
+		for (int j = 0; j < packet->nPts[i]; j++) {
+			
+			float x = packet->pts[i][j].x;
+			float y = packet->pts[i][j].y;
+			networkBlobs[i].pts[j].set(x, y);
+		
+		}
+	}
+	
+	// go and track them
+	tracker.trackBlobs(networkBlobs);
+	
+	
 }
 
 
-
+// --------------------------------------------------- 
 void sceneManager::update(){
 	scenes[currentScene]->update();
 }
@@ -93,8 +126,16 @@ void sceneManager::mouseReleased(int x, int y, int button) {
 }
 	
 
-
-
+// --------------------------------------------------- tracker events
+void sceneManager::blobOn( int x, int y, int bid, int order ) {
+	scenes[currentScene]->blobOn(x, y, bid, order);
+}
+void sceneManager::blobMoved( int x, int y, int bid, int order ) {
+	scenes[currentScene]->blobMoved(x, y, bid, order);
+}
+void sceneManager::blobOff( int x, int y, int bid, int order ) {
+	scenes[currentScene]->blobOff(x, y, bid, order);
+}
 
 
 

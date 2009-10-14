@@ -23,13 +23,15 @@
 #include "FerryBuilding.h"
 #include "ofxBox2d.h"
 
+#include "ofCvBlobTracker.h"		// <--- we all get a nice blob tacker too :)
+
 
 enum {
 	HAND_SCENE, TREE_SCENE, PAINT_SCENE, MONSTER_SCENE, STAR_SCENE
 };
 
 
-class sceneManager {
+class sceneManager : public ofCvBlobListener {
 	
 	public :
 	
@@ -53,7 +55,13 @@ class sceneManager {
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	
+	// blob tracking
+	void blobOn( int x, int y, int bid, int order );
+    void blobMoved( int x, int y, int bid, int order );    
+    void blobOff( int x, int y, int bid, int order );
 	
+	vector <ofxCvBlob>		networkBlobs;
+	ofCvBlobTracker			tracker;
 	
 	int						numScenes;
 	baseScene **			scenes;

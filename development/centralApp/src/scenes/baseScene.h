@@ -17,11 +17,16 @@
 #include "FerryBuilding.h"
 #include "renderConstants.h"
 #include "ofxVectorMath.h"
-#include "ofxBox2d.h" // <--- beacuse most scenes are using this
+#include "ofxBox2d.h"				// <--- beacuse most scenes are using this
+#include "ofCvBlobTracker.h"		// <--- ref to the blob tracker
 
-class baseScene{
+class baseScene {
 	
 public: 
+	
+	baseScene() {
+		tracker = NULL;
+	}
 	
 	virtual void setup(){}
 	virtual void update(){}
@@ -29,6 +34,7 @@ public:
 	
 	virtual void drawTop(){}		// this is a drawing "on top" of the building mask, for diagnostic stuff. 
 	
+	// key board & mouse
 	virtual void keyPressed(int key){}
 	virtual void keyReleased(int key){}
 	virtual void mouseMoved(int x, int y){}
@@ -36,7 +42,12 @@ public:
 	virtual void mousePressed(int x, int y, int button){}
 	virtual void mouseReleased(int x, int y, int button){}
 
-	
+	// blob tracking
+	virtual void blobOn( int x, int y, int bid, int order ) {}
+    virtual void blobMoved( int x, int y, int bid, int order ) {};    
+    virtual void blobOff( int x, int y, int bid, int order ) {};
+    
+	// get point in FBO
 	ofPoint getPointInPreview(float x, float y, bool bCap=true){
 		
 		float ratio  = (float)OFFSCREEN_HEIGHT / (float)OFFSCREEN_WIDTH;
@@ -72,6 +83,9 @@ public:
 	// stuff with.
 	// later we might have an object sitting between the raw data and
 	// the scenes, smoothing or post processing
+	
+	ofCvBlobTracker *			tracker;
+	
 	
 	computerVisionPacket		packet;	
 	FerryBuilding				building;
