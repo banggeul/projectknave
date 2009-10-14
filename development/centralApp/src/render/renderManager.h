@@ -23,4 +23,6 @@ class renderManager {
 	
 	ofPoint	getPointInPreview(float x, float y, bool bCap = true);
 	
+	
+	
 };

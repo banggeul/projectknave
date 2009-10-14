@@ -37,6 +37,7 @@ void renderManager::drawForPreview(){
 	float height = ratio * width;
 	float diff = ofGetHeight() - height;
 	if (diff < 0) diff = 0;
+	
 	FBO.draw(0,diff,width, height);
 }
 
