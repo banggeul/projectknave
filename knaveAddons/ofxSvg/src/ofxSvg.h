@@ -15,8 +15,11 @@ protected:
 	ofxPoint2f anchor;
 	vector<ofxSvgPath> paths;
 	ofxDisplayList fullList, plainList;
+	bool useDisplayList;
 public:
 	void loadFile(string filename) {
+		useDisplayList = true;
+
 		ofxXmlSettings xml;
 		xml.loadFile(filename);
 
@@ -40,6 +43,9 @@ public:
 			loadPaths(xml);
 			xml.popTag();
 		}
+	}
+	void setUseDisplayList(bool useDisplayList) {
+		this->useDisplayList = useDisplayList;
 	}
 	int size() const {
 		return paths.size();
@@ -83,7 +89,7 @@ public:
 		ofPopMatrix();
 	}
 	void draw() {
-		if(!fullList.draw()) {
+		if(!useDisplayList || !fullList.draw()) {
 			fullList.begin();
 			ofPushMatrix();
 			ofTranslate(-anchor.x, -anchor.y);
