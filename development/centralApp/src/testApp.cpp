@@ -9,6 +9,7 @@ void testApp::setup(){
 	
 	//CVM.setupVideo("testMovies/silhouettes-sorenson.mov");
 	
+	
 	//ofDisableArbTex();
 	
 	XML.loadFile("settings/mainAppSettings.xml");
@@ -22,7 +23,7 @@ void testApp::setup(){
 	SM.gotoScene(MONSTER_SCENE);
 	RM.setup();
 	
-	drawMode = DRAW_SCENE;
+	drawMode = DRAW_CV;
 
 	// box2d
 	bEnableBox2d = false;
