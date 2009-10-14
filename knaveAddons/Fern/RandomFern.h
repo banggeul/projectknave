@@ -50,6 +50,8 @@ public:
 		style.leafGrowth = 3;
 		style.overallGrowth = .3;
 
+		style.leafVariation.set(10, 10);
+
 		fern.setup(style, ofRandom(20, 40));
 
 		mature.update();

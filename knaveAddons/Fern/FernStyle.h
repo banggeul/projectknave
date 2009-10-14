@@ -10,7 +10,8 @@ public:
 		leftBranchAngle,
 		rightBranchAngle,
 		leftTrunkAngle,
-		rightTrunkAngle;
+		rightTrunkAngle,
+		leafVariation;
 
 	float
 		branchScaling,

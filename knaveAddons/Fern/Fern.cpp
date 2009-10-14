@@ -48,6 +48,8 @@ void Fern::setup(const FernStyle* style, int level, float length, ofxVec2f angle
 			length * style->branchScaling,
 			(style->rightBranchAngle * style->branchAngle) + makeVariation(style->branchVariation),
 			true);
+	} else {
+		this->angle += makeVariation(style->leafVariation);
 	}
 }
 
