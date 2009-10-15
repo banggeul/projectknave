@@ -7,8 +7,9 @@
 #include "ofMain.h"
 #include "ofxVectorMath.h"
 #include "ofxBox2dCircle.h"
+#include "MonsterConst.h"
 
-#define MAX_POP_BITS 25
+
 
 
 class MonsterParticles : public ofxBox2dCircle {
@@ -34,9 +35,14 @@ public:
 		bDead  = true;
 		bGoPop = false;
 		
-		clr.r = ofRandom(0, 255);
-		clr.g = ofRandom(0, 255);
-		clr.b = ofRandom(0, 255);
+		
+	
+		
+		
+		int hex = particleColor[(int)ofRandom(0, NUM_PARTICLE_COLOR)];
+		clr.r = (hex >> 16) & 0xff;
+		clr.g = (hex >> 8)  & 0xff;
+		clr.b = (hex >> 0)  & 0xff;
 		clr.a = 255;
 		
 		age			= 0;

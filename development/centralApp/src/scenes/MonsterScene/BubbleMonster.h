@@ -5,11 +5,8 @@
 #include "MonsterEye.h"
 #include "MonsterSVGParts.h"
 #include "ofxDaito.h"
+#include "MonsterConst.h"
 
-#define NUM_CONTOUR_PNTS	20
-#define MAX_NUM_EYS			8
-#define MAX_NUM_SPIKES		60
-#define NUM_MONSTER_COLOR	6
 
 enum {
 	
@@ -56,8 +53,6 @@ public:
 	GiggleBubble		bubbles[NUM_CONTOUR_PNTS];
 	MonsterSVGParts *   parts;
 	
-	// colors
-	int				    monsterColor[NUM_MONSTER_COLOR];
 	
 	// contours
 	vector <ofPoint>	normals;
@@ -86,13 +81,6 @@ public:
 		parts	  = NULL;
 		eyeID	  = 0;
 		spikeMode = 0;
-		
-		monsterColor[0] = 0xd1007e;
-		monsterColor[1] = 0xffc000;
-		monsterColor[2] = 0x6ac539;
-		monsterColor[3] = 0x00a3c4;
-		monsterColor[4] = 0xff5500;
-		monsterColor[5] = 0xff0009;
 		
 	}
 	

@@ -83,7 +83,7 @@ void MonsterScene::update(){
 	}
 	
 	
-
+	
 	
 	// --------------------- Monsters
 	for(int i = 0; i < monsters.size(); i++) {
@@ -148,10 +148,8 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 	
 	for(int i=monsters.size()-1; i>=0; i--) {
 		if(monsters[i].monsterID == bid) {
-	
+			
 			// tell daito that the monster just moved
-			
-			
 			ofxOscMessage msg;		
 			msg.setAddress("/bang");							//	bang
 			msg.addStringArg("monsterMove");					//	new monster
@@ -159,10 +157,7 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			msg.addIntArg(bid);									//	monster ID
 			msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
 			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
-			
 			DAITO.sendCustom(msg);
-			
-			
 			
 			monsters[i].genNewRadius();
 			
@@ -175,6 +170,7 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 				monsterParticles.back().init();
 				monsterParticles.back().setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
 				monsterParticles.back().setup(box2d.getWorld(), bx, by, ofRandom(4, 50));
+				
 			}
 		}
 	}
@@ -238,8 +234,7 @@ void MonsterScene::render() {
 //-------------------------------------------------------------- render
 void MonsterScene::draw() {
 	
-	//ofEnableAlphaBlending();
-	ofSetColor(50,50,50);
+	ofEnableAlphaBlending();
 	
 	// --------------------- People
 	glPushMatrix();
@@ -278,7 +273,6 @@ void MonsterScene::draw() {
 	
 	
 	// --------------------- tracker
-	ofSetColor(255, 0, 0);
 	//tracker->draw(0, 0);
 	
 	
@@ -329,7 +323,6 @@ void MonsterScene::createBuildingContour() {
 			by -= (OFFSCREEN_HEIGHT-packet.height);
 			
 			
-			
 			box2dBuilding.back().addPoint(bx, by);
 		}
 		box2dBuilding.back().createShape();
@@ -359,7 +352,7 @@ void MonsterScene::keyPressed(int key) {
 		
 		
 		MonsterBall bub;
-		bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
+		bub.setPhysics(30.0, 0.53, 0.1); // mass - bounce - friction
 		bub.setup(box2d.getWorld(), bx, by, ofRandom(3, 50));
 		balls.push_back(bub);
 		

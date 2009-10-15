@@ -21,10 +21,8 @@
 #include "ofxFBOTexture.h"
 #include "MonsterBall.h"
 #include "ofxDaito.h"
+#include "MonsterConst.h"
 
-
-
-#define MAX_MONSTER_PARTICLES 20
 
 
 
@@ -48,8 +46,12 @@ public:
     void blobOff( int x, int y, int bid, int order );
 	
 	// get a monster here
-	BubbleMonster&  getMonsterById( int monsterId );
+	BubbleMonster&				getMonsterById( int monsterId );
 	
+	
+	// colors
+	int							monsterColor[NUM_MONSTER_COLOR];
+
 	
 	// sounds for daito
 	ofxDaito					DAITO;

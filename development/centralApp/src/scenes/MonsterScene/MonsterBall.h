@@ -7,6 +7,8 @@
 class MonsterBall : public ofxBox2dCircle {
 	
 public:
+	
+	ofColor		color;
 	MonsterBall() {
 		
 	}
@@ -16,16 +18,10 @@ public:
 		ofPoint pos = getPosition();
 		float	r   = getRadius();
 		
-		ofCircle(pos.x, pos.y, r);
-		return;
-		ofEnableAlphaBlending();
-		glPushMatrix();
-		glTranslatef(pos.x, pos.y, 0);
-		ofSetColor(10, 100, 10);
+		ofSetColor(color.r, color.g, color.b, color.a);
 		ofFill();
-		ofCircle(0, 0, r);
-		glPopMatrix();
-		ofDisableAlphaBlending();
+		ofCircle(pos.x, pos.y, r);
+
 	}
 	
 };
