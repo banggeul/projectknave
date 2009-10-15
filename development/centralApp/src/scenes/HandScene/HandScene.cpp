@@ -302,7 +302,7 @@ void HandScene::update(){
 		}	
 		box2dBuilding.clear();
 		*/
-		float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+		float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
 		float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 		
 		/*
@@ -496,6 +496,7 @@ void HandScene::drawTop(){
 void HandScene::keyPressed(int key) {
 	ferryBuilding.keyPressed(key);
 	
+	
 	if(key == ' ') {
 		
 		for(int i=0; i<box2dBuilding.size(); i++) {
@@ -523,11 +524,12 @@ void HandScene::keyPressed(int key) {
 void HandScene::mousePressed(int x, int y, int button) {
 	
 	ferryBuilding.mousePressed(x, y, button);
-	
+	/*
 	HandBall bub;
 	bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
 	bub.setup(box2d.getWorld(), x, y, 20);
 	balls.push_back(bub);
+	*/
 	
 }
 
