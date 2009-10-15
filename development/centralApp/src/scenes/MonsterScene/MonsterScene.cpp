@@ -177,16 +177,18 @@ void MonsterScene::drawTop() {
 void MonsterScene::draw(){
 	
 	
-	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
-	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
+	
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
 	
 	ofEnableAlphaBlending();
 	
 	// --------------------- People
 	glPushMatrix();
-	//glTranslatef(0, 0, 0);
+	//glTranslatef(mouseX, mouseY, 0);
 	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
 	
 	bool bDrawPeople = false;
