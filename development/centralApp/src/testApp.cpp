@@ -38,6 +38,7 @@ void testApp::setup() {
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
 
 	bDrawInDebugWay = true;
+	showInfo = true;
 
 	SM.gotoScene(MONSTER_SCENE);
 }
@@ -98,8 +99,6 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
-
-
 	// ----------------------------------
 	//  -------- Networking -------------
 	// ----------------------------------
@@ -111,20 +110,17 @@ void testApp::draw() {
 		}
 	}
 
-
-
 	// ----------------------------------
 	//  -------- Info ----------------
 	// ----------------------------------
 	ofSetColor(0, 0, 0);
 	string info = "	FPS: "+ofToString(ofGetFrameRate());
 	info += "\n		left / right key to change draw";
-	info += "\n		up / down to change scenes.";
+	info += "\n		up / down to change scenes";
+	info += "\n   f to toggle fullscreen";
+	info += "\n   m multiscreen with fbo";
+
 	info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
-
-
-
-
 
 	// ----------------------------------
 	//  --------  Vision ----------------
@@ -160,11 +156,12 @@ void testApp::draw() {
 			glPopMatrix();
 
 			// ---- draw the gui utils
-			ofSetColor(255, 255, 255, 255);
-			MRM.drawInputDiagnostically(guiIn.x, guiIn.y, guiIn.width, guiIn.height);
-			MRM.drawOutputDiagnostically(guiOut.x, guiOut.y, guiOut.width, guiOut.height);
+			if(showInfo) {
+				ofSetColor(255, 255, 255, 255);
+				MRM.drawInputDiagnostically(guiIn.x, guiIn.y, guiIn.width, guiIn.height);
+				MRM.drawOutputDiagnostically(guiOut.x, guiOut.y, guiOut.width, guiOut.height);
+			}
 		} else {
-
 			ofSetColor(255, 255, 255, 255);
 			float ratio = (float)OFFSCREEN_HEIGHT / (float)OFFSCREEN_WIDTH;
 			float width = ofGetWidth();
@@ -173,24 +170,6 @@ void testApp::draw() {
 			if (diff < 0) diff = 0;
 			MRM.myOffscreenTexture.draw(0,diff,width, height);
 		}
-
-		// not using this anymore
-		/*	RM.swapInFBO();
-		 SM.draw();
-
-		 ofEnableAlphaBlending();
-		 ofSetColor(255,255,255, 210);
-
-		 mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-
-		 // move outside fbo can see it better
-		 //ofSetColor(255,255,255);
-		 //SM.drawTop();
-
-		 RM.swapOutFBO();
-		 ofSetColor(255,255,255);
-		 RM.drawForPreview();
-		 */
 	}
 
 
@@ -202,15 +181,12 @@ void testApp::draw() {
 		SM.drawTop();
 	}
 
-
-
-
 	// ----------------------------------
 	//  -------- Debug ----------------
 	// ----------------------------------
-	ofDrawBitmapString(info, 20, 20);
-
-
+	if(showInfo) {
+		ofDrawBitmapString(info, 20, 20);
+	}
 }
 
 //--------------------------------------------------------------
@@ -223,6 +199,13 @@ void testApp::keyPressed(int key){
 		case 'f':
 			ofToggleFullscreen();
 			break;
+		case 'm':
+			bDrawInDebugWay = !bDrawInDebugWay;
+			break;
+		case 'i':
+			showInfo = !showInfo;
+			break;
+
 		case OF_KEY_RIGHT:
 			drawMode ++;
 			drawMode %= 2;
@@ -238,11 +221,6 @@ void testApp::keyPressed(int key){
 		case OF_KEY_DOWN:
 			SM.prevScene();
 			break;
-
-		case 'd':
-			bDrawInDebugWay = !bDrawInDebugWay;
-			break;
-
 	}
 }
 

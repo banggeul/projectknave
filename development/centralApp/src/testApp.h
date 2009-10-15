@@ -59,6 +59,7 @@ public:
 	ofRectangle				guiOut;
 
 	bool					bDrawInDebugWay;
+	bool showInfo;
 
 };
 
