@@ -2,33 +2,32 @@
 
 //--------------------------------------------------------------
 void testApp::setup() {
-	
+
 	ofBackground(90, 90, 90);
 
 	ofxDaito::setup("settings/daito.xml");
 
 	ofBackground(90, 90, 90);
 	drawMode = DRAW_SCENE;
-	
+
 	// -------- The images for the building
 	building.loadImage("buildingRefrences/building.jpg");
 	mask.loadImage("buildingRefrences/mask_half.png");
-	
+
 	// -------- App settings
 
 	XML.loadFile("settings/mainAppSettings.xml");
 	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);
 	CVM.id = XML.getValue("mainApp:id", 0);
-	
-	// -------- Scenes 
+
+	// -------- Scenes
 	SM.setup();
 	RM.setup();
 	CVM.setupNonCV();	// this order is all wonky now.
 
-	
+
 	// Mega Render Manager
-	bFBOgui		= false;
-	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen	
+	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen
 	MRM.allocateForNScreens(nScreens, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 	//MRM.loadFromXml("settings/fboSettingsLive.xml");
 	MRM.loadFromXml("settings/fboSettings.xml");
@@ -37,9 +36,9 @@ void testApp::setup() {
 
 	guiIn   = ofRectangle(0, 0, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
-	
+
 	bDrawInDebugWay = true;
-	
+
 	SM.gotoScene(MONSTER_SCENE);
 }
 
@@ -79,10 +78,10 @@ void testApp::update() {
 		SM.passInPacket(CVM.packet);
 		SM.update();
 	}
-	
-	
+
+
 	int sendDaitoPixelDataRate = 5;
-	
+
 	if (ofGetFrameNum() % sendDaitoPixelDataRate == 0){
 		ofxOscMessage msg;
 		msg.setAddress("/cvData");							//	/cvData
@@ -92,15 +91,15 @@ void testApp::update() {
 		msg.addFloatArg(CVM.packet->pctPixelsMoving);		//	float
 		ofxDaito::sendCustom(msg);
 	}
-		
-	
+
+
 
 }
 
 //--------------------------------------------------------------
 void testApp::draw() {
 
-	
+
 	// ----------------------------------
 	//  -------- Networking -------------
 	// ----------------------------------
@@ -132,19 +131,19 @@ void testApp::draw() {
 	// ----------------------------------
 	if (drawMode == DRAW_CV){
 		CVM.draw();
-	} 
+	}
 
 	// ----------------------------------
 	//  -------- Scenese ----------------
-	// ----------------------------------	
+	// ----------------------------------
 	else if (drawMode == DRAW_SCENE) {
 
 		// ---- do off screen rendering
 		ofSetColor(255, 255, 255, 255);
 		MRM.startOffscreenDraw();
-		
+
 		SM.draw();
-		
+
 		mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 
 		MRM.endOffscreenDraw();
@@ -165,7 +164,7 @@ void testApp::draw() {
 			MRM.drawInputDiagnostically(guiIn.x, guiIn.y, guiIn.width, guiIn.height);
 			MRM.drawOutputDiagnostically(guiOut.x, guiOut.y, guiOut.width, guiOut.height);
 		} else {
-			
+
 			ofSetColor(255, 255, 255, 255);
 			float ratio = (float)OFFSCREEN_HEIGHT / (float)OFFSCREEN_WIDTH;
 			float width = ofGetWidth();
@@ -174,7 +173,7 @@ void testApp::draw() {
 			if (diff < 0) diff = 0;
 			MRM.myOffscreenTexture.draw(0,diff,width, height);
 		}
-		
+
 		// not using this anymore
 		/*	RM.swapInFBO();
 		 SM.draw();
@@ -194,7 +193,7 @@ void testApp::draw() {
 		 */
 	}
 
-	
+
 	// ----------------------------------
 	//  -------- Debug Scenese ----------
 	// ----------------------------------
@@ -203,15 +202,15 @@ void testApp::draw() {
 		SM.drawTop();
 	}
 
-	
-	
-	
+
+
+
 	// ----------------------------------
 	//  -------- Debug ----------------
 	// ----------------------------------
 	ofDrawBitmapString(info, 20, 20);
-	
-	
+
+
 }
 
 //--------------------------------------------------------------
@@ -226,11 +225,11 @@ void testApp::keyPressed(int key){
 			break;
 		case OF_KEY_RIGHT:
 			drawMode ++;
-			drawMode %= 3;
+			drawMode %= 2;
 			break;
 		case OF_KEY_LEFT:
 			drawMode --;
-			if (drawMode < 0) drawMode += 3;
+			if (drawMode < 0) drawMode += 2;
 			break;
 
 		case OF_KEY_UP:
@@ -240,22 +239,6 @@ void testApp::keyPressed(int key){
 			SM.prevScene();
 			break;
 
-
-		case 'h':
-			bFBOgui = !bFBOgui;
-			break;
-			
-		case 's':
-			MRM.saveToXml();
-			break;
-
-		case 'r':
-			MRM.reloadFromXml();
-			break;
-
-		case 'c':
-			MRM.resetCoordinates();
-			break;
 		case 'd':
 			bDrawInDebugWay = !bDrawInDebugWay;
 			break;

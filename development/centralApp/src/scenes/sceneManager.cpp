@@ -31,10 +31,6 @@ void sceneManager::setup(){
 		scenes[i]->setup();
 		scenes[i]->tracker = &tracker;		// <--- ref to the tracker - werd
 	}
-
-
-
-
 }
 
 void sceneManager::nextScene(){
@@ -95,6 +91,11 @@ void sceneManager::gotoScene(int theScene) {
 	if(theScene >= numScenes) theScene = numScenes-1;
 	currentScene = theScene;
 	ofxDaito::scene(theScene);
+	if(theScene == 0) {
+		ofSetFrameRate(20);
+	} else {
+		ofSetFrameRate(60);
+	}
 }
 
 
