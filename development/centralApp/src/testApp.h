@@ -11,31 +11,25 @@
 #include "ofxBox2d.h"
 #include "ofxXmlSettings.h"
 
+#include "ofxDaito.h"
+
 
 // ----------------------------------------- new Render Manager
 
 #include "megaRenderManager.h"
 
-
-
-
 enum {
-	
 	DRAW_SCENE, DRAW_CV
-	
 };
 
-
-
-
 class testApp : public ofBaseApp{
-	
+
 public:
-	
+
 	void setup();
 	void update();
 	void draw();
-	
+
 	void keyPressed  (int key);
 	void keyReleased(int key);
 	void mouseMoved(int x, int y );
@@ -43,26 +37,26 @@ public:
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	void resized(int w, int h);
-	
+
 	ofImage					building;
-	ofImage					mask;	
-	
+	ofImage					mask;
+
 	cvManager				CVM;
 	sceneManager			SM;
 	renderManager			RM;
-	
+
 	int						drawMode;
-	
-	ofxXmlSettings			XML;	
+
+	ofxXmlSettings			XML;
 	bool					bUseNetworking;
-	
-	
+
+
 	// mega fbo rendering
 	megaRenderManager		MRM;
 	int						nScreens;
 	ofRectangle				guiIn;
 	ofRectangle				guiOut;
-	
+
 };
 
 #endif
