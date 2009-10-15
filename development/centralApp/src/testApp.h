@@ -52,6 +52,8 @@ public:
 
 
 	// mega fbo rendering
+	ofTrueTypeFont			font;
+	bool					bFBOgui;
 	megaRenderManager		MRM;
 	int						nScreens;
 	ofRectangle				guiIn;
