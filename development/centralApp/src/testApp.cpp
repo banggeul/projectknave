@@ -32,10 +32,10 @@ void testApp::setup(){
 
 	// Mega Render Manager
 	bFBOgui		= false;
-	nScreens	= 1;		// <--- if you just want to work on your mac set to one screen	
+	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen	
 	MRM.allocateForNScreens(nScreens, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 	//MRM.loadFromXml("settings/fboSettingsLive.xml");
-	//MRM.loadFromXml("settings/fboSettings.xml");
+	MRM.loadFromXml("settings/fboSettings.xml");
 	float ratio = .2;
 
 
