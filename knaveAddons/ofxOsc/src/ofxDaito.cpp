@@ -20,21 +20,14 @@ void ofxDaito::setup(string settings, bool verbose) {
 	}
 }
 
-void ofxDaito::start(int scene) {
+void ofxDaito::scene(int scene) {
 	ofxOscMessage msg;
-	msg.setAddress("/start");
+	msg.setAddress("/scene");
 	msg.addIntArg(scene);
 	send(msg);
 }
 
 void ofxDaito::sendCustom(ofxOscMessage &msg){
-	send(msg);
-}
-
-void ofxDaito::stop(int scene) {
-	ofxOscMessage msg;
-	msg.setAddress("/stop");
-	msg.addIntArg(scene);
 	send(msg);
 }
 
