@@ -20,6 +20,19 @@
 #include "ofxDaito.h"
 
 
+typedef struct {
+	
+	ofPoint		center;
+	float		energy;
+	int			id;
+	int			whoThisFrame;	
+	bool		bFoundThisFrame;
+	
+	ofPoint		myColor;
+	
+}	handObject;
+
+
 class HandScene : public baseScene {
 	
 public: 
@@ -60,6 +73,10 @@ public:
 	buildingShapeManager			BSM;
 	
 	
+	ofImage							neon;
+	unsigned char *	neonPixels;
+	
+	
 	/*
 	 
 	 for finding building shapes ! 
@@ -75,6 +92,12 @@ public:
 	
 	
 	ofxDaito			DAITO;
+	
+	// let's try to track hands (yikes)
+	
+	vector < handObject > HOBJ;
+	
+	
 	
 	
 };

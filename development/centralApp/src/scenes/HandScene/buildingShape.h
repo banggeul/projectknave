@@ -44,10 +44,15 @@ public:
 	buildingShape();
 	void draw();
 	void update();
-	void checkInside(float x, float y);
+	void checkInside(float x, float y, ofPoint colorMe);
 	
 	void setupList();
 	bool			bSetupList;
 	ofxDisplayList DL;
+	
+	ofPoint			myColor;
+	ofPoint			myColorTarget;
+	
+	
 	
 };

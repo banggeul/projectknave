@@ -91,10 +91,10 @@ void buildingShapeManager::parseShapesFromFile(string fileName, int _type){
 	
 }
 
-void buildingShapeManager::checkShapesForPoint(float x,float y){
+void buildingShapeManager::checkShapesForPoint(float x,float y, ofPoint colorMe){
 	
 	for (int i = 0; i < shapes.size(); i++){
-		shapes[i]->checkInside(x,y);
+		shapes[i]->checkInside(x,y, colorMe);
 	}
 	
 	

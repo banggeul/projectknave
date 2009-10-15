@@ -86,12 +86,143 @@ void HandScene::setup(){
 	//DAITO ofxDaito -- see the setup there. 
 	//DAITO.setup("...", "...");
 	
-	
-	
+	//neon.loadImage("image/Scene_01_Neon.png");
+	//neon.setImageType(OF_IMAGE_COLOR);	// RGB yah
+	//neonPixels = neon.getPixels();
 }
 
+static int trackerId = 0; 
 //--------------------------------------------------------------
 void HandScene::update(){
+	
+	
+	
+	// TRACKING 
+	
+	
+	int nBlobs = packet.nBlobs;
+	bool bFoundThisFrame [nBlobs];
+	for (int i = 0;  i < nBlobs; i++){
+		bFoundThisFrame[i] = false;
+	}
+	
+	for (int i = 0; i < HOBJ.size(); i++){
+		HOBJ[i].bFoundThisFrame = false;
+		HOBJ[i].whoThisFrame = -1;
+	}
+	
+	for (int i = 0; i < HOBJ.size(); i++){
+		
+		
+		float minDistance = 1000000;
+		int minIndex = -1;
+		
+		for (int j = 0; j < nBlobs; j++){
+			
+			if (bFoundThisFrame[j]) continue; 
+			// try to find the closest "hand" to this object, withing a range
+			float diffx = HOBJ[i].center.x - packet.centroid[j].x;
+			float diffy =  HOBJ[i].center.y - packet.centroid[j].y;
+			float distance = sqrt(diffx * diffx + diffy*diffy);
+			
+			if (minDistance > distance){
+				minDistance = distance;
+				minIndex = j;
+			}
+		}
+		
+		
+		if (minIndex != -1 && minDistance < 200){
+				bFoundThisFrame[minIndex] = true;
+				// kk we are close, so let's mark and keep rolling: 
+				HOBJ[i].center.set(packet.centroid[minIndex].x, packet.centroid[minIndex].y, 0);
+				HOBJ[i].bFoundThisFrame = true;
+				HOBJ[i].whoThisFrame = minIndex;
+				HOBJ[i].energy += 0.1f; 
+				HOBJ[i].energy = MIN(HOBJ[i].energy, 1);
+		}
+	}
+	
+	
+	// ok for ALL non found blobs, add them to the vector
+	for (int i = 0;  i < nBlobs; i++){
+		if (bFoundThisFrame[i] == false){
+				// make some $ in HOBJ
+			handObject temp;
+			HOBJ.push_back( temp);
+			HOBJ[HOBJ.size()-1].bFoundThisFrame = true;
+			HOBJ[HOBJ.size()-1].whoThisFrame = i;
+			HOBJ[HOBJ.size()-1].energy = 0.3;
+			HOBJ[HOBJ.size()-1].id = trackerId;
+			HOBJ[HOBJ.size()-1].center.x = packet.centroid[i].x;
+			HOBJ[HOBJ.size()-1].center.y = packet.centroid[i].y;
+			
+			// let's pick a random color word: 
+			
+			
+			// this wasn't so great.  maybe if they were SUPER bright, the problem is I kind of need equality in terms of brightness 
+			// across the color spectrum.  so I bumped to something else.... 
+			/*
+			float xp = (int)(ofRandom(0,1) * (neon.width-1));
+			float yp = (int)(ofRandom(0,1) * (neon.height-1));
+			int pixelPos = (yp*neon.width + xp) * 3;
+			*/
+			float random = ofRandom(0,1);
+			if (random < 0.25){
+				HOBJ[HOBJ.size()-1].myColor.set(255,255,0);
+			} else if (random >= 0.25 && random < 0.5) {
+				HOBJ[HOBJ.size()-1].myColor.set(255,0,255);
+			} else if (random >= 0.5f && random < 0.75f){
+				HOBJ[HOBJ.size()-1].myColor.set(0,255,255);
+			} else {
+				HOBJ[HOBJ.size()-1].myColor.set(255,255,255);
+			}
+			
+			
+			trackerId ++;
+			bFoundThisFrame[i] = true;
+		}
+	}
+	
+	
+	// do some other stuff, delete off old ones: 
+	for (int i = 0;  i < HOBJ.size(); i++){
+		if (HOBJ[i].bFoundThisFrame == false){
+			HOBJ[i].energy *= 0.9f;
+		}
+	}
+	
+	std::vector<handObject >::iterator iter = HOBJ.begin();
+	while (iter != HOBJ.end())
+	{
+		if ((*iter).energy <= 0.05)
+		{
+			
+			// seems to work!
+			//printf("removing a packet with ID  %i \n", (*iter)->packetID);
+			//delete (*iter);	// this should !!! free memory.  please check
+			
+			iter = HOBJ.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+	
+	/*
+	printf("--------------------------------- \n");
+	for (int i = 0; i < HOBJ.size(); i ++){
+		
+			printf("object %i  id %i \n", i, HOBJ[i].id);
+			printf("object %i  energy  %f \n", i, HOBJ[i].energy);
+			printf("object %i  bFoundThisFrame  %i \n", i, (int)HOBJ[i].bFoundThisFrame);
+			printf("object %i  whoThisFrame  %i \n", i, HOBJ[i].whoThisFrame);
+		
+	}
+	printf("--------------------------------- \n");
+	*/
+	
 	
 	ofFill();
 	FBO.swapIn();
@@ -106,7 +237,7 @@ void HandScene::update(){
 	
 	for (int i = 0; i < BSM.shapes.size(); i++){
 		
-		ofSetColor(255, 0, 255, 10 * powf(BSM.shapes[i]->energy, 1.4));
+		ofSetColor( BSM.shapes[i]->myColor.x,  BSM.shapes[i]->myColor.y,  BSM.shapes[i]->myColor.z, 10 * powf(BSM.shapes[i]->energy, 1.4));
 		
 		if (BSM.shapes[i]->trail.size() > 2){
 			ofPoint pta = BSM.shapes[i]->trail[BSM.shapes[i]->trail.size()-2];
@@ -202,10 +333,21 @@ void HandScene::update(){
 	
 	for (int i = 0; i < packet.nBlobs; i++){
 		
+		// try to find my color : 
+		
+		ofPoint myColor;
+		myColor.set(255,0,255);
+		
+		for (int j = 0; j < HOBJ.size(); j++){
+			if (HOBJ[j].bFoundThisFrame && HOBJ[j].whoThisFrame == i){
+				myColor = HOBJ[j].myColor;
+			}
+		}
+	
 		for (int j = packet.nPts[i]-1; j>0 ; j-=10){	
 			float bx = packet.pts[i][j].x * scalex;
 			float by = packet.pts[i][j].y * scaley;
-			BSM.checkShapesForPoint(bx, by);
+			BSM.checkShapesForPoint(bx, by, myColor);
 			
 		}
 		
@@ -222,7 +364,7 @@ void HandScene::update(){
 	for (int i = 0; i < BSM.shapes.size(); i++){
 		if (BSM.shapes[i]->bPeakedThisFrame){
 			
-			printf("%i peaked at %f %f \n", BSM.shapes[i]->type, BSM.shapes[i]->centroid.x, BSM.shapes[i]->centroid.y);
+			//printf("%i peaked at %f %f \n", BSM.shapes[i]->type, BSM.shapes[i]->centroid.x, BSM.shapes[i]->centroid.y);
 			BSM.shapes[i]->bPeakedThisFrame = false;
 			
 			ofxOscMessage msg;		

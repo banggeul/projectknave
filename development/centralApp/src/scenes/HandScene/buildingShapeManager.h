@@ -34,7 +34,7 @@ public:
 			shapes[i]->update();
 		}
 	}
-	void checkShapesForPoint(float x, float y);
+	void checkShapesForPoint(float x, float y, ofPoint colorMe);
 	
 	vector < buildingShape * > shapes;
 	

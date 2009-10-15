@@ -16,6 +16,11 @@ buildingShape::buildingShape(){
 	bPeakedThisFrame = false;
 	nFramesSinceTrigger = 0;
 	type = 0;
+	
+	myColor.set(255,0,255);
+	myColorTarget.set(255,0,255);
+	
+	
 }
 
 void buildingShape::setupList(){
@@ -39,7 +44,7 @@ void buildingShape::draw(){
 	
 	if (energy < 0.01f) return;
 	
-	ofSetColor(255, 0, 255, powf(energy,3)*255*(0.25 + peakEnergy*0.65));
+	ofSetColor(myColor.x, myColor.y, myColor.z, powf(energy,3)*255*(0.25 + peakEnergy*0.65));
 	/*ofFill();
 	//ofRect(boundingRect.x, boundingRect.y, boundingRect.width, boundingRect.height);
 	ofBeginShape();
@@ -58,7 +63,7 @@ void buildingShape::draw(){
 	ofSetColor(255, 255, 255, energy*255);
 	
 	int posInArray = MAX(MIN(animator * nPts, nPts-1),0);
-	ofSetColor(255, 0, 255, energy*255);
+	ofSetColor(myColor.x, myColor.y, myColor.z, energy*255);
 	
 	ofFill();
 	ofPoint temp = pts[posInArray];
@@ -78,6 +83,13 @@ void buildingShape::draw(){
 
 
 void buildingShape::update(){
+	
+	
+	myColor.x = 0.93f * myColor.x + 0.07f * myColorTarget.x;
+	myColor.y = 0.93f * myColor.y + 0.07f * myColorTarget.y;
+	myColor.z = 0.93f * myColor.z + 0.07f * myColorTarget.z;
+	
+	
 	energy*=0.95f;
 	
 	
@@ -105,7 +117,7 @@ void buildingShape::update(){
 	temp.set(x,y);
 	trail.push_back(temp);
 	
-	if (trail.size() > 15){
+	if (trail.size() > 30){
 		trail.erase(trail.begin());
 	}
 	
@@ -133,11 +145,12 @@ void buildingShape::update(){
 	
 }
 
-void buildingShape::checkInside(float x, float y){
+void buildingShape::checkInside(float x, float y, ofPoint colorMe){
 	if (x > boundingRect.x && x < (boundingRect.x + boundingRect.width)){
 		if (y > boundingRect.y && y < (boundingRect.y + boundingRect.height)){
 			energy = MIN(energy+0.04, 1);
 			bAnyInsideMeFromLastFrame = true;
+			myColorTarget.set(colorMe.x, colorMe.y, colorMe.z);
 		}
 	}
 }
