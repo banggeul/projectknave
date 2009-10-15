@@ -83,7 +83,7 @@ public:
 	// stuff with.
 	// later we might have an object sitting between the raw data and
 	// the scenes, smoothing or post processing
-	
+	float						mouseX, mouseY;
 	ofCvBlobTracker *			tracker;
 	
 	
