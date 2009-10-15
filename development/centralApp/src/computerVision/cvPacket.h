@@ -23,7 +23,7 @@ public:
 	
 	ofPoint		pts[MAX_N_BLOBS][MAX_BLOB_LENGTH];					// todo: OF POINT IS HEAVY HERE... let's do simpler & better. 
 	ofPoint		centroid[MAX_N_BLOBS];					// todo: OF POINT IS HEAVY HERE... let's do simpler & better. 
-	
+	ofRectangle rect[MAX_N_BLOBS];
 	
 	bool		bAmInner[MAX_N_BLOBS];
 	// add more stuff here....

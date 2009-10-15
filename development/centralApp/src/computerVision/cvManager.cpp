@@ -70,6 +70,7 @@ void cvManager::setupNonCV(){
 	// video then lets use the sticher
 	if(nVideos > 1) {
 		bUseFBOSticher = true;
+		printf("using vbo sticher\n");
 	}
 	
 	
@@ -206,6 +207,8 @@ void cvManager::fillPacket(){
 		
 		packet->bAmInner[i] = !Contour.blobs[i].hole;
 		packet->centroid[i] = Contour.blobs[i].centroid; // added blob centroids
+		packet->rect[i] = Contour.blobs[i].boundingRect; // added blob rect
+		
 		if (nPts < MAX_BLOB_LENGTH){
 			
 			packet->nPts[i] = nPts;
@@ -250,6 +253,8 @@ void cvManager::fillPacket(){
 //requires the app to be restarted - mabe we can change this?
 //---------------------------		
 void cvManager::setupCamera(int which, int deviceNumber, int _width, int _height){
+	
+	if(which >= nVideos) return;
 	
 	bSetup				= false;
 	
