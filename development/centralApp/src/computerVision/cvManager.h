@@ -95,8 +95,14 @@ class cvManager {
 	ofxCvGrayscaleImage		GreyFrame;
 	ofxCvGrayscaleImage		GreyFramePostWarp;
 	ofxCvGrayscaleImage		PresenceFrame;
+	ofxCvGrayscaleImage		PresenceFramePrev;
+	ofxCvGrayscaleImage		diffImage;
 	ofxCvGrayscaleImage		PresenceFrameDialate;
 	ofxCvContourFinder		Contour;
+	
+	int						nWhitePixels;
+	int						nMovingPixels;
+	
 	
 	//-----------------------------------
 	//		* fbo stiching * 

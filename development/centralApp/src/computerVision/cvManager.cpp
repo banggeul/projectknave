@@ -199,6 +199,7 @@ void cvManager::fillPacket(){
 	packet->height = VideoFrame.height;
 	packet->nBlobs = nBlobs;
 	
+	
 	for (int i = 0; i < nBlobs; i++){
 		
 		int nPts = Contour.blobs[i].nPts;
@@ -230,6 +231,12 @@ void cvManager::fillPacket(){
 		}
 		
 	}
+	
+	int nPixels = PresenceFrame.width * PresenceFrame.height;
+	
+	packet->pctWhitePixels = (float)(nPixels - nWhitePixels) / (float)nPixels;
+	packet->pctPixelsMoving = nMovingPixels / (float)nPixels;
+	
 	
 	packet->checkSum = packet->myId + packet->frameNumber + packet->nBlobs;		
 	
@@ -332,6 +339,15 @@ void cvManager::setupCV(){
 	GreyFrame.allocate(width, height);
 	GreyFramePostWarp.setUseTexture(false);
 	GreyFramePostWarp.allocate(width, height);
+	
+	
+	PresenceFramePrev.setUseTexture(false);
+	diffImage.setUseTexture(false);
+	PresenceFramePrev.allocate(width, height);
+	diffImage.allocate(width, height);
+	
+	nMovingPixels = 0;
+	nWhitePixels = 0;
 	
 	
 	printf("cv allocated\n");
@@ -543,6 +559,13 @@ void cvManager::update(){
 	// Part 3 - do thresholding
 	///////////////////////////////////////////////////////////
 	PresenceFrame = GreyFramePostWarp;	
+
+	diffImage.absDiff(PresenceFrame, PresenceFramePrev);
+	diffImage.threshold(127);
+	nMovingPixels = diffImage.countNonZeroInRegion(0,0,diffImage.width, diffImage.height);	
+	nWhitePixels = PresenceFrame.countNonZeroInRegion(0,0,diffImage.width, diffImage.height);	
+
+	PresenceFramePrev = PresenceFrame;
 	
 	int threshold = panel.getValueI("CV_MANAGER_PANEL_VIDEO_THRESHOLD");
 	//panel.addSlider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);

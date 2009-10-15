@@ -28,6 +28,10 @@ public:
 	bool		bAmInner[MAX_N_BLOBS];
 	// add more stuff here....
 	
+	
+	float		pctWhitePixels;			// for daito
+	float		pctPixelsMoving;		// for daito
+	
 	int			checkSum;		// myId + frameNumber + nBlobs	?  that's not ideal but all I can think of at the moment.
 	
 	computerVisionPacket() {
@@ -37,6 +41,9 @@ public:
 		height = 0;
 		nBlobs = 0;
 		checkSum = 0;
+		
+		pctPixelsMoving = 0;
+		pctPixelsMoving = 0;
 		
 	}
 

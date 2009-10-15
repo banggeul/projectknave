@@ -81,6 +81,21 @@ void testApp::update() {
 		SM.passInPacket(CVM.packet);
 		SM.update();
 	}
+	
+	
+	int sendDaitoPixelDataRate = 5;
+	
+	if (ofGetFrameNum() % sendDaitoPixelDataRate == 0){
+		ofxOscMessage msg;
+		msg.setAddress("/cvData");							//	/cvData
+		msg.addStringArg("pctWhitePixels");					//	"pctWhitePixels"
+		msg.addFloatArg(CVM.packet->pctWhitePixels);		//	float
+		msg.addStringArg("pctMovingPixels");				//	"pctPixelsMoving"
+		msg.addFloatArg(CVM.packet->pctPixelsMoving);		//	float
+		ofxDaito::sendCustom(msg);
+	}
+		
+	
 
 }
 
