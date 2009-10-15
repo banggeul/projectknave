@@ -30,7 +30,8 @@ void megaRenderManager::allocateForNScreens(int numScreens, int renderWidth, int
     screenHeight = height;
 	
     myOffscreenTexture.allocate(renderWidth, renderHeight, true);
-	myOffscreenTexture.setClearColor(10,10,10,255);
+
+	myOffscreenTexture.setClearColor(0,0,0,255);
 	
     nScreens            = numScreens;
     outputPositions     = new ofPoint*[nScreens];

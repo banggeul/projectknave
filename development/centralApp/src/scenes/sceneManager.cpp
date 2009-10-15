@@ -92,7 +92,7 @@ void sceneManager::drawTop(){
 
 void sceneManager::gotoScene(int theScene) {
 	if(theScene < 0) theScene = 0;
-	if(theScene > numScenes) theScene = numScenes;
+	if(theScene >= numScenes) theScene = numScenes-1;
 	currentScene = theScene;
 	ofxDaito::scene(theScene);
 }

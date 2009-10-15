@@ -58,6 +58,8 @@ public:
 	int						nScreens;
 	ofRectangle				guiIn;
 	ofRectangle				guiOut;
+	
+	bool					bDrawInDebugWay;
 
 };
 

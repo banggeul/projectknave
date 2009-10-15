@@ -38,8 +38,11 @@ void testApp::setup(){
 	//MRM.loadFromXml("settings/fboSettings.xml");
 	float ratio = .2;
 
+
 	guiIn   = ofRectangle(0, 0, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
+	
+	bDrawInDebugWay = true;
 }
 
 //--------------------------------------------------------------
@@ -132,24 +135,32 @@ void testApp::draw() {
 
 		MRM.endOffscreenDraw();
 
-		
-		// ---- now draw the screens
-		ofSetColor(255, 255, 255, 255);
-		for(int i=0; i<nScreens; i++){
-			if(nScreens == 1) MRM.drawScreen(i, true);
-			else MRM.drawScreen(i);
-		}
 
-		// ---- draw the gui utils
-		if(bFBOgui) {
-			ofSetColor(255, 255, 255, 25);
+		if (!bDrawInDebugWay){
+			// ---- now draw the screens
+			glPushMatrix();
+			glTranslatef(0, 0, 0);
+			ofSetColor(255, 255, 255, 255);
+			for(int i=0; i<nScreens; i++){
+				MRM.drawScreen(i);
+			}
+			glPopMatrix();
+
+			// ---- draw the gui utils
+			ofSetColor(255, 255, 255, 255);
 			MRM.drawInputDiagnostically(guiIn.x, guiIn.y, guiIn.width, guiIn.height);
 			MRM.drawOutputDiagnostically(guiOut.x, guiOut.y, guiOut.width, guiOut.height);
+		} else {
+			
+			ofSetColor(255, 255, 255, 255);
+			float ratio = (float)OFFSCREEN_HEIGHT / (float)OFFSCREEN_WIDTH;
+			float width = ofGetWidth();
+			float height = ratio * width;
+			float diff = ofGetHeight() - height;
+			if (diff < 0) diff = 0;
+			MRM.myOffscreenTexture.draw(0,diff,width, height);
 		}
-		ofDisableAlphaBlending();
 		
-
-
 		// not using this anymore
 		/*	RM.swapInFBO();
 		 SM.draw();
@@ -230,6 +241,9 @@ void testApp::keyPressed(int key){
 
 		case 'c':
 			MRM.resetCoordinates();
+			break;
+		case 'd':
+			bDrawInDebugWay = !bDrawInDebugWay;
 			break;
 
 	}
