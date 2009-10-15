@@ -107,6 +107,8 @@ void sceneManager::keyReleased(int key) {
 }
 void sceneManager::mouseMoved(int x, int y) {
 	scenes[currentScene]->mouseMoved(x, y);
+	scenes[currentScene]->mouseX = x;
+	scenes[currentScene]->mouseY = y;
 }
 void sceneManager::mouseDragged(int x, int y, int button) {
 	scenes[currentScene]->mouseDragged(x, y, button);
