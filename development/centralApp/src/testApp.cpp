@@ -37,13 +37,7 @@ void testApp::setup(){
 	//MRM.loadFromXml("settings/fboSettingsLive.xml");
 	//MRM.loadFromXml("settings/fboSettings.xml");
 	float ratio = .2;
-	guiIn		= ofRectangle(20, 20, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
-    guiOut		= ofRectangle(guiIn.x + guiIn.width + 20, 20, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
 
-	float ratio = .2;
-
-	
-	
 	guiIn   = ofRectangle(0, 0, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
 }
@@ -123,9 +117,6 @@ void testApp::draw() {
 	if (drawMode == DRAW_CV){
 		CVM.draw();
 	} 
-	
-
-	}
 
 	// ----------------------------------
 	//  -------- Scenese ----------------
