@@ -1,8 +1,8 @@
 #include "testApp.h"
 
 //--------------------------------------------------------------
+void testApp::setup() {
 	
-void testApp::setup(){
 	ofBackground(90, 90, 90);
 
 	ofxDaito::setup("settings/daito.xml");
@@ -22,14 +22,10 @@ void testApp::setup(){
 	
 	// -------- Scenes 
 	SM.setup();
-	SM.gotoScene(HAND_SCENE);
-
 	RM.setup();
-
-	drawMode = DRAW_SCENE;
-
 	CVM.setupNonCV();	// this order is all wonky now.
 
+	
 	// Mega Render Manager
 	bFBOgui		= false;
 	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen	
@@ -43,6 +39,8 @@ void testApp::setup(){
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
 	
 	bDrawInDebugWay = true;
+	
+	SM.gotoScene(MONSTER_SCENE);
 }
 
 //--------------------------------------------------------------
@@ -146,6 +144,7 @@ void testApp::draw() {
 		MRM.startOffscreenDraw();
 		
 		SM.draw();
+		
 		mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 
 		MRM.endOffscreenDraw();
