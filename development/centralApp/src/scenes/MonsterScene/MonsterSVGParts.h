@@ -32,8 +32,9 @@ public:
 			
 			ofxSvg svgFile;
 			if(svgFile.loadFile(fileToLoad)) {
-				
+				svgFile.setAnchor(OF_ANCHOR_CENTER);
 				eyes.push_back(svgFile);
+				
 				printf("file:%s\n", fileToLoad.c_str());
 			
 			}

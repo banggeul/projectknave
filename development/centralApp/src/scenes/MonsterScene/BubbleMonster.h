@@ -2,19 +2,19 @@
 
 #pragma once
 #include "BaseMonster.h"
-//#include "ofxMSASpline.h"
 #include "MonsterEye.h"
+#include "MonsterSVGParts.h"
+#include "ofxDaito.h"
 
-
-#define NUM_CONTOUR_PNTS 20
-#define MAX_NUM_EYS		 8
-#define MAX_NUM_SPIKES   60
+#define NUM_CONTOUR_PNTS	20
+#define MAX_NUM_EYS			8
+#define MAX_NUM_SPIKES		60
+#define NUM_MONSTER_COLOR	6
 
 enum {
 	
 	BUBBLE_MONSTER,
 	SPIKER_MONSTER
-	
 	
 };
 
@@ -28,6 +28,14 @@ public:
 	float    radiusV;
 };
 
+//-------------------------------------------------------------- Bouncy Shape
+typedef struct {
+	int		 id;
+	bool     bMatched;
+	ofxVec2f pos;
+	ofxVec2f vel;
+	ofxVec2f acc;
+} BouncyShape;
 
 //-------------------------------------------------------------- Monster
 class BubbleMonster : public BaseMonster {
@@ -46,17 +54,25 @@ public:
 	int					monsterID;
 	ofxVec2f			points;
 	GiggleBubble		bubbles[NUM_CONTOUR_PNTS];
+	MonsterSVGParts *   parts;
 	
+	// colors
+	int				    monsterColor[NUM_MONSTER_COLOR];
 	
 	// contours
 	vector <ofPoint>	normals;
 	vector <ofPoint>	contourSimple;
 	vector <ofPoint>	contourSmooth;
 	vector <ofPoint>	contourConvex;
-	//ofxMSASpline2D		spline2D;
+	
+	BouncyShape			contour[NUM_CONTOUR_PNTS];
 	
 	
 	// eyes
+	int					eyeID; // <--- heheh get it
+	int					colorID;
+	int					spikeMode; // temp;
+	
 	int					numEyes;
 	MonsterEye			eyes[MAX_NUM_EYS];
 	
@@ -67,12 +83,27 @@ public:
 	BubbleMonster() {
 		monsterID = -1;
 		bDebug	  = false;
+		parts	  = NULL;
+		eyeID	  = 0;
+		spikeMode = 0;
+		
+		monsterColor[0] = 0xd1007e;
+		monsterColor[1] = 0xffc000;
+		monsterColor[2] = 0x6ac539;
+		monsterColor[3] = 0x00a3c4;
+		monsterColor[4] = 0xff5500;
+		monsterColor[5] = 0xff0009;
+		
 	}
 	
 	//-------------------------------------------------------------- init
 	void init(ofCvTrackedBlob &blob) {
 		
+		spikeMode    = (int)ofRandom(0, 2);
 		numEyes		 = (int)ofRandom(1, 3);//MAX_NUM_EYS);
+		eyeID		 = 5;//(int)ofRandom(0, parts->eyes.size());
+		colorID		 = (int)ofRandom(0, NUM_MONSTER_COLOR);
+		
 		monsterMode  = SPIKER_MONSTER; 
 		pos			 = blob.centroid;
 		monsterID    = blob.id;
@@ -88,6 +119,12 @@ public:
 			bubbles[i].radiusD = ofRandom(16.0, 50.0);
 			bubbles[i].radiusV = 0;
 			
+			// the contour
+			contour[i].pos = 0;
+			contour[i].vel = 0;
+			contour[i].acc = 0;
+			contour[i].id = -1;
+			contour[i].bMatched = false;
 		}
 		
 		for(int i=0; i<MAX_NUM_SPIKES; i++) {
@@ -151,6 +188,7 @@ public:
 		
 		for(int j=0; j<cntPoints.size(); j++) {
 			
+			//if(cntPoints[i].bMatched) continue;
 			float pct    = (float)j / (float)(cntPoints.size()-1);
 			int   ind = pct * NUM_CONTOUR_PNTS;
 			if(ind < 0) ind = 0;
@@ -182,6 +220,8 @@ public:
 		highestPnt.y = 9999999;
 		
 		for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
+			
+			
 			// make the bubble bouncy
 			bubbles[i].radiusV = (bubbles[i].radiusV * 0.9) + (bubbles[i].radiusD-bubbles[i].radius) / 20.0;
 			bubbles[i].radius += bubbles[i].radiusV;
@@ -191,6 +231,41 @@ public:
 			}
 			
 		}
+		
+		
+		// ---------------------------------- will come back to this
+		
+		/*
+		 float minDistance = 1000000;
+		 int minIndex = -1;
+		 
+		 for (int j = 0; j < nBlobs; j++){
+		 
+		 if (bFoundThisFrame[j]) continue; 
+		 // try to find the closest "hand" to this object, withing a range
+		 float diffx = HOBJ[i].center.x - packet.centroid[j].x;
+		 float diffy =  HOBJ[i].center.y - packet.centroid[j].y;
+		 float distance = sqrt(diffx * diffx + diffy*diffy);
+		 
+		 if (minDistance > distance){
+		 minDistance = distance;
+		 minIndex = j;
+		 }
+		 }
+		 */		 
+		/*
+		 float minDis = 1000000; // start big
+		 int	  minInd = -1;		// start false
+		 
+		 // find the contour point closest to me
+		 for(int i=0; i<contourConvex.size(); i++) {
+		 
+		 if(contour[i].bMatched) continue;
+		 
+		 
+		 
+		 }
+		 */
 		
 		
 		// Spring
@@ -230,6 +305,22 @@ public:
 	//-------------------------------------------------------------- draw
 	void draw() {
 		
+		
+		/*
+		int cLen = contourConvex.size();
+		if(cLen >= MAX_CONTOUR_LENGTH)  cLen = MAX_CONTOUR_LENGTH-1;
+		
+		ofSetColor(5, 255, 50);
+		for(int i=0; i<cLen; i++) {
+			ofSetColor(25, 255, 0);
+			ofCircle(contour[i].pos.x, contour[i].pos.y, 20);
+			ofSetColor(255, 5, 255);
+			ofDrawBitmapString(ofToString(contour[i].id), contour[i].pos.x, contour[i].pos.y);
+		}
+		
+		*/
+		
+		
 		if(bDebug) {
 			
 			ofEnableAlphaBlending();
@@ -264,7 +355,8 @@ public:
 		
 		// ------------------------------------  a spiker monster (convex)
 		if(monsterMode == SPIKER_MONSTER) {
-			ofSetColor(5, 255, 50);
+			
+			ofSetColor(monsterColor[colorID]);
 			ofFill();
 			ofBeginShape();
 			for(int i=0; i<contourConvex.size(); i++) {
@@ -294,18 +386,21 @@ public:
 				normalScaled  = contourConvex[k] + (norml * spikeLength[k]);				
 				normalScaleIn = (normlIn * 40);		
 				
-				//glLineWidth(10.0);
-				//ofLine(contourConvex[k].x, contourConvex[k].y,
-				//	   normalScaled.x, normalScaled.y);
-				//glLineWidth(1.0);
-				
-				float offset = 10;
-				if(normalScaled.x > pos.x) offset = -10;
-				
-				ofTriangle(contourConvex[k].x+offset, contourConvex[k].y-20,
-						   normalScaled.x, normalScaled.y,
-						   contourConvex[k].x+offset, contourConvex[k].y+20);
+				if(spikeMode) {
+					glLineWidth(10.0);
+					ofLine(contourConvex[k].x, contourConvex[k].y,
+						   normalScaled.x, normalScaled.y);
+					glLineWidth(1.0);
+				} else {
 					
+					
+					float offset = 10;
+					if(normalScaled.x > pos.x) offset = -10;
+					
+					ofTriangle(contourConvex[k].x+offset, contourConvex[k].y-20,
+							   normalScaled.x, normalScaled.y,
+							   contourConvex[k].x+offset, contourConvex[k].y+20);
+				}
 				
 				/*
 				 ofxVec2f pt = bubbles[k-1].pos;
@@ -334,7 +429,10 @@ public:
 		
 		// draw the eyes
 		for(int i=0; i<numEyes; i++) {
-			eyes[i].draw();	
+			// shit this feels weird
+			//ofSetColor(255, 244, 244);
+			eyes[i].draw();
+			//parts->eyes[eyeID].draw(eyes[i].pos.x, eyes[i].pos.y);
 		}
 		
 		

@@ -10,7 +10,6 @@ class MonsterEye {
 	
 	
 public:
-	
 	float	 size, sizeD, sizeV;
 	ofxVec2f pos;
 	

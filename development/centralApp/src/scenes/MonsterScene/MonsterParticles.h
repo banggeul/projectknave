@@ -43,6 +43,7 @@ public:
 		deadDate	= ofRandom(30, 120);
 		numPopBits  = (int)ofRandom(10, 20);
 		
+		enableGravity(false);
 	}
 	
 
@@ -90,6 +91,10 @@ public:
 		}
 		
 		
+		// monster farts fly up duhh
+		addForce(0, -10);
+		
+		
 		
 	}
 	
@@ -98,7 +103,7 @@ public:
 		
 		if(bDead) return;
 		
-		ofEnableAlphaBlending();
+		//ofEnableAlphaBlending();
 		ofPoint		pos = getPosition();
 		
 		glPushMatrix();
@@ -129,6 +134,6 @@ public:
 		ofFill();
 		ofCircle(0, 0, r);
 		glPopMatrix();
-		ofDisableAlphaBlending();
+		//ofDisableAlphaBlending();
 	}
 };

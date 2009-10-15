@@ -18,8 +18,9 @@
 #include "MonsterParticles.h"
 #include "ofxBox2d.h"
 #include "MonsterSVGParts.h"
-
-
+#include "ofxFBOTexture.h"
+#include "MonsterBall.h"
+#include "ofxDaito.h"
 
 
 
@@ -35,7 +36,7 @@ public:
 	void setup();
 	void update();
 	void draw();
-
+	void render();
 	
 	// ---------------------- mouse & keyboard
 	void mousePressed(int x, int y, int button);
@@ -50,11 +51,18 @@ public:
 	BubbleMonster&  getMonsterById( int monsterId );
 	
 	
+	// sounds for daito
+	ofxDaito					DAITO;
+
+	
+	
+	
 	// ---------------------- utils
 	void createBuildingContour();
 	void drawTop();
 	
-	
+	ofxFBOTexture				FBO;
+
 	// ---------------------- settings
 	bool						bGotMyFirstPacket;
 	
@@ -77,5 +85,10 @@ public:
 	MonsterSVGParts				parts;
 	ofxContourAnalysis			contourAnalysis;
 	vector <BubbleMonster>		monsters;
-	
+	vector <MonsterBall>		balls;
 };
+
+
+
+
+

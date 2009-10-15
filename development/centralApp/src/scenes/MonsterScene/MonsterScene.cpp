@@ -10,13 +10,13 @@ void MonsterScene::setup(){
 	
 	// box2d
 	box2d.init();
-	box2d.setGravity(0, -10);
+	box2d.setGravity(0, 30);
 	box2d.checkBounds(true);
 	box2d.setFPS(70.0);
 	printf("monster box2d allocated\n");
 	
 	// load the ferry contour
-	ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/monsterFerryContour.xml");
+	ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/windowsFerryContour.xml");
 	
 	
 	// no particles yet
@@ -25,6 +25,8 @@ void MonsterScene::setup(){
 	
 	// load all the svg parts
 	parts.loadAllParts();
+	
+	FBO.allocate(OFFSCREEN_WIDTH/5,OFFSCREEN_HEIGHT/5, false);	// fixed?
 	
 }
 
@@ -45,13 +47,6 @@ void MonsterScene::update(){
 			monsterParticles.erase(monsterParticles.begin() + i);
 		}		
 	}
-	
-	// --------------------- Monsters
-	for(int i = 0; i < monsters.size(); i++) {
-		monsters[i].update();
-	}
-	
-	
 	
 	
 	// --------------------- update the monster contour pnts
@@ -88,12 +83,24 @@ void MonsterScene::update(){
 	}
 	
 	
+
+	
+	// --------------------- Monsters
+	for(int i = 0; i < monsters.size(); i++) {
+		monsters[i].update();
+	}
+	
+	
+	/// packet info
 	if(packet.frameNumber >= 0 && !bGotMyFirstPacket) {
 		printf("got my first packet - %i\n", packet.frameNumber);
 		bGotMyFirstPacket = true;
 		createBuildingContour();
 	}
 	
+	
+	// --------------------- render for all
+	//render();
 	
 	
 }
@@ -115,11 +122,25 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 	
 	BubbleMonster monster;
 	monster.monsterID = bid;
+	monster.parts = &parts;
 	monster.init( tracker->getById(bid) );
+	
 	monsters.push_back(monster);
 	
 	//monsters.push_back(BubbleMonster());
 	//monsters.back().init( tracker->getById(id) );
+	
+	
+	ofxOscMessage msg;		
+	msg.setAddress("/bang");							//	bang
+	msg.addStringArg("newMonster");						//	new monster
+	msg.addIntArg(3);									//	SCENE 3
+	msg.addIntArg(bid);									//	monster ID
+	msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
+	msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
+	
+	DAITO.sendCustom(msg);
+	
 	
 }
 
@@ -127,6 +148,21 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 	
 	for(int i=monsters.size()-1; i>=0; i--) {
 		if(monsters[i].monsterID == bid) {
+	
+			// tell daito that the monster just moved
+			
+			
+			ofxOscMessage msg;		
+			msg.setAddress("/bang");							//	bang
+			msg.addStringArg("monsterMove");					//	new monster
+			msg.addIntArg(3);									//	SCENE 3
+			msg.addIntArg(bid);									//	monster ID
+			msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
+			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
+			
+			DAITO.sendCustom(msg);
+			
+			
 			
 			monsters[i].genNewRadius();
 			
@@ -151,6 +187,19 @@ void MonsterScene::blobOff( int x, int y, int bid, int order ) {
 	for(int i=monsters.size()-1; i>=0; i--) {
 		if(monsters[i].monsterID == bid) {
 			monsters.erase(monsters.begin() + i);
+			
+			
+			// tell daito that the monster is dead
+			ofxOscMessage msg;		
+			msg.setAddress("/bang");							//	bang
+			msg.addStringArg("deadMonster");					//	new monster
+			msg.addIntArg(3);									//	SCENE 3
+			msg.addIntArg(bid);									//	monster ID
+			msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
+			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
+			
+			DAITO.sendCustom(msg);
+			
 		}
 	}
 }
@@ -162,8 +211,9 @@ void MonsterScene::drawTop() {
 	glPushMatrix();
 	glTranslatef(0, 100, 0);
 	
+	
 	// for debuging draw all the parts
-	parts.drawAllParts();
+	// parts.drawAllParts();
 	
 	ofSetColor(255, 0, 0);
 	string info = "Monsters Rule!\n";
@@ -173,31 +223,36 @@ void MonsterScene::drawTop() {
 }
 
 
+
 //-------------------------------------------------------------- draw
-void MonsterScene::draw(){
-	
-	
-	
-	
-	
-	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
-	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
-	
+void MonsterScene::render() {
 	
 	ofEnableAlphaBlending();
+	ofSetColor(50,50,50);
+	glBlendFunc(GL_ONE, GL_ONE);
+	FBO.draw(0, 0);
+	ofEnableAlphaBlending();	
+}
+
+
+//-------------------------------------------------------------- render
+void MonsterScene::draw() {
+	
+	//ofEnableAlphaBlending();
+	ofSetColor(50,50,50);
 	
 	// --------------------- People
 	glPushMatrix();
 	//glTranslatef(mouseX, mouseY, 0);
 	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
 	
-	bool bDrawPeople = false;
+	bool bDrawPeople = true;
 	
 	if(bDrawPeople) {
 		for(int i=0; i<packet.nBlobs; i++) {
 			ofSetColor(255, i*20, 255-(i*40), 100);
 			ofFill();
-			ofEnableSmoothing();
+			
 			ofBeginShape();
 			for (int j = 0; j < packet.nPts[i]; j++) {
 				
@@ -209,7 +264,6 @@ void MonsterScene::draw(){
 			ofEndShape(true);
 		}
 	}
-	
 	
 	// --------------------- particles
 	for(int i=0; i<monsterParticles.size(); i++) {
@@ -233,23 +287,22 @@ void MonsterScene::draw(){
 		box2dBuilding[i].draw();	
 	}
 	
+	for(int i=0; i<balls.size(); i++) {
+		balls[i].draw();	
+	}
 	
+	//ofDisableAlphaBlending();
 	glPopMatrix();
 	
 	
 	
-	
-	
-	
-	
-	
 	// ferry building only for setup (hide when live)
-	//ferryBuilding.drawContour();
+	ferryBuilding.drawContour();
 	//ferryBuilding.drawInfo();
 	
 	
 	
-	ofDisableAlphaBlending();
+	//ofDisableAlphaBlending();
 	
 }
 
@@ -294,6 +347,22 @@ void MonsterScene::keyPressed(int key) {
 	
 	if(key == ' ') {
 		createBuildingContour();
+	}
+	
+	// add some
+	if(key == 't') {
+		float bx = mouseX;
+		float by = mouseY;
+		
+		bx -= ((OFFSCREEN_WIDTH - packet.width)/2);
+		by -= (OFFSCREEN_HEIGHT - packet.height);
+		
+		
+		MonsterBall bub;
+		bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
+		bub.setup(box2d.getWorld(), bx, by, ofRandom(3, 50));
+		balls.push_back(bub);
+		
 	}
 }
 
