@@ -58,7 +58,7 @@ void sceneManager::passInPacket(computerVisionPacket * packet){
 	for(int i=0; i<packet->nBlobs; i++) {
 
 		networkBlobs[i].centroid = packet->centroid[i];
-		networkBlobs[i].nPts = 33;
+		networkBlobs[i].nPts = packet->nPts[i];
 		networkBlobs[i].pts.assign(packet->nPts[i], ofPoint());
 
 		for (int j = 0; j < packet->nPts[i]; j++) {
