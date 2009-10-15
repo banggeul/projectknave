@@ -1,8 +1,6 @@
 #include "testApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup() {
-	
 	
 void testApp::setup(){
 	ofBackground(90, 90, 90);
