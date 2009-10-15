@@ -14,7 +14,7 @@ class megaRenderManager {
         void drawInputDiagnostically(float x, float y, float w, float h); // can't specify abs dimensions, since might be diff apsect ratio...
         void drawOutputDiagnostically(float x, float y, float w, float h); // can't specify abs dimensions, since might be diff apsect ratio...
 
-        void drawScreen(int nScreen);
+        void drawScreen(int nScreen, bool debugMode=false);
 
         void startOffscreenDraw();
         void endOffscreenDraw();
