@@ -364,7 +364,7 @@ void HandScene::update(){
 			BSM.shapes[i]->bPeakedThisFrame = false;
 
 			ofxOscMessage msg;
-			msg.setAddress("bang");								//	bang
+			msg.setAddress("/bang");								//	bang
 			msg.addStringArg("handTrigger");					//	handTrigger
 			msg.addIntArg(0);									//	SCENE 0
 			msg.addIntArg(BSM.shapes[i]->type);					//	type of object (column, etc) see the list in setup "BSM.parseShapesFromFile"
