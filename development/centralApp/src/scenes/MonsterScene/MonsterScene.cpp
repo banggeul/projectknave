@@ -639,7 +639,7 @@ void MonsterScene::Add(const b2ContactPoint* point){
 		//printf("-- this is a window %i\n", theData->bIsWindow);
 		
 		if(dust.size() < MAX_MONSTER_DUST) {
-			dust.push_back(MonsterDust(p.x*SCALE, p.y*SCALE));
+			dust.push_back(MonsterDust(p.x, p.y));
 			dust.back().img = &dotImage;
 			
 			/*
