@@ -38,7 +38,7 @@ double ImprovedNoise::noise(double x, double y, double z) {
 	w = fade(z);
 	int A = p[X  ]+Y, AA = p[A]+Z, AB = p[A+1]+Z,      // HASH COORDINATES OF
 	B = p[X+1]+Y, BA = p[B]+Z, BB = p[B+1]+Z;      // THE 8 CUBE CORNERS,
-	
+
 	return lerp(w, lerp(v, lerp(u, grad(p[AA  ], x  , y  , z   ),  // AND ADD
 								grad(p[BA  ], x-1, y  , z   )), // BLENDED
 						lerp(u, grad(p[AB  ], x  , y-1, z   ),  // RESULTS
