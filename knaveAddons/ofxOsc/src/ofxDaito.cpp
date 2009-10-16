@@ -18,7 +18,7 @@ void ofxDaito::setup(string settings, bool verbose) {
 		for(int i = 0; i < receivers; i++) {
 			host = xml.getValue("host", "localhost");
 			port = xml.getValue("port", 0);
-			senders.push_back();
+			senders.push_back(ofxOscSender());
 			senders.back().setup(host, port);
 			cout << "Connected OSC to " << host << ":" << port << endl;
 		}
