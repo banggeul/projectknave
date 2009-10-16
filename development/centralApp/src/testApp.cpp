@@ -2,11 +2,6 @@
 
 //--------------------------------------------------------------
 void testApp::setup() {
-
-	ofBackground(90, 90, 90);
-
-	ofxDaito::setup("settings/daito.xml");
-
 	ofBackground(90, 90, 90);
 	drawMode = DRAW_SCENE;
 
@@ -17,14 +12,19 @@ void testApp::setup() {
 	// -------- App settings
 
 	XML.loadFile("settings/mainAppSettings.xml");
+
+	int useDaito = XML.getValue("mainApp:useDaito", 1);
+	if(useDaito)
+		ofxDaito::setup("settings/daito.xml");
+
 	bUseNetworking = XML.getValue("mainApp:useCvNetworking", 0);
 	CVM.id = XML.getValue("mainApp:id", 0);
 
 	// -------- Scenes
 	SM.setup();
 	RM.setup();
-	CVM.setupNonCV();	// this order is all wonky now.
-
+	CVM.setup();	// this order is all wonky now.
+	CVM.setupScene(SM.currentScene);
 
 	// Mega Render Manager
 	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen
@@ -32,7 +32,6 @@ void testApp::setup() {
 	//MRM.loadFromXml("settings/fboSettingsLive.xml");
 	MRM.loadFromXml("settings/fboSettings.xml");
 	float ratio = .2;
-
 
 	guiIn   = ofRectangle(0, 0, OFFSCREEN_WIDTH*ratio, OFFSCREEN_HEIGHT*ratio);
 	guiOut  = ofRectangle(guiIn.x + guiIn.width + 30, 40, 500, 178);
