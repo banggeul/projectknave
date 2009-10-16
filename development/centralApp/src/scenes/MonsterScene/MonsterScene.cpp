@@ -13,7 +13,7 @@ void MonsterScene::setup(){
 	box2d.init();
 	box2d.setGravity(0, 20);
 	box2d.checkBounds(true);
-	box2d.setFPS(15.0);
+	box2d.setFPS(30.0);
 	printf("monster box2d allocated\n");
 	
 	// load the ferry contour
