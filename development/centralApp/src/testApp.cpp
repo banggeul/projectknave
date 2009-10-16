@@ -23,7 +23,7 @@ void testApp::setup() {
 	// -------- Scenes
 	SM.setup();
 	RM.setup();
-	CVM.setup();	// this order is all wonky now.
+	CVM.setupNonCV();	// this order is all wonky now.
 	//CVM.setupScene(SM.currentScene);
 
 	// Mega Render Manager
