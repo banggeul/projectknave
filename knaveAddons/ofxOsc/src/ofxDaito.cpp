@@ -1,8 +1,6 @@
 #include "ofxDaito.h"
 
 ofxXmlSettings ofxDaito::xml;
-string ofxDaito::host;
-int ofxDaito::port;
 vector<ofxOscSender> ofxDaito::senders;
 
 void ofxDaito::send(ofxOscMessage& msg) {
@@ -16,11 +14,13 @@ void ofxDaito::setup(string settings, bool verbose) {
 	if(xml.loadFile(settings)) {
 		int receivers = xml.getNumTags("receiver");
 		for(int i = 0; i < receivers; i++) {
-			host = xml.getValue("host", "localhost");
-			port = xml.getValue("port", 0);
+			xml.pushTag("receiver", i);
+			string host = xml.getValue("host", "localhost");
+			int port = xml.getValue("port", 0);
 			senders.push_back(ofxOscSender());
 			senders.back().setup(host, port);
 			cout << "Connected OSC to " << host << ":" << port << endl;
+			xml.popTag();
 		}
 	} else {
 		cout << "Couldn't load file " << settings << endl;

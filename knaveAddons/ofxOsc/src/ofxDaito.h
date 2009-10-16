@@ -16,8 +16,6 @@
 class ofxDaito {
 private:
 	static ofxXmlSettings xml;
-	static string host;
-	static int port;
 	static vector<ofxOscSender> senders;
 	static void send(ofxOscMessage& msg);
 public:
