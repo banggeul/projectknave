@@ -13,6 +13,8 @@
 #include "groupableParticle.h"
 #include "ImprovedNoise.h"
 
+#include "ofxDaito.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -126,7 +128,9 @@ class particleManager{
 		
 		vector < vfAdder > VFs;
 	
-
+		
+		
+	
         void triangulateParticles();
         vector< Delaunay::Point > v;
 	

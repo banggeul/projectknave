@@ -1,6 +1,8 @@
 
 
 #include "particleManager.h"
+#include "renderConstants.h"
+
 
 
 
@@ -60,25 +62,97 @@ void particleManager::update(){
 		if (ofRandom(0,1)> 0.91f){
 			int pos = (int)(ofRandom(0,0.99) * particles.size());
 			particles[pos].peakMe(1);
+			
+			ofxOscMessage msg;
+			msg.setAddress("/bang");								//	bang
+			msg.addStringArg("explosion");					//	handTrigger
+			msg.addIntArg(4);									//	SCENE 4 (?)
+			
+			float x = ofClamp(particles[pos].pos.x / OFFSCREEN_WIDTH, 0,1);
+			float y = ofClamp(particles[pos].pos.y / OFFSCREEN_HEIGHT, 0,1);
+			
+			msg.addFloatArg(x);								// centroid x
+			msg.addFloatArg(y);								// centroid y
+			
+			
+			//DAITO --- >   /bang /explosion /4 /x(noramlized) /y(noramlized)
+			
+			ofxDaito::sendCustom(msg);
+			
+			
 		}
 	}
 	
 	if (mode == 3){
 		if (ofRandom(0,1)> 0.85f){
 			int pos = (int)(ofRandom(0,0.99) * particles.size());
-			 particles[pos].directionallyPeakMe(1, ofRandom(-PI, PI));
+			
+			float angle = ofRandom(0, TWO_PI);
+			particles[pos].directionallyPeakMe(1, angle);
+			
+			ofxOscMessage msg;
+			msg.setAddress("/bang");									//	bang
+			msg.addStringArg("explosionDirectional");					//	handTrigger
+			msg.addIntArg(4);											//	SCENE 4 (?)
+			
+			float x = ofClamp(particles[pos].pos.x / OFFSCREEN_WIDTH, 0,1);
+			float y = ofClamp(particles[pos].pos.y / OFFSCREEN_HEIGHT, 0,1);
+			
+			msg.addFloatArg(x);											// centroid x
+			msg.addFloatArg(y);											// centroid y
+			msg.addFloatArg(angle/TWO_PI);								// angle of explosion (0-1)
+			
+			
+			//DAITO --- >   /bang /explosionDirectional /4 /x(noramlized) /y(noramlized) /angle
+			
+			ofxDaito::sendCustom(msg);
+			
+			
+			
 		}
 	}
 	
 	if (mode == 4){
 		if (ofRandom(0,1)> 0.82f){
 			int pos = (int)(ofRandom(0,0.99) * particles.size());
-			particles[pos].directionallyPeakMe(1, ofRandom(-PI, PI));
+			float angle = ofRandom(0, TWO_PI);
+			particles[pos].directionallyPeakMe(1, angle);
+			ofxOscMessage msg;
+			msg.setAddress("/bang");									//	bang
+			msg.addStringArg("explosionDirectional");					//	handTrigger
+			msg.addIntArg(4);											//	SCENE 4 (?)
+			
+			float x = ofClamp(particles[pos].pos.x / OFFSCREEN_WIDTH, 0,1);
+			float y = ofClamp(particles[pos].pos.y / OFFSCREEN_HEIGHT, 0,1);
+			
+			msg.addFloatArg(x);											// centroid x
+			msg.addFloatArg(y);											// centroid y
+			msg.addFloatArg(angle/TWO_PI);								// angle of explosion (0-1)
+			
+			
+			//DAITO --- >   /bang /explosionDirectional /4 /x(noramlized) /y(noramlized) /angle
+			
+			ofxDaito::sendCustom(msg);
 		}
 		
 		if (ofRandom(0,1)> 0.91f){
 			int pos = (int)(ofRandom(0,0.99) * particles.size());
 			particles[pos].peakMe(1);
+			ofxOscMessage msg;
+			msg.setAddress("/bang");								//	bang
+			msg.addStringArg("explosion");					//	handTrigger
+			msg.addIntArg(4);									//	SCENE 4 (?)
+			
+			float x = ofClamp(particles[pos].pos.x / OFFSCREEN_WIDTH, 0,1);
+			float y = ofClamp(particles[pos].pos.y / OFFSCREEN_HEIGHT, 0,1);
+			
+			msg.addFloatArg(x);								// centroid x
+			msg.addFloatArg(y);								// centroid y
+			
+			
+			//DAITO --- >   /bang /explosion /4 /x(noramlized) /y(noramlized)
+			
+			ofxDaito::sendCustom(msg);
 		}
 	}
 	
@@ -104,8 +178,28 @@ void particleManager::update(){
 		if (bErase == true){
 			VFs.erase(VFs.begin());
 		}
-		
 	}
+	
+	if (VFs.size() > 0 && ofGetFrameNum() % 4 == 0){
+		
+		
+		ofxOscMessage msg;
+		msg.setAddress("/continuous");									//	bang
+		msg.addStringArg("particlePusher");					//	handTrigger
+		msg.addIntArg(4);											//	SCENE 4 (?)
+		
+		float x = ofClamp(VFs[0].point.x / OFFSCREEN_WIDTH, 0,1);
+		float y = ofClamp(VFs[0].point.y / OFFSCREEN_HEIGHT, 0,1);
+		
+		msg.addFloatArg(x);											// centroid x
+		msg.addFloatArg(y);											// centroid y
+		
+		//DAITO --- >   /continuous /particlePusher /4 /x(noramlized) /y(noramlized) 
+		
+		ofxDaito::sendCustom(msg);
+	}
+	
+	
 	
     VF.fade(0.99f);
 	
