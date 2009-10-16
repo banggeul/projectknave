@@ -19,24 +19,25 @@
 
 #include "ofxDaito.h"
 
+#define NEON_SILHOUETTE_SIZE 16
 
 typedef struct {
-	
+
 	ofPoint		center;
 	float		energy;
 	int			id;
-	int			whoThisFrame;	
+	int			whoThisFrame;
 	bool		bFoundThisFrame;
-	
+
 	ofPoint		myColor;
-	
+
 }	handObject;
 
 
 class HandScene : public baseScene {
-	
-public: 
-	
+
+public:
+
 	void setup();
 	void update();
 	void draw();
@@ -44,60 +45,60 @@ public:
 	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
 
-	
+
 	// Box2d
 	ofxBox2d							box2d;
 	vector <ofxBox2dLine>				box2dHandShape;
 	vector <ofxBox2dLine>				box2dBuilding;
 	vector <ofxBox2dCircle>				circles;
-	vector <HandBall>					balls;	
+	vector <HandBall>					balls;
 	ofxBox2dRect						floor;
-	
+
 	// Ferry Building
 	FerryBuilding						ferryBuilding;
-	
+
 	ofxFBOTexture						FBO;
-	
-	
+
+
 	int	handImgW, handImgH;
-	
-	
+
+
 	ofxCvGrayscaleAdvanced				handImage;
 	ofxCvGrayscaleAdvanced				handImageTemporallyBlurred;
 	ofxCvGrayscaleAdvanced				handImageTemporallyBlurredInvert;
 
-	
+
 	int lastFrameRendered;
-	
-	
+
+
 	buildingShapeManager			BSM;
-	
-	
+
+
 	ofImage							neon;
 	unsigned char *	neonPixels;
-	
-	
+
+
 	/*
-	 
-	 for finding building shapes ! 
-	 
+
+	 for finding building shapes !
+
 	 */
-	
+
 	ofImage				roof;
 	int width, height;
 	ofxCvGrayscaleImage 	grayImage;
 	ofxCvContourFinder 	contourFinder;
 	int 				threshold;
 	bool				bLearnBakground;
-	
-	
+
+
 	ofxDaito			DAITO;
-	
+
 	// let's try to track hands (yikes)
-	
+
 	vector < handObject > HOBJ;
-	
-	
-	
-	
+
+
+
+
 };

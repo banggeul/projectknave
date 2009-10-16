@@ -418,7 +418,8 @@ void HandScene::draw(){
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 
-
+	ofPushStyle();
+	glLineWidth(NEON_SILHOUETTE_SIZE);
 	for (int i = 0; i < packet.nBlobs; i++){
 
 		/*glBegin(GL_LINE_LOOP);
@@ -444,10 +445,7 @@ void HandScene::draw(){
 		}
 		ofEndShape(true);*/
 	}
-
-
-
-
+	ofPopStyle();
 
 	// draw some new stuff.
 	for(int i=0; i<balls.size(); i++) {
