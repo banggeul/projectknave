@@ -2,7 +2,8 @@
 
 #pragma once
 
-#define SCALE 1.6
+#define SCALE 1.5
+
 
 // Look
 #define NUM_MONSTER_COLOR		6

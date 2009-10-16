@@ -58,10 +58,6 @@
  */
 
 
-
-
-
-
 class MonsterScene : public baseScene , public b2ContactListener{
 	
 public: 
@@ -70,7 +66,6 @@ public:
 	void setup();
 	void update();
 	void draw();
-	void render();
 	
 	void saveMonsterSettings();
 	void loadMonsterSettings();
@@ -85,8 +80,7 @@ public:
     void blobMoved( int x, int y, int bid, int order );    
     void blobOff( int x, int y, int bid, int order );
 	
-	// ---------------------- box2d bumps
-	// a bit of a hack
+	// ---------------------- box2d bump ---- !a bit of a hack
 	void Add(const b2ContactPoint* point);
 	void Remove(const b2ContactPoint* point);
 	
@@ -98,17 +92,11 @@ public:
 	// get a monster here
 	BubbleMonster&				getMonsterById( int monsterId );
 	
-	
 	// colors
 	int							monsterColor[NUM_MONSTER_COLOR];
-	
-	
-	// sounds for daito
-	ofxDaito					DAITO;
-	
-	
 	int							ballCounter;
 	int							timeSinceLastBurst;
+	
 	
 	// ---------------------- utils
 	void createBuildingContour();
@@ -145,8 +133,7 @@ public:
 	ofxContourAnalysis			contourAnalysis;
 	vector <BubbleMonster>		monsters;
 	vector <MonsterBall>		balls;
-	
-	vector <ofPoint> sclContour;
+	vector <ofPoint>			sclContour;
 };
 
 

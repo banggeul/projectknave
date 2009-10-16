@@ -118,7 +118,7 @@ public:
 		// set initial radius
 		for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 			bubbles[i].radius  = 1.0;
-			bubbles[i].radiusD = ofRandom(16.0, 40.0);
+			bubbles[i].radiusD = ofRandom(16.0, 20.0);
 			bubbles[i].radiusV = 0;
 		}
 		
@@ -210,7 +210,7 @@ public:
 			float pct    = (float)j / (float)(cntPoints.size()-1);
 			int   ind = pct * NUM_BUBBLE_PNTS;
 			if(ind < 0) ind = 0;
-			if(ind > NUM_BUBBLE_PNTS-1) ind = NUM_BUBBLE_PNTS-1;
+			if(ind >= NUM_BUBBLE_PNTS) ind = NUM_BUBBLE_PNTS-1;
 			
 			
 			bubbles[ind].pos.x = cntPoints[j].x;// * 2.0;
@@ -223,7 +223,7 @@ public:
 	//-------------------------------------------------------------- new radius
 	void genNewRadius() {
 		for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
-			bubbles[i].radiusD = ofRandom(16.0, 50.0);			
+			bubbles[i].radiusD = ofRandom(16.0, 30.0);			
 		}
 	}
 	
@@ -240,11 +240,6 @@ public:
 				bubbles[i].radius = 10;
 				bubbles[i].pos = pos;
 			}
-			
-			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
-				
-			}
-			
 		}
 		
 		// ITS MONSTER TIME
@@ -262,7 +257,7 @@ public:
 			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 				
 				// make the bubble bouncy
-				bubbles[i].radiusV = (bubbles[i].radiusV * 0.9) + (bubbles[i].radiusD-bubbles[i].radius) / 20.0;
+				bubbles[i].radiusV = (bubbles[i].radiusV * 0.5) + (bubbles[i].radiusD-bubbles[i].radius) / 10.0;
 				bubbles[i].radius += bubbles[i].radiusV;
 				
 				if(bubbles[i].pos.y < highestPnt.y) {
