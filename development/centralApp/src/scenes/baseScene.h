@@ -33,6 +33,7 @@ public:
 	virtual void draw(){}
 	
 	virtual void drawTop(){}		// this is a drawing "on top" of the building mask, for diagnostic stuff. 
+	virtual void cleanUpScene() {}
 	
 	// key board & mouse
 	virtual void keyPressed(int key){}
