@@ -129,14 +129,19 @@ class particleManager{
 		vector < vfAdder > VFs;
 	
 		
+		void computeStatistics();
+		ofxVec2f avgVelocity;
+		ofxVec2f avgPosition;
+		ofxVec2f	stdDeviation;
+	
 		
 	
         void triangulateParticles();
         vector< Delaunay::Point > v;
 	
 		ImprovedNoise * impNoise;
-	float minNoise ;//= 0.499;
-	float maxNoise ;//= 0.501;
+		float minNoise ;//= 0.499;
+		float maxNoise ;//= 0.501;
 	
 	int mode;
 	

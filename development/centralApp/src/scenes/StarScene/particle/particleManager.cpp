@@ -36,6 +36,87 @@ for(int j = 0; j < particles.size(); j ++){
 }
 
 
+void particleManager::computeStatistics(){
+	
+	bool bSkipFirst200 = true;
+	
+	
+	avgVelocity.set(0,0);
+	avgPosition.set(0,0);
+	stdDeviation.set(0,0);
+	
+	int nParticles = particles.size() - (bSkipFirst200 ? 200 : 0);
+	
+	for(int i = (bSkipFirst200 ? 200 : 0); i < particles.size(); i ++){
+		
+		
+		avgPosition += particles[i].pos;
+		avgVelocity += particles[i].vel;
+		//stdDeviation += particles[i].pos;
+	}
+	
+	avgPosition /= nParticles;
+	avgVelocity /= nParticles;
+	
+	//http://en.wikipedia.org/wiki/Standard_deviation
+	
+	for(int i = (bSkipFirst200 ? 200 : 0); i < particles.size(); i ++){
+		stdDeviation.x += (avgPosition.x - particles[i].pos.x) * (avgPosition.x - particles[i].pos.x);
+		stdDeviation.y += (avgPosition.y - particles[i].pos.y) * (avgPosition.y - particles[i].pos.y);
+	}
+	
+	stdDeviation /= nParticles;
+	stdDeviation.x = sqrt(stdDeviation.x);
+	stdDeviation.y = sqrt(stdDeviation.y);
+	
+	
+	avgPosition.x /= (float)OFFSCREEN_WIDTH;
+	avgPosition.y /= (float)OFFSCREEN_HEIGHT;
+	avgVelocity.x /= (float)OFFSCREEN_WIDTH;
+	avgVelocity.y /= (float)OFFSCREEN_HEIGHT;
+	stdDeviation.x /= (float)OFFSCREEN_WIDTH;
+	stdDeviation.y /= (float)OFFSCREEN_WIDTH;
+	
+	ofxOscMessage msg;
+	msg.setAddress("/continuous");									//	bang
+	msg.addStringArg("statistics");					//	handTrigger
+	msg.addIntArg(4);									//	SCENE 4 (?)
+	
+	avgPosition.x	= ofClamp(avgPosition.x ,	0,1);
+	avgPosition.y	= ofClamp(avgPosition.y,	0,1);
+	stdDeviation.x	= ofClamp(stdDeviation.x ,	0,1);
+	stdDeviation.y	= ofClamp(stdDeviation.y,	0,1);
+	
+	msg.addFloatArg(avgPosition.x);											// avgPosition.x
+	msg.addFloatArg(avgPosition.y);											// avgPosition.y
+	msg.addFloatArg(avgVelocity.x);											// avgVelocity.x
+	msg.addFloatArg(avgVelocity.y);											// avgVelocity.y
+	msg.addFloatArg(stdDeviation.x);											// stdDeviation.x
+	msg.addFloatArg(stdDeviation.y);											// stdDeviation.y
+	
+	//DAITO --- >   /continuous /statistics /4 /avgPosition.x /avgPosition.y /avgVelocity.x /avgVelocity.y /stdDeviation.x /stdDeviation.y
+	
+	
+	ofxDaito::sendCustom(msg);
+	
+	
+	
+	
+	/*
+	printf("avg position %f %f \n", avgPosition.x, avgPosition.y);
+	printf("avg vel %f %f \n", avgVelocity.x, avgVelocity.y);
+	printf("std dev  %f %f \n", stdDeviation.x, stdDeviation.y);
+	*/
+	/*
+	 avg position 0.485056 0.520628 
+	 avg vel 0.000000 0.000045 
+	 std dev  0.247757 0.145714 
+	 
+	 */
+}
+
+
+
 float particleManager::getRads(float $val1, float $val2,  float zoff, float $mult, float $div){
 
 	float rads = impNoise->noise($val1 * .0125f, $val2 * .0125f, zoff);
@@ -56,8 +137,10 @@ float particleManager::getRads(float $val1, float $val2,  float zoff, float $mul
 void particleManager::update(){
 	//if we are meant to be in formation
 
-
-
+	
+	if (ofGetFrameNum() % 4 == 0){
+		computeStatistics();
+	}
 
 
 	if (mode == 2){
