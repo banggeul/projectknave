@@ -1,2 +1,9 @@
-<host>10.0.2.4</host>
-<port>4444</port>
+<receiver>
+ <host>127.0.0.1</host>
+ <port>4444</port>
+</receiver>
+
+<receiver>
+ <host>127.0.0.1</host>
+ <port>5555</port>
+</receiver>
