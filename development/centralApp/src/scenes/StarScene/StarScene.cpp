@@ -12,28 +12,31 @@
 
 void StarScene::setup(){
 	tempC = (int)ofRandom(0, 255);
-
+	PM.setupWorld();
 }
 
 void StarScene::update(){
+
 	
+	PM.update();
+	
+	
+}
+
+void StarScene::keyPressed(int key){
+	
+	switch (key){
+		case '0': PM.mode = 0; break;
+		case '1': PM.mode = 1; break;
+		case '2': PM.mode = 2; break;
+		case '3': PM.mode = 3; break;
+		case '4': PM.mode = 4; break;
+		case '5': PM.mode = 5; break;
+	}
 }
 
 void StarScene::draw(){
 	
 	
-	ofFill();
-	ofSetColor(tempC, tempC, 255);
-	ofRect(0,0,320,240);
-	
-	
-	for (int i = 0; i < packet.nBlobs; i++){
-		ofNoFill();
-		ofSetColor(255, 0, 0);
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++){	
-			ofVertex(packet.pts[i][j].x, packet.pts[i][j].y);
-		}
-		ofEndShape(true);
-	}
+	PM.draw();
 }

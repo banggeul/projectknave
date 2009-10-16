@@ -11,6 +11,7 @@
 
 #include "ofMain.h"
 #include "baseScene.h"
+#include "particleManager.h"
 
 class StarScene : public baseScene {
 	
@@ -22,4 +23,25 @@ public:
 	
 	int tempC;
 	
+	void keyPressed(int key);
+	
+	 particleManager PM;
+	/* 
+	 ofImage		temp;
+	 
+	 */
+	
 };
+
+
+/*
+
+ 
+ 
+ temp.loadImage("images/logoHalf.png");
+ temp.setImageType(OF_IMAGE_GRAYSCALE);
+ PM.findLockTarget(temp.getPixels(), temp.width, temp.height);
+ 
+
+ */
+ 
