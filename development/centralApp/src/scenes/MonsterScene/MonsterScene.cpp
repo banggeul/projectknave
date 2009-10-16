@@ -301,6 +301,7 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
 			msg.addFloatArg((float)blober.boundingRect.width/(float)packet.width);		// width (normalize)
 			msg.addFloatArg((float)blober.boundingRect.height/(float)packet.height);		// hieght (normalize)	
+			ofxDaito::sendCustom(msg);
 			
 			monsters[i].genNewRadius();
 			monsters[i].area = (float)(blober.boundingRect.height*blober.boundingRect.width) / (float)(packet.width*packet.height);
@@ -672,7 +673,7 @@ void MonsterScene::Add(const b2ContactPoint* point){
 			msg.addFloatArg((float)p.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
 			msg.addFloatArg((float)p.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
 			
-			
+			ofxDaito::sendCustom(msg);
 		}
 		
 	}
