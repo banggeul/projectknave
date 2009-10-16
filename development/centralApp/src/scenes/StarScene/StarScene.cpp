@@ -23,7 +23,27 @@ void StarScene::setup(){
 void StarScene::update(){
 
 	
+	
+	// always move 200 particles OFFSCREEN
+	for (int i = 0; i < 200; i++){
+		PM.particles[i].pos.set(OFFSCREEN_WIDTH*2 + i * 10, 500,0); 
+	}
+	
 	PM.update();
+	
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	for (int i = 0; i < packet.nCentroids; i++){
+		PM.particles[i].pos.set(packet.allCentroid[i].x * scalex, packet.allCentroid[i].y * scaley, 0);
+		PM.particles[i].vel.set(0,0,0);
+		PM.particles[i].energy = 1;						// BIG 
+	}
+	
+	
+	
+	
 	
 	
 }

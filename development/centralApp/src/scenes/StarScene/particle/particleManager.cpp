@@ -58,6 +58,8 @@ void particleManager::update(){
 	
 	
 	
+	
+	
 	if (mode == 2){
 		if (ofRandom(0,1)> 0.91f){
 			int pos = (int)(ofRandom(0,0.99) * particles.size());
