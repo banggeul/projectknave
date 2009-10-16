@@ -3,18 +3,25 @@
 ofxXmlSettings ofxDaito::xml;
 string ofxDaito::host;
 int ofxDaito::port;
-ofxOscSender ofxDaito::sender;
+vector<ofxOscSender> ofxDaito::senders;
 
 void ofxDaito::send(ofxOscMessage& msg) {
-	sender.sendMessage(msg);
+	for(int i = 0; i < senders.size(); i++) {
+		senders[i].sendMessage(msg);
+	}
 }
 
 void ofxDaito::setup(string settings, bool verbose) {
 	xml.setVerbose(verbose);
 	if(xml.loadFile(settings)) {
-		host = xml.getValue("host", "localhost");
-		port = xml.getValue("port", 0);
-		sender.setup(host, port);
+		int receivers = xml.getNumTags("receiver");
+		for(int i = 0; i < receivers; i++) {
+			host = xml.getValue("host", "localhost");
+			port = xml.getValue("port", 0);
+			senders.push_back();
+			senders.back().setup(host, port);
+			cout << "Connected OSC to " << host << ":" << port << endl;
+		}
 	} else {
 		cout << "Couldn't load file " << settings << endl;
 	}

@@ -18,7 +18,7 @@ private:
 	static ofxXmlSettings xml;
 	static string host;
 	static int port;
-	static ofxOscSender sender;
+	static vector<ofxOscSender> senders;
 	static void send(ofxOscMessage& msg);
 public:
 	static void setup(string settings, bool verbose = true);
