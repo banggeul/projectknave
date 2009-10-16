@@ -52,7 +52,7 @@ void sceneManager::passInPacket(computerVisionPacket * packet){
 	networkBlobs.assign(packet->nBlobs, ofxCvBlob());
 
 	for(int i=0; i<packet->nBlobs; i++) {
-		
+
 		networkBlobs[i].hole		 = packet->bAmInner[i];
 		networkBlobs[i].boundingRect = packet->rect[i];
 		networkBlobs[i].centroid = packet->centroid[i];
@@ -81,7 +81,9 @@ void sceneManager::update(){
 }
 
 void sceneManager::draw(){
+	ofPushStyle();
 	scenes[currentScene]->draw();
+	ofPopStyle();
 }
 
 void sceneManager::drawTop(){
@@ -92,11 +94,11 @@ void sceneManager::gotoScene(int theScene) {
 	if(theScene < 0) theScene = 0;
 	if(theScene >= numScenes) theScene = numScenes-1;
 	currentScene = theScene;
-	
+
 	// clean up the scenes
 	scenes[currentScene]->cleanUpScene();
 	tracker.blobs.clear();
-	
+
 	ofxDaito::scene(theScene);
 	if(theScene == 0) {
 		ofSetFrameRate(20);

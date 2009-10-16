@@ -23,7 +23,7 @@ public:
 		eb = 0;
 		p = 0; v = 0; a = 0;
 		ev = 0;
-		size = ofRandom(10, 90);
+		size = ofRandom(10, 30);
 	}
 	
 	

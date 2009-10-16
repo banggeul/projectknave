@@ -98,6 +98,7 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
+
 	// ----------------------------------
 	//  -------- Networking -------------
 	// ----------------------------------
@@ -259,11 +260,11 @@ void testApp::mousePressed(int x, int y, int button) {
 		CVM.mousePressed(x, y, button);
 	}
 
-
+/*
 	if( !MRM.mouseSelectInputPoint(guiIn, ofPoint(x, y)) ){
         MRM.mouseSelectOutputPoint(guiOut, ofPoint( x,  y));
     }
-
+*/
 }
 
 //--------------------------------------------------------------

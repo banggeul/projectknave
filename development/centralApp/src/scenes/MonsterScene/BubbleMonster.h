@@ -43,6 +43,7 @@ class BubbleMonster : public BaseMonster {
 public:
 	
 	
+	
 	float				age, area;
 	int					monsterMode;
 	
@@ -106,7 +107,7 @@ public:
 		colorID		 = (int)ofRandom(0, NUM_MONSTER_COLOR);
 		
 		//monsterMode  = (int)ofRandom(0, 2); 
-		pos			 = blob.centroid;
+		pos			 = blob.centroid * SCALE;
 		monsterID    = blob.id;
 		
 		printf("	monster %i made\n", monsterID);
@@ -117,7 +118,7 @@ public:
 		// set initial radius
 		for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 			bubbles[i].radius  = 1.0;
-			bubbles[i].radiusD = ofRandom(16.0, 50.0);
+			bubbles[i].radiusD = ofRandom(16.0, 40.0);
 			bubbles[i].radiusV = 0;
 		}
 		
@@ -212,8 +213,8 @@ public:
 			if(ind > NUM_BUBBLE_PNTS-1) ind = NUM_BUBBLE_PNTS-1;
 			
 			
-			bubbles[ind].pos.x = cntPoints[j].x;
-			bubbles[ind].pos.y = cntPoints[j].y;
+			bubbles[ind].pos.x = cntPoints[j].x;// * 2.0;
+			bubbles[ind].pos.y = cntPoints[j].y;// * 2.0;
 			
 			
 		}
@@ -400,6 +401,7 @@ public:
 			return;
 			
 		}
+		
 		
 		
 		

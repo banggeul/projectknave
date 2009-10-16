@@ -91,7 +91,8 @@ public:
 	void Remove(const b2ContactPoint* point);
 	
 	
-	
+	ofPoint OFFSET;
+	float W, H;
 	
 	
 	// get a monster here
@@ -144,6 +145,8 @@ public:
 	ofxContourAnalysis			contourAnalysis;
 	vector <BubbleMonster>		monsters;
 	vector <MonsterBall>		balls;
+	
+	vector <ofPoint> sclContour;
 };
 
 
