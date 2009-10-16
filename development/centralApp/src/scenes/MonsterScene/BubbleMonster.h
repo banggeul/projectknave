@@ -6,7 +6,7 @@
 #include "MonsterSVGParts.h"
 #include "ofxDaito.h"
 #include "MonsterConst.h"
-
+#include "MonsterHair.h"
 
 enum {
 	
@@ -40,17 +40,20 @@ class BubbleMonster : public BaseMonster {
 	
 public:
 	
+	
+	float				age;
 	int					monsterMode;
 	
 	
 	// settings
+	bool				bMonster;
 	bool				bDebug;
 	
 	
 	// monster
 	int					monsterID;
 	ofxVec2f			points;
-	GiggleBubble		bubbles[NUM_CONTOUR_PNTS];
+	GiggleBubble		bubbles[NUM_BUBBLE_PNTS];
 	MonsterSVGParts *   parts;
 	
 	
@@ -61,6 +64,7 @@ public:
 	vector <ofPoint>	contourConvex;
 	
 	BouncyShape			contour[NUM_CONTOUR_PNTS];
+	MonsterHair			hair[NUM_CONTOUR_PNTS];
 	
 	
 	// eyes
@@ -76,23 +80,28 @@ public:
 	
 	//-------------------------------------------------------------- init
 	BubbleMonster() {
+		bMonster  = false;
 		monsterID = -1;
 		bDebug	  = false;
 		parts	  = NULL;
 		eyeID	  = 0;
 		spikeMode = 0;
 		
+		vel = 0;
+		pos = 0;
+		prePos = 0;
+		age = 0;
 	}
 	
 	//-------------------------------------------------------------- init
 	void init(ofCvTrackedBlob &blob) {
-		
+		age = 0;
 		spikeMode    = (int)ofRandom(0, 2);
 		numEyes		 = (int)ofRandom(1, 3);//MAX_NUM_EYS);
 		eyeID		 = 5;//(int)ofRandom(0, parts->eyes.size());
 		colorID		 = (int)ofRandom(0, NUM_MONSTER_COLOR);
 		
-		monsterMode  = SPIKER_MONSTER; 
+		//monsterMode  = (int)ofRandom(0, 2); 
 		pos			 = blob.centroid;
 		monsterID    = blob.id;
 		
@@ -102,10 +111,13 @@ public:
 		updateContourPnts(blob.pts);
 		
 		// set initial radius
-		for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
+		for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 			bubbles[i].radius  = 1.0;
 			bubbles[i].radiusD = ofRandom(16.0, 50.0);
 			bubbles[i].radiusV = 0;
+		}
+		
+		for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
 			
 			// the contour
 			contour[i].pos = 0;
@@ -113,10 +125,23 @@ public:
 			contour[i].acc = 0;
 			contour[i].id = -1;
 			contour[i].bMatched = false;
+			
+			
+			// star hair in center
+			hair[i].pos1 = pos;
+			hair[i].pos2 = pos;
+			hair[i].p = pos;
 		}
 		
 		for(int i=0; i<MAX_NUM_SPIKES; i++) {
 			spikeLength[i] = ofRandom(10.0, 60.0);
+		}
+		
+		// set the eyes
+		for(int i=0; i<numEyes; i++) {
+			eyes[i].init(pos.x, pos.y);
+			
+			
 		}
 	}
 	
@@ -178,9 +203,9 @@ public:
 			
 			//if(cntPoints[i].bMatched) continue;
 			float pct    = (float)j / (float)(cntPoints.size()-1);
-			int   ind = pct * NUM_CONTOUR_PNTS;
+			int   ind = pct * NUM_BUBBLE_PNTS;
 			if(ind < 0) ind = 0;
-			if(ind > NUM_CONTOUR_PNTS-1) ind = NUM_CONTOUR_PNTS-1;
+			if(ind > NUM_BUBBLE_PNTS-1) ind = NUM_BUBBLE_PNTS-1;
 			
 			
 			bubbles[ind].pos.x = cntPoints[j].x;
@@ -192,8 +217,8 @@ public:
 	}
 	//-------------------------------------------------------------- new radius
 	void genNewRadius() {
-		for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
-			bubbles[i].radiusD = ofRandom(16.0, 20.0);			
+		for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
+			bubbles[i].radiusD = ofRandom(16.0, 50.0);			
 		}
 	}
 	
@@ -201,25 +226,47 @@ public:
 	void update() {
 		
 		
+		age ++;
 		
 		
-		ofPoint highestPnt;
-		highestPnt.x = 0;
-		highestPnt.y = 9999999;
-		
-		for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
+		if(age < 30) {
 			
+			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
+				bubbles[i].radiusD = 10;
+				bubbles[i].radius = 10;
+				bubbles[i].pos = pos;
+			}
 			
-			// make the bubble bouncy
-			bubbles[i].radiusV = (bubbles[i].radiusV * 0.9) + (bubbles[i].radiusD-bubbles[i].radius) / 20.0;
-			bubbles[i].radius += bubbles[i].radiusV;
-			
-			if(bubbles[i].pos.y < highestPnt.y) {
-				highestPnt = bubbles[i].pos;
+			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
+				
 			}
 			
 		}
 		
+		// ITS MONSTER TIME
+		else {
+			bMonster = true;
+		}
+		
+		
+		
+		ofPoint highestPnt;
+		if(bMonster) {
+			
+			highestPnt.x = 0;
+			highestPnt.y = 9999999;
+			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
+				
+				// make the bubble bouncy
+				bubbles[i].radiusV = (bubbles[i].radiusV * 0.9) + (bubbles[i].radiusD-bubbles[i].radius) / 20.0;
+				bubbles[i].radius += bubbles[i].radiusV;
+				
+				if(bubbles[i].pos.y < highestPnt.y) {
+					highestPnt = bubbles[i].pos;
+				}
+			}
+			
+		}
 		
 		// ---------------------------------- will come back to this
 		
@@ -269,44 +316,103 @@ public:
 		 
 		 */
 		
-		
-		// update the eyes
-		for(int i=0; i<numEyes; i++) {
-			eyes[i].update();
-		}
-		
-		if(numEyes == 2) {
-			eyes[0].pos = highestPnt;
-			eyes[1].pos = highestPnt;
+		if(bMonster) {
+			float dy = rect.y+pos.y;
+			highestPnt.y = dy/2;
 			
-			eyes[0].pos.x -= 30;
-			eyes[1].pos.x += 30;
+			// update the eyes
+			for(int i=0; i<numEyes; i++) {
+				eyes[i].update();
+			}
+			
+			if(numEyes == 2) {
+				eyes[0].pos = highestPnt;
+				eyes[1].pos = highestPnt;
+				
+				eyes[0].pos.x -= 30;
+				eyes[1].pos.x += 30;
+			}
+			
+			if(numEyes == 1) {
+				eyes[0].pos = highestPnt;
+				eyes[0].pos.x = pos.x;
+			}
+			
 		}
 		
-		if(numEyes == 1) {
-			eyes[0].pos = highestPnt;
-			eyes[0].pos.x = pos.x;
-		}
+		
+		// history of centroid
+		vel    = pos-prePos;
+		prePos = pos;
+		
+			
+		/*
+		 // make the hari
+		 ofxVec2f	norml, normlIn;
+		 ofxVec2f	diff;
+		 ofxPoint2f	mid;
+		 ofxPoint2f	normalScaled;
+		 
+		 if(monsterMode == SPIKER_MONSTER) {
+		 
+		 for(int k=1; k<NUM_CONTOUR_PNTS; k++) {
+		 
+		 hair[k].update();
+		 
+		 float ni = (float)k / (float)(NUM_CONTOUR_PNTS-1.0);
+		 int ind = ni * (int)contourConvex.size();
+		 
+		 
+		 diff = contourConvex[ind] - contourConvex[ind-1];
+		 diff.normalize();
+		 norml.set(diff.y, -diff.x);
+		 
+		 
+		 normalScaled  = contourConvex[k] + (norml * 40.0);				
+		 
+		 hair[k].pos1 = contourConvex[k];
+		 hair[k].pos2 = normalScaled;
+		 
+		 }				
+		 }
+		 */
+		
 	}
 	
 	
 	//-------------------------------------------------------------- draw
 	void draw() {
 		
-		
-		/*
-		int cLen = contourConvex.size();
-		if(cLen >= MAX_CONTOUR_LENGTH)  cLen = MAX_CONTOUR_LENGTH-1;
-		
-		ofSetColor(5, 255, 50);
-		for(int i=0; i<cLen; i++) {
-			ofSetColor(25, 255, 0);
-			ofCircle(contour[i].pos.x, contour[i].pos.y, 20);
-			ofSetColor(255, 5, 255);
-			ofDrawBitmapString(ofToString(contour[i].id), contour[i].pos.x, contour[i].pos.y);
+		if(!bMonster) {
+			
+			// draw the shape of the body
+			ofSetColor(monsterColor[colorID]);
+			ofFill();
+			ofBeginShape();
+			for(int i=0; i<contourSimple.size(); i++) {
+				ofVertex(contourSimple[i].x, contourSimple[i].y);
+			}
+			ofEndShape(true);
+			
+			return;
+			
 		}
 		
-		*/
+		
+		
+		/*
+		 int cLen = contourConvex.size();
+		 if(cLen >= MAX_CONTOUR_LENGTH)  cLen = MAX_CONTOUR_LENGTH-1;
+		 
+		 ofSetColor(5, 255, 50);
+		 for(int i=0; i<cLen; i++) {
+		 ofSetColor(25, 255, 0);
+		 ofCircle(contour[i].pos.x, contour[i].pos.y, 20);
+		 ofSetColor(255, 5, 255);
+		 ofDrawBitmapString(ofToString(contour[i].id), contour[i].pos.x, contour[i].pos.y);
+		 }
+		 
+		 */
 		
 		
 		if(bDebug) {
@@ -325,7 +431,7 @@ public:
 		if(monsterMode == BUBBLE_MONSTER) {
 			
 			ofSetColor(5, 255, 50);
-			for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
+			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 				ofCircle(bubbles[i].pos.x, bubbles[i].pos.y, bubbles[i].radius);	
 			}
 			
@@ -334,7 +440,7 @@ public:
 			ofFill();
 			ofBeginShape();
 			for(int i=0; i<contourSmooth.size(); i++) {
-				ofVertex(contourSmooth[i].x, contourSmooth[i].y);
+				ofCurveVertex(contourSmooth[i].x, contourSmooth[i].y);
 			}
 			ofEndShape(true);
 			
@@ -344,6 +450,7 @@ public:
 		// ------------------------------------  a spiker monster (convex)
 		if(monsterMode == SPIKER_MONSTER) {
 			
+			// convex shape of the monster
 			ofSetColor(monsterColor[colorID]);
 			ofFill();
 			ofBeginShape();
@@ -351,8 +458,11 @@ public:
 				ofVertex(contourConvex[i].x, contourConvex[i].y);
 			}
 			ofEndShape(true);
-			
-			
+			/*
+			 for(int i=0; i<NUM_CONTOUR_PNTS; i++) {
+			 hair[i].draw();
+			 }
+			 */
 			
 			// spikes
 			
@@ -414,6 +524,26 @@ public:
 		}		
 		
 		
+		//	ofNoFill();
+		//	ofRect(rect.x, rect.y, rect.width, rect.height);
+		
+		
+		
+		if(bDebug) {	
+			// draw the vel of the monster
+			float len = vel.length() * 20.0;
+			float arrowsize = 30;
+			ofxVec2f v;
+			float ang = v.angle(vel);
+			ofSetColor(255, 0, 0);
+			glPushMatrix();
+			glTranslatef(pos.x, pos.y, 0);
+			glRotatef(ang, 0, 0, 1);
+			ofLine(0,0,len,0);
+			ofLine(len,0,len-arrowsize,+arrowsize/2);
+			ofLine(len,0,len-arrowsize,-arrowsize/2);
+			glPopMatrix();
+		}
 		
 		// draw the eyes
 		for(int i=0; i<numEyes; i++) {

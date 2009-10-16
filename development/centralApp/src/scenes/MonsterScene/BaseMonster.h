@@ -10,7 +10,8 @@ class BaseMonster {
 public:
 	
 	//int			id;
-	ofxVec2f	pos;
+	ofxVec2f	pos, vel, prePos;
+	ofRectangle rect;
 	
 	BaseMonster() {
 	}

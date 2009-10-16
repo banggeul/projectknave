@@ -22,11 +22,13 @@
 #include "MonsterBall.h"
 #include "ofxDaito.h"
 #include "MonsterConst.h"
+#include "MonsterData.h"
+#include "MonsterLine.h"
+#include "ofxXmlSettings.h"
+#include "MonsterWindow.h"
+#include "MonsterDust.h"
 
-
-
-
-class MonsterScene : public baseScene {
+class MonsterScene : public baseScene , public b2ContactListener{
 	
 public: 
 	
@@ -36,6 +38,10 @@ public:
 	void draw();
 	void render();
 	
+	void saveMonsterSettings();
+	void loadMonsterSettings();
+	void cleanUpScene();
+	
 	// ---------------------- mouse & keyboard
 	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
@@ -44,6 +50,15 @@ public:
 	void blobOn( int x, int y, int bid, int order );
     void blobMoved( int x, int y, int bid, int order );    
     void blobOff( int x, int y, int bid, int order );
+	
+	// ---------------------- box2d bumps
+	// a bit of a hack
+	void Add(const b2ContactPoint* point);
+	void Remove(const b2ContactPoint* point);
+	
+	
+	
+	
 	
 	// get a monster here
 	BubbleMonster&				getMonsterById( int monsterId );
@@ -57,31 +72,38 @@ public:
 	ofxDaito					DAITO;
 
 	
-	
+	int							ballCounter;
+	int							timeSinceLastBurst;
 	
 	// ---------------------- utils
 	void createBuildingContour();
 	void drawTop();
 	
 	ofxFBOTexture				FBO;
-
+	ofImage						dotImage;
+	
 	// ---------------------- settings
+	bool						bDebug;
+	ofxXmlSettings				xmlSaver;
+	vector <MonsterWindow>		windowPnts;
 	bool						bGotMyFirstPacket;
 	
 	// ---------------------- 
 	// Ferry Building
 	FerryBuilding				ferryBuilding;
-	vector <ofxBox2dLine>		box2dBuilding;
+	vector <MonsterLine>		box2dBuilding;
 
 	
 	// tracking
 	int							lastFrameRendered;
+	int							lastTypeofMonster;
+	
 	
 	// particles
 	ofxBox2d					box2d;
 	int							particleCount;
 	vector <MonsterParticles>	monsterParticles;
-	
+	vector <MonsterDust>		dust;
 	
 	// monsters
 	MonsterSVGParts				parts;

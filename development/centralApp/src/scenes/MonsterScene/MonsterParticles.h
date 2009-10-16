@@ -10,7 +10,11 @@
 #include "MonsterConst.h"
 
 
-
+typedef struct {
+	ofPoint a, b;
+	float r;
+	ofPoint bits[3];
+} PopBits;
 
 class MonsterParticles : public ofxBox2dCircle {
 	
@@ -22,22 +26,36 @@ public:
 	ofColor		clr;
 	
 	int			numPopBits;
-	ofPoint		popA[MAX_POP_BITS];
-	ofPoint		popB[MAX_POP_BITS];
-	float		popR[MAX_POP_BITS];
-	
 	float		deadDate, age;
 	float		r;
 	
+	PopBits	    *popBits;
+	ofImage *img;
 	// ----------------------------------------
 	MonsterParticles() {
-		
+		img    = NULL;
 		bDead  = true;
 		bGoPop = false;
 		
 		
+		popBits = NULL;
+		
+		
 	
 		
+		enableGravity(false);
+	}
+	
+	// ----------------------------------------
+	void cleanUp() {
+		delete[] popBits;
+		popBits = NULL;
+	}
+	
+	// ----------------------------------------
+	void init() {
+		
+		bDead = false;
 		
 		int hex = particleColor[(int)ofRandom(0, NUM_PARTICLE_COLOR)];
 		clr.r = (hex >> 16) & 0xff;
@@ -49,16 +67,20 @@ public:
 		deadDate	= ofRandom(30, 120);
 		numPopBits  = (int)ofRandom(10, 20);
 		
-		enableGravity(false);
-	}
-	
-
-	// ----------------------------------------
-	void init() {
-		bDead = false;
-		clr.r = ofRandom(0, 255);
-		clr.g = ofRandom(0, 255);
-		clr.b = ofRandom(0, 255);	
+		
+		
+		popBits		= new PopBits[numPopBits];
+		// set the pop bits
+		for(int i=0; i<numPopBits; i++) {
+			if(popBits == NULL) continue;
+			popBits[i].r = 0;
+			popBits[i].a = 0;
+			popBits[i].b = 0;
+			for(int j=0; j<3; j++) {
+				float br = getRadius() / 2.2;///1.3;
+				popBits[i].bits[j].set(ofRandom(-br,br), ofRandom(-br, br));
+			}
+		}
 	}
 	
 	// ----------------------------------------
@@ -70,14 +92,18 @@ public:
 			bGoPop = true;	
 			
 			for(int i=0; i<numPopBits; i++) {
+				if(popBits == NULL) continue;
+
 				float n = (float)i/ (float)(numPopBits-1);
-				popA[i].x  = cos(n * TWO_PI) * (r+10);
-				popA[i].y  = sin(n * TWO_PI) * (r+10);
 				
-				popB[i].x  = cos(n * TWO_PI) * (r+ofRandom(12, 45));
-				popB[i].y  = sin(n * TWO_PI) * (r+ofRandom(12, 45));
+				popBits[i].a.x  = cos(n * TWO_PI) * (r+10);
+				popBits[i].a.y  = sin(n * TWO_PI) * (r+10);
+				
+				popBits[i].b.x  = cos(n * TWO_PI) * (r+ofRandom(12, 45));
+				popBits[i].b.y  = sin(n * TWO_PI) * (r+ofRandom(12, 45));
 			
-				popR[i] = ofRandom(3.0, 10.0);
+				popBits[i].r = ofRandom(3.0, 5.0);
+				
 			}
 		}
 		
@@ -85,21 +111,22 @@ public:
 		// time to pop !
 		if(bGoPop) {
 			
-			r +=1.7;
-			clr.a -= 20.0;
+			r += (getRadius() / 3.3);
+			clr.a -= 50.0;
 			if(r <= 2 || clr.a <= 0.0) {
 				bDead = true;
 			}
 			
 			for(int i=0; i<numPopBits; i++) {
-				popA[i] += (popB[i]-popA[i]) / popR[i];
+				if(popBits == NULL) continue;
+
+				popBits[i].a += (popBits[i].b-popBits[i].a) / popBits[i].r;
 			}
 		}
 		
 		
 		// monster farts fly up duhh
-		addForce(0, -10);
-		
+		addAttractionPoint(ofPoint(0, 0), 1.0, 100);
 		
 		
 	}
@@ -122,21 +149,32 @@ public:
 		if(bGoPop) {
 			ofSetColor(clr.r, clr.g, clr.b, clr.a);
 			for(int i=0; i<numPopBits; i++) {
+				if(popBits == NULL) continue;
+
+				glPushMatrix();
+				glTranslatef(popBits[i].a.x, popBits[i].a.y, 0);
 				ofBeginShape();
-				for(int j=0; j<4; j++) {
-					ofVertex(popA[i].x+ofRandom(-3, 3), popA[i].y+ofRandom(-3, 3));
-					ofVertex(popA[i].x+ofRandom(-3, 3), popA[i].y+ofRandom(-3, 3));
-					ofVertex(popA[i].x+ofRandom(-3, 3), popA[i].y+ofRandom(-3, 3));
+				
+				for(int j=0; j<3; j++) {
+					ofVertex(popBits[i].bits[j].x, popBits[i].bits[j].y);
 				}
 				ofEndShape();
+				glPopMatrix();
+				
 			}
 		}
 		
-		
-		
-		
-		
 		ofSetColor(clr.r, clr.g, clr.b, clr.a);
+
+		
+		
+		ofFill();
+		if(img) {
+			ofSetRectMode(OF_RECTMODE_CENTER);
+			img->draw(0, 0, r*5, r*5);
+			ofSetRectMode(OF_RECTMODE_CORNER);
+		}
+		
 		ofFill();
 		ofCircle(0, 0, r);
 		glPopMatrix();
