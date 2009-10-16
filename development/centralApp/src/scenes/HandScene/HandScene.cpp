@@ -378,7 +378,6 @@ void HandScene::update(){
 
 		ofxDaito::sendCustom(msg);
 
-
 		}
 	}
 
@@ -386,9 +385,6 @@ void HandScene::update(){
 
 //--------------------------------------------------------------
 void HandScene::draw(){
-
-
-
 	ofSetColor(255, 0, 0);
 	//ofLine (0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 	//ofLine (0,OFFSCREEN_HEIGHT,OFFSCREEN_WIDTH, 0);
