@@ -13,6 +13,7 @@ starParticle::starParticle(){
 	radius = 4;// + ofRandom(0,6);
 	bBeenPeaked = false;
 	nFrameOfLastPeaking = 0;
+	fiveEnergy = 0;
 }
 
 
@@ -184,8 +185,8 @@ void starParticle::findLockTarget(unsigned char * pixels, int width, int height)
 		int randW = (int)ofRandom(0,width-1);
 		int randH = (int)ofRandom(0,height-1);
 		if (pixels[randH * width + randW] > 10){
-			lockTarget.set(randW, randH, 0);
-			pos.set(randW, randH, 0);
+			lockTarget.set(randW*2, randH*2, 0);
+			//pos.set(randW*2, randH*2, 0);
 			bfoundWhite = true;
 			//cout << "2 \n";
 		} else {

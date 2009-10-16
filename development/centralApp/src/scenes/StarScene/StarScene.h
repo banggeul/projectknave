@@ -23,13 +23,11 @@ public:
 	
 	int tempC;
 	
+	void announceChange(int change);
 	void keyPressed(int key);
 	
 	 particleManager PM;
-	/* 
-	 ofImage		temp;
-	 
-	 */
+		ofImage		temp;
 	
 };
 

@@ -60,7 +60,7 @@ class starParticle {
 			}
 		}
 	
-	
+	float fiveEnergy;
 
 		bool        bInSameBin(starParticle &p);
         unsigned        bitFlagW;

@@ -157,9 +157,18 @@ void particleManager::update(){
 	}
 	
 	
-	
-	for(int j = 0; j < particles.size(); j ++){
-		particles[j].radius = 2 + 20 * particles[j].energy; 
+	if (mode != 5) {
+		for(int j = 0; j < particles.size(); j ++){
+			particles[j].radius = 2 + 20 * particles[j].energy; 
+			particles[j].fiveEnergy *= 0.50;
+		} 
+		
+		
+	} else {
+		for(int j = 0; j < particles.size(); j ++){ particles[j].radius = 1;
+		
+		particles[j].fiveEnergy = 0.94f * particles[j].fiveEnergy + 0.06f * 1.0;
+		}
 	}
 	
 	
@@ -316,13 +325,15 @@ void particleManager::update(){
 					
 					float radius = particles[pta].radius + particles[ptb].radius;
 					
-					radius *= 2.5;
+					if (mode != 5) radius *= 2.5;
+					
 					
                     float distance = (particles[pta].pos - particles[ptb].pos).length();
 					
                     if (!bAnyArrow){
                         if ( distance < radius) {
-							particles[pta].addRepulsionForce(particles[ptb], radius, 0.1f);
+							if (mode != 5) particles[pta].addRepulsionForce(particles[ptb], radius, 0.1f);
+							else particles[pta].addRepulsionForce(particles[ptb], radius, 0.026f);
 						}
                         if ( distance < 100)  particles[pta].addAttractionForce(particles[ptb], 100, 0.001f);
                     } else {
@@ -339,11 +350,16 @@ void particleManager::update(){
 		if (mode == 4){
 			if (!particles[i].bBeenChosen) particles[i].addAttractionForce(1793/2, 1024/2+ 1024/4, 6000, 0.008);
 		} else {
-			if (!particles[i].bBeenChosen) particles[i].addAttractionForce(1793/2, 1024/2+ 1024/4, 6000, 0.003);
-
+			if (mode != 5) {
+				if (!particles[i].bBeenChosen) particles[i].addAttractionForce(1793/2, 1024/2+ 1024/4, 6000, 0.003);
+			} else {
+				particles[i].addAttractionForce( particles[i].lockTarget.x, particles[i].lockTarget.y, 6000, 0.06); //0.2f -0.2*sin(ofGetElapsedTimef()));
+				//cout << particles[i].lockTarget.x <<  " " <<  particles[i].lockTarget.y << endl;
+				
+			}
 		}
-																	   //particles[i].lockTarget.x, particles[i].lockTarget.y, 1000, 0.004); //0.2f -0.2*sin(ofGetElapsedTimef()));
-    }
+																	   
+	}
 	
 	
 	
@@ -393,7 +409,9 @@ void particleManager::update(){
 	
 	for (int i = 0; i< VFs.size(); i++){
 
+		if (mode !=5){
         VF.addIntoField( (VFs[i].point.x)/(float)ofGetWidth(), VFs[i].point.y/(float)ofGetHeight(), VFs[i].diffPoint*0.001  , 0.093 * 1.6);
+		}
 	}
 	
 }
@@ -408,7 +426,11 @@ void particleManager::draw(){
     ofSetColor(255,255,255);
 	ofFill();
 	for(int i = 0; i < particles.size(); i++){
-        ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 0.7);
+		if (mode!=5){
+			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 0.7);
+		} else {
+			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 2 * 0.7 + particles[i].fiveEnergy * 2.5);
+		}
 	}
 	
     //VF.draw(0,0,ofGetWidth(), ofGetHeight(), 20);
