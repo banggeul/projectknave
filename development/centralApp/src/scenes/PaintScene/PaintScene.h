@@ -20,7 +20,7 @@
 
 
 
-class PaintScene : public baseScene , public b2ContactListener {
+class PaintScene : public baseScene {// , public b2ContactListener {
 	
 public: 
 	
@@ -67,8 +67,8 @@ public:
 	
 	
 	// a bit of a hack
-	void Add(const b2ContactPoint* point);
-	void Remove(const b2ContactPoint* point);
+	//void Add(const b2ContactPoint* point);
+	//void Remove(const b2ContactPoint* point);
 	
 	
 };

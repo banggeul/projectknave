@@ -10,7 +10,7 @@ void PaintScene::setup() {
 	box2d.checkBounds(true);
 	box2d.setFPS(30.0);
 	
-	box2d.getWorld()->SetContactListener(this);
+	//box2d.getWorld()->SetContactListener(this);
 	
 	
 	// build the building for box2d
@@ -266,7 +266,7 @@ void PaintScene::keyPressed(int key) {
 	}
 }
 
-
+/*
 //--------------------------------------------------------------
 void PaintScene::Add(const b2ContactPoint* point){
 	b2Vec2 p = point->position;
@@ -289,7 +289,7 @@ void PaintScene::Add(const b2ContactPoint* point){
 void PaintScene::Remove(const b2ContactPoint* point){
 	printf("-- time to remove --\n");
 	
-}
+}*/
 
 
 
