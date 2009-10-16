@@ -11,7 +11,9 @@
 enum {
 	
 	BUBBLE_MONSTER,
-	SPIKER_MONSTER
+	SPIKER_MONSTER,
+	MEGA_SPIKER,
+	MEGA_SPIKER_SOFT
 	
 };
 
@@ -41,7 +43,7 @@ class BubbleMonster : public BaseMonster {
 public:
 	
 	
-	float				age;
+	float				age, area;
 	int					monsterMode;
 	
 	
@@ -95,7 +97,9 @@ public:
 	
 	//-------------------------------------------------------------- init
 	void init(ofCvTrackedBlob &blob) {
-		age = 0;
+		
+		age = 0; 
+		area = 1.0;
 		spikeMode    = (int)ofRandom(0, 2);
 		numEyes		 = (int)ofRandom(1, 3);//MAX_NUM_EYS);
 		eyeID		 = 5;//(int)ofRandom(0, parts->eyes.size());
@@ -228,7 +232,6 @@ public:
 		
 		age ++;
 		
-		
 		if(age < 30) {
 			
 			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
@@ -345,7 +348,7 @@ public:
 		vel    = pos-prePos;
 		prePos = pos;
 		
-			
+		
 		/*
 		 // make the hari
 		 ofxVec2f	norml, normlIn;
@@ -446,6 +449,57 @@ public:
 			
 		}
 		
+		/*
+		// ------------------------------------ MEGA a spiker monster (SMOOTHER)
+		if(monsterMode == MEGA_SPIKER || monsterMode == MEGA_SPIKER_SOFT) {
+			
+			ofxVec2f	norml, normlIn;
+			ofxVec2f	diff;
+			ofxPoint2f	mid;
+			ofxPoint2f	normalScaled;
+			
+			// draw the shape of the body
+			ofFill();
+			ofBeginShape();
+			for(int i=0; i<contourSmooth.size(); i++) {
+				ofCurveVertex(contourSmooth[i].x, contourSmooth[i].y);
+			}
+			ofEndShape(true);
+			
+			
+			
+			// the spike HELL YA
+			for(int k=1; k<contourSimple.size(); k+=5) {
+				
+				diff = contourSimple[k] - contourSimple[k-1];
+				diff.normalize();
+				norml.set(diff.y, -diff.x);
+				
+				normlIn.set(-diff.y, diff.x);
+				
+				normalScaled  = contourSimple[k] + (norml * (50+(area*60)));				
+				
+				
+				if(monsterMode == MEGA_SPIKER) {
+					glLineWidth(6.0);
+					ofLine(contourSimple[k].x, contourSimple[k].y,
+						   normalScaled.x, normalScaled.y);
+					glLineWidth(1.0);
+				} else {
+					
+					
+					float offset = 10;
+					if(normalScaled.x > pos.x) offset = -10;
+					
+					glPushMatrix();
+					glTranslatef(contourSimple[k].x+offset, contourSimple[k].y-20, 0);
+					ofEllipse(0, 0, 10, 40);
+					glPopMatrix();
+				}
+				
+			}
+		}
+		*/
 		
 		// ------------------------------------  a spiker monster (convex)
 		if(monsterMode == SPIKER_MONSTER) {

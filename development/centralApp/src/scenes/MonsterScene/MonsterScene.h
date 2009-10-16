@@ -1,13 +1,6 @@
-/*
- *  simpleScene.h
- *  openFrameworks
- *
- *  Created by Zach Lieberman on 9/23/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
 
-#pragma once;
+
+#pragma once
 
 #include "ofMain.h"
 #include "baseScene.h"
@@ -28,6 +21,47 @@
 #include "MonsterWindow.h"
 #include "MonsterDust.h"
 
+
+
+
+
+
+/*
+ OSC setup:
+ 
+ EVENT: 
+ newMonster
+ monsterMove
+ deadMonster
+ 
+ DATA:
+ scene			 = int
+ type of monster = int
+ id				 = int
+ center x		 = float <-- normailized
+ center y	     = float <-- normailized
+ width			 = flaot <-- normailized
+ height			 = float <-- normailized
+ 
+ 
+ Particle Events:
+ 
+ EVENT:
+ particleHit
+ 
+ DATA:
+ scene			 = int
+ x				 = float <-- normailized
+ y				 = float <-- normailized
+ 
+ 
+ */
+
+
+
+
+
+
 class MonsterScene : public baseScene , public b2ContactListener{
 	
 public: 
@@ -45,7 +79,7 @@ public:
 	// ---------------------- mouse & keyboard
 	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
-
+	
 	// ---------------------- blob tracking
 	void blobOn( int x, int y, int bid, int order );
     void blobMoved( int x, int y, int bid, int order );    
@@ -66,11 +100,11 @@ public:
 	
 	// colors
 	int							monsterColor[NUM_MONSTER_COLOR];
-
+	
 	
 	// sounds for daito
 	ofxDaito					DAITO;
-
+	
 	
 	int							ballCounter;
 	int							timeSinceLastBurst;
@@ -92,7 +126,7 @@ public:
 	// Ferry Building
 	FerryBuilding				ferryBuilding;
 	vector <MonsterLine>		box2dBuilding;
-
+	
 	
 	// tracking
 	int							lastFrameRendered;

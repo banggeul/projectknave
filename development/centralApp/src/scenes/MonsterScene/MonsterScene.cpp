@@ -225,8 +225,11 @@ BubbleMonster& MonsterScene::getMonsterById( int monsterId ) {
 void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 	printf("monster on - %i\n", bid);
 	
+	
+	ofxCvBlob blober = tracker->getById(bid);
+	
 	// if i am hole make a shape instead
-	if(tracker->getById(bid).hole) {
+	if(blober.hole) {
 		
 	}
 	
@@ -248,6 +251,7 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 		// set the parts
 		monster.parts = &parts;
 		monster.init( tracker->getById(bid) );
+		monster.area = (float)(blober.boundingRect.height*blober.boundingRect.width) / (float)(packet.width*packet.height);
 		
 		
 		monsters.push_back(monster);
@@ -257,12 +261,12 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 		
 	}
 	
-	ofxCvBlob blober = tracker->getById(bid);
 	
 	ofxOscMessage msg;		
 	msg.setAddress("/bang");							//	bang
 	msg.addStringArg("newMonster");						//	new monster
 	msg.addIntArg(3);									//	SCENE 3
+	msg.addIntArg(monsters.back().monsterMode);					//  what kind of monster are we
 	msg.addIntArg(bid);									//	monster ID
 	msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
 	msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
@@ -270,6 +274,7 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 	msg.addFloatArg((float)blober.boundingRect.height/(float)packet.height);		// hieght (normalize)
 	
 	
+
 	
 	
 	ofxDaito::sendCustom(msg);
@@ -288,8 +293,9 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			
 			ofxOscMessage msg;		
 			msg.setAddress("/bang");							//	bang
-			msg.addStringArg("newMonster");						//	new monster
+			msg.addStringArg("monsterMove");						//	new monster
 			msg.addIntArg(3);									//	SCENE 3
+			msg.addIntArg(monsters[i].monsterMode);					//  what kind of monster are we
 			msg.addIntArg(bid);									//	monster ID
 			msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
 			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
@@ -297,7 +303,7 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			msg.addFloatArg((float)blober.boundingRect.height/(float)packet.height);		// hieght (normalize)	
 			
 			monsters[i].genNewRadius();
-			
+			monsters[i].area = (float)(blober.boundingRect.height*blober.boundingRect.width) / (float)(packet.width*packet.height);
 			
 			//---------- add some particle love -- ewww			
 			if(monsterParticles.size() < MAX_MONSTER_PARTICLES) {
@@ -325,11 +331,12 @@ void MonsterScene::blobOff( int x, int y, int bid, int order ) {
 			
 			
 			// tell daito that the monster is dead
-
+			
 			ofxOscMessage msg;		
 			msg.setAddress("/bang");							//	bang
-			msg.addStringArg("newMonster");						//	new monster
+			msg.addStringArg("deadMonster");						//	new monster
 			msg.addIntArg(3);									//	SCENE 3
+			msg.addIntArg(monsters[i].monsterMode);					//  what kind of monster are we
 			msg.addIntArg(bid);									//	monster ID
 			msg.addFloatArg((float)x/(float)packet.width);		// centroid x (normalize)
 			msg.addFloatArg((float)y/(float)packet.height);		// centroid y (normalize)
@@ -366,11 +373,11 @@ void MonsterScene::drawTop() {
 //-------------------------------------------------------------- draw
 void MonsterScene::render() {
 	//
-//	ofEnableAlphaBlending();
-//	ofSetColor(50,50,50);
-//	glBlendFunc(GL_ONE, GL_ONE);
-//	FBO.draw(0, 0);
-//	ofEnableAlphaBlending();	
+	//	ofEnableAlphaBlending();
+	//	ofSetColor(50,50,50);
+	//	glBlendFunc(GL_ONE, GL_ONE);
+	//	FBO.draw(0, 0);
+	//	ofEnableAlphaBlending();	
 }
 
 
@@ -655,27 +662,22 @@ void MonsterScene::Add(const b2ContactPoint* point){
 		if(dust.size() < MAX_MONSTER_DUST) {
 			dust.push_back(MonsterDust(p.x, p.y));
 			dust.back().img = &dotImage;
+			
+			
+			// particle dust hit
+			ofxOscMessage msg;		
+			msg.setAddress("/bang");							    //	bang
+			msg.addStringArg("particleHit");					    //	hit
+			msg.addIntArg(3);									    //	SCENE 3
+			msg.addFloatArg((float)p.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
+			msg.addFloatArg((float)p.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
+			
+			
 		}
 		
 	}
-	else {
-		//printf("--- no data --\n");	
-	}
-	//	myApp->contact_points.push_back(p);
-	//	p = point->velocity;
-	//	myApp->contact_velocities.push_back(p);
-	
-	/*
-	 SimplePaint bub;
-	 bub.pos.x = p.x;
-	 bub.pos.y = p.y;
-	 
-	 //bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
-	 //bub.setup(box2d.getWorld(), 9, 9, 20);
-	 paint.push_back(bub);
-	 */
-	//printf("-- add some paint herer --\n");	
 }
+
 void MonsterScene::Remove(const b2ContactPoint* point){
 	//printf("-- time to remove --\n");
 	
@@ -707,10 +709,6 @@ void MonsterScene::cleanUpScene() {
 		balls.erase(balls.begin() + i);
 	}	
 	balls.clear();
-	
-	
-	
-	
 	
 }
 
