@@ -21,10 +21,10 @@ void testApp::setup() {
 	CVM.id = XML.getValue("mainApp:id", 0);
 
 	// -------- Scenes
-	SM.setup(CVM);
+	SM.setup();
 	RM.setup();
 	CVM.setup();	// this order is all wonky now.
-	//CVM.setupScene(SM.currentScene);
+	CVM.setupScene(SM.currentScene);
 
 	// Mega Render Manager
 	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen
