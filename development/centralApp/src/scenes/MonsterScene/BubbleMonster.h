@@ -42,8 +42,9 @@ class BubbleMonster : public BaseMonster {
 	
 public:
 	
-	
-	
+	float				SCALE;
+	float				initAge;
+	float				monsterDelayAge, monsterAge;
 	float				age, area;
 	int					monsterMode;
 	
@@ -83,6 +84,7 @@ public:
 	
 	//-------------------------------------------------------------- init
 	BubbleMonster() {
+		SCALE = 1.0;
 		bJustBecameMonster = false;
 		bMonster  = false;
 		monsterID = -1;
@@ -95,6 +97,10 @@ public:
 		pos = 0;
 		prePos = 0;
 		age = 0;
+		
+		monsterDelayAge = 0.0;
+		monsterAge = 0;
+		initAge = 0;
 	}
 	
 	//-------------------------------------------------------------- init
@@ -233,8 +239,8 @@ public:
 		
 		
 		age ++;
-		
-		if(age < 30) {
+		monsterAge = ofGetElapsedTimef() - initAge;
+		if(monsterAge < monsterDelayAge) {
 			
 			for(int i=0; i<NUM_BUBBLE_PNTS; i++) {
 				bubbles[i].radiusD = 10;
@@ -429,18 +435,6 @@ public:
 		 */
 		
 		
-		if(bDebug) {
-			
-			ofEnableAlphaBlending();
-			ofFill();
-			ofSetColor(255, 25, 0, 100);
-			ofCircle(pos.x, pos.y, 30);
-			ofSetColor(255, 255, 250);
-			ofDrawBitmapString(ofToString(monsterID), pos.x, pos.y);
-			ofDisableAlphaBlending();
-			
-		}
-		
 		// ------------------------------------  a bubble monster
 		if(monsterMode == BUBBLE_MONSTER) {
 			
@@ -617,6 +611,20 @@ public:
 			eyes[i].draw();
 			//parts->eyes[eyeID].draw(eyes[i].pos.x, eyes[i].pos.y);
 		}
+		
+		
+		
+		//if(bDebug) {
+		
+		ofEnableAlphaBlending();
+		ofFill();
+		ofSetColor(255, 25, 0, 100);
+		ofCircle(pos.x, pos.y, 30);
+		ofSetColor(255, 255, 250);
+		ofDrawBitmapString(ofToString(monsterAge), pos.x, pos.y);
+		ofDisableAlphaBlending();
+		
+		//}
 		
 		
 	}

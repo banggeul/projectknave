@@ -2,7 +2,6 @@
 
 #pragma once
 
-#define SCALE 1.5
 
 
 // Look

@@ -6,7 +6,20 @@
 //-------------------------------------------------------------- setup
 void MonsterScene::setup(){
 	
-	bDebug			  = false;
+	panel.setup("Monster Scene", 700, 10, 300, 750);
+	panel.addPanel("Triggers", 1, false);
+	
+	panel.setWhichPanel("Triggers");
+	panel.addSlider("Monster Age", "MONSTER_AGE", 1.3, 0.0, 10.0, false);
+	panel.addSlider("Bottom offset", "BOTTOM_OFFSET", 100.3, 0.0, 500.0, false);
+	panel.addSlider("scale", "SCALE", 1.3, 0.10, 5.0, false);
+	panel.addToggle("Building", "REBUILD", 0);
+	panel.addToggle("debug", "DEBUG", 0);
+	
+	panel.loadSettings("settings/panels_xml/monsterScenePanel.xml");
+	
+	
+	bDebug			  = true;
 	bGotMyFirstPacket = false;
 	
 	// box2d
@@ -24,7 +37,8 @@ void MonsterScene::setup(){
 	
 	
 	W = 1.0;
-	H = 1.0;
+	H = panel.getValueF("BOTTOM_OFFSET");
+	SCALE = panel.getValueF("SCALE");
 	
 	// no particles yet
 	particleCount		= 0;
@@ -40,8 +54,14 @@ void MonsterScene::setup(){
 //-------------------------------------------------------------- update
 void MonsterScene::update(){
 	
+	bDebug = panel.getValueB("DEBUG");
+	SCALE = panel.getValueF("SCALE");
+	if(panel.getValueB("REBUILD")) {
+		createBuildingContour();
+		panel.setValueB("REBUILD", 0);
+	}
 	
-	
+	panel.update();
 	box2d.update();
 	
 	
@@ -124,9 +144,10 @@ void MonsterScene::update(){
 	}
 	
 	
-		// --------------------- particles
+	// --------------------- particles
 	for(int i = 0; i < monsterParticles.size(); i++) {
 		monsterParticles[i].update();
+		
 	}
 	for(int i=monsterParticles.size()-1; i>=0; i--) {
 		// sorry time to go away
@@ -205,7 +226,10 @@ void MonsterScene::update(){
 	
 	// --------------------- Monsters
 	for(int i = 0; i < monsters.size(); i++) {
+		monsters[i].SCALE = panel.getValueF("SCALE");
+		monsters[i].monsterDelayAge = panel.getValueF("MONSTER_AGE");
 		monsters[i].update();
+		
 	}
 	
 	
@@ -214,12 +238,12 @@ void MonsterScene::update(){
 		printf("got my first packet - %i\n", packet.frameNumber);
 		bGotMyFirstPacket = true;
 		
-		W = packet.width * SCALE;
-		H = 100 + (packet.height * SCALE);
 		contourAnalysis.setSize(packet.width*SCALE, packet.height*SCALE);
 		createBuildingContour();
 	}
 	
+	W = packet.width * SCALE;
+	H = panel.getValueF("BOTTOM_OFFSET") + (packet.height * SCALE);
 	
 	
 	
@@ -272,6 +296,7 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 		monster.parts = &parts;
 		monster.init( tracker->getById(bid) );
 		monster.area = (float)(blober.boundingRect.height*blober.boundingRect.width) / (float)(packet.width*packet.height);
+		monster.initAge = ofGetElapsedTimef();
 		monsters.push_back(monster);
 		
 		
@@ -300,7 +325,7 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 	msg2.addIntArg((int)monsters.size());				
 	ofxDaito::sendCustom(msg2);
 	
-
+	
 }
 
 //-------------------------------------------------------------- 
@@ -329,7 +354,7 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			
 			//---------- add some particle love -- ewww
 			if(monsterParticles.size() < MAX_MONSTER_PARTICLES) {
-
+				
 				float bx = (x*SCALE) + ofRandom(-30, 30);
 				float by = (y*SCALE) + ofRandom(-30, 30);
 				
@@ -377,6 +402,8 @@ void MonsterScene::blobOff( int x, int y, int bid, int order ) {
 void MonsterScene::drawTop() {
 	
 	if(!bDebug) return;
+	
+	panel.draw();
 	
 	glPushMatrix();
 	glTranslatef(0, 100, 0);
@@ -459,7 +486,7 @@ void MonsterScene::draw() {
 	
 	
 	// ferry building only for setup (hide when live)
-	ferryBuilding.drawContour();
+	if(bDebug) ferryBuilding.drawContour();
 	//ferryBuilding.drawInfo();
 	ofDisableAlphaBlending();
 	ofPopStyle();
@@ -488,7 +515,7 @@ void MonsterScene::createBuildingContour() {
 			
 			bx -= ((OFFSCREEN_WIDTH - W)/2);
 			by -= (OFFSCREEN_HEIGHT - H);
-		
+			
 			box2dBuilding.back().addPoint(bx, by);
 		}
 		box2dBuilding.back().createShape();
@@ -514,6 +541,11 @@ void MonsterScene::keyPressed(int key) {
 		}
 	}
 	
+	if(key == 'd') {
+		bDebug = !bDebug;
+		panel.setValueB("DEBUG", bDebug);	
+	}
+	
 	// add some
 	if(key == 't') {
 		float bx = mouseX;
@@ -537,6 +569,8 @@ void MonsterScene::keyPressed(int key) {
 //--------------------------------------------------------------
 void MonsterScene::mousePressed(int wx, int wy, int x, int y, int button) {
 	
+	panel.mousePressed(wx, wy, button);
+	
 	float bx = mouseX;
 	float by = mouseY;
 	
@@ -558,6 +592,19 @@ void MonsterScene::mousePressed(int wx, int wy, int x, int y, int button) {
 	printf("--------------  %f    %f", bx, by);
 	
 }
+
+//--------------------------------------------------------------
+void MonsterScene::mouseDragged(int wx, int wy, int x, int y, int button){
+	panel.mouseDragged(wx, wy, button);
+}
+
+//--------------------------------------------------------------
+void MonsterScene::mouseReleased(int wx, int wy, int x, int y, int button){
+	panel.mouseReleased();
+}
+
+
+
 
 //--------------------------------------------------------------
 void MonsterScene::loadMonsterSettings() {
@@ -645,16 +692,16 @@ void MonsterScene::Add(const b2ContactPoint* point){
 			dust.back().img = &dotImage;
 			
 			/*
-			// particle dust hit
-			ofxOscMessage msg;
-			msg.setAddress("/bang");							    //	bang
-			msg.addStringArg("particleHit");					    //	hit
-			msg.addIntArg(3);									    //	SCENE 3
-			msg.addFloatArg((float)p.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
-			msg.addFloatArg((float)p.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
-			
-			ofxDaito::sendCustom(msg);
-			*/
+			 // particle dust hit
+			 ofxOscMessage msg;
+			 msg.setAddress("/bang");							    //	bang
+			 msg.addStringArg("particleHit");					    //	hit
+			 msg.addIntArg(3);									    //	SCENE 3
+			 msg.addFloatArg((float)p.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
+			 msg.addFloatArg((float)p.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
+			 
+			 ofxDaito::sendCustom(msg);
+			 */
 		}
 		
 	}

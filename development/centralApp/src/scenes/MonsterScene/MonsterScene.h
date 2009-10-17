@@ -20,7 +20,7 @@
 #include "ofxXmlSettings.h"
 #include "MonsterWindow.h"
 #include "MonsterDust.h"
-
+#include "ofxControlPanel.h"
 
 
 
@@ -74,6 +74,8 @@ public:
 	// ---------------------- mouse & keyboard
 	void mousePressed(int wx, int wy, int x, int y, int button);
 	void keyPressed(int key);
+	void mouseDragged(int wx, int wy, int x, int y, int button);
+	void mouseReleased(int wx, int wy, int x, int y, int button);
 	
 	// ---------------------- blob tracking
 	void blobOn( int x, int y, int bid, int order );
@@ -84,9 +86,9 @@ public:
 	void Add(const b2ContactPoint* point);
 	void Remove(const b2ContactPoint* point);
 	
-	
+	ofxControlPanel				panel;
 	ofPoint OFFSET;
-	float W, H;
+	float W, H, SCALE;
 	
 	
 	// get a monster here
