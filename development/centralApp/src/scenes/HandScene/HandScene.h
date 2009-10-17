@@ -19,18 +19,17 @@
 
 #include "ofxDaito.h"
 
-#define NEON_SILHOUETTE_SIZE 16
+
+#define NEON_SILHOUETTE_SIZE 9
+
 
 typedef struct {
-
 	ofPoint		center;
 	float		energy;
 	int			id;
 	int			whoThisFrame;
 	bool		bFoundThisFrame;
-
 	ofPoint		myColor;
-
 }	handObject;
 
 
@@ -61,8 +60,6 @@ public:
 
 
 	int	handImgW, handImgH;
-
-
 	ofxCvGrayscaleAdvanced				handImage;
 	ofxCvGrayscaleAdvanced				handImageTemporallyBlurred;
 	ofxCvGrayscaleAdvanced				handImageTemporallyBlurredInvert;

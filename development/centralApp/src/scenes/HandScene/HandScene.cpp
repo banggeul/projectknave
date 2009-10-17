@@ -94,8 +94,6 @@ void HandScene::update(){
 
 
 	// TRACKING
-
-
 	int nBlobs = packet.nBlobs;
 	bool bFoundThisFrame [nBlobs];
 	for (int i = 0;  i < nBlobs; i++){
