@@ -286,6 +286,8 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 		msg.addFloatArg((float)blober.boundingRect.width/(float)packet.width);		// width (normalize)
 		msg.addFloatArg((float)blober.boundingRect.height/(float)packet.height);		// hieght (normalize)
 		msg.addIntArg(monster.numEyes);
+		msg.addIntArg(monster.colorID);
+		
 		ofxDaito::sendCustom(msg);
 		
 	}
