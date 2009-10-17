@@ -100,10 +100,12 @@ void sceneManager::gotoScene(int theScene) {
 	tracker.blobs.clear();
 
 	ofxDaito::scene(theScene);
-	if(theScene == 0) {
-		ofSetFrameRate(20);
-	} else {
-		ofSetFrameRate(60);
+
+	switch(theScene) {
+		case HAND_SCENE: ofSetFrameRate(20); break;
+		case PAINT_SCENE: ofSetFrameRate(30); break;
+		case STAR_SCENE: ofSetFrameRate(45); break;
+		default: ofSetFrameRate(60);
 	}
 }
 
