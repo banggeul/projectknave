@@ -106,13 +106,9 @@ void cvManager::setupGUI() {
 	panel.addPanel("adjust ments", 1, false);
 
 
-
-
 	panel.setWhichPanel("input");
 	panel.addToggle("Video 0 Settings", "CAMERA_0_SETTING", false);
 	panel.addToggle("Video 1 Settings", "CAMERA_1_SETTING", false);
-
-	panel.addSlider("scene id", "SCENE_ID", 0, 0, 4, true);
 
 	panel.addToggle("save coords", "STICH_COORDS", false);
 
@@ -402,8 +398,6 @@ void cvManager::setScene(int curScene) {
 void cvManager::update(){
 	panel.update();
 	updateGUI();
-
-	setScene(panel.getValueI("SCENE_ID"));
 
 	// open video settings
 	bool bCamSettings_0 = panel.getValueB("CAMERA_0_SETTING");

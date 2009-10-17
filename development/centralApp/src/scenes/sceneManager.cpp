@@ -10,7 +10,8 @@
 #include "sceneManager.h"
 
 
-void sceneManager::setup(){
+void sceneManager::setup(cvManager& CVM){
+	this->CVM = &CVM;
 
 	currentScene	= 0;
 	numScenes		= 5;
@@ -99,14 +100,16 @@ void sceneManager::gotoScene(int theScene) {
 	scenes[currentScene]->cleanUpScene();
 	tracker.blobs.clear();
 
-	ofxDaito::scene(theScene);
+	ofxDaito::scene(currentScene);
 
-	switch(theScene) {
+	switch(currentScene) {
 		case HAND_SCENE: ofSetFrameRate(20); break;
 		case PAINT_SCENE: ofSetFrameRate(30); break;
 		case STAR_SCENE: ofSetFrameRate(45); break;
 		default: ofSetFrameRate(60);
 	}
+
+	CVM->setScene(currentScene);
 }
 
 
