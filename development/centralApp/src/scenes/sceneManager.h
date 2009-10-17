@@ -50,10 +50,10 @@ class sceneManager : public ofCvBlobListener {
 	// keyboard and mouse
 	void keyPressed(int key);
 	void keyReleased(int key);
-	void mouseMoved(int x, int y );
-	void mouseDragged(int x, int y, int button);
-	void mousePressed(int x, int y, int button);
-	void mouseReleased(int x, int y, int button);
+	void mouseMoved(int wx, int wy, int x, int y );
+	void mouseDragged(int wx, int wy, int x, int y, int button);
+	void mousePressed(int wx, int wy, int x, int y, int button);
+	void mouseReleased(int wx, int wy, int x, int y, int button);
 	
 	// blob tracking
 	void blobOn( int x, int y, int bid, int order );

@@ -7,7 +7,7 @@
  *
  */
 
-#pragma once;
+#pragma once
 
 #include "ofMain.h"
 #include "baseScene.h"
@@ -39,7 +39,7 @@ public:
 	void draw();
 	
 	// ---------------------- mouse & keyboard
-	void mousePressed(int x, int y, int button);
+	void mousePressed(int wx, int wy, int x, int y, int button);
 	void keyPressed(int key);
 	
 	

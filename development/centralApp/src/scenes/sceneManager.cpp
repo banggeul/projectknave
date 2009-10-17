@@ -115,19 +115,19 @@ void sceneManager::keyPressed(int key) {
 void sceneManager::keyReleased(int key) {
 	scenes[currentScene]->keyReleased(key);
 }
-void sceneManager::mouseMoved(int x, int y) {
-	scenes[currentScene]->mouseMoved(x, y);
+void sceneManager::mouseMoved(int wx, int wy, int x, int y) {
+	scenes[currentScene]->mouseMoved(wx, wy, x, y);
 	scenes[currentScene]->mouseX = x;
 	scenes[currentScene]->mouseY = y;
 }
-void sceneManager::mouseDragged(int x, int y, int button) {
-	scenes[currentScene]->mouseDragged(x, y, button);
+void sceneManager::mouseDragged(int wx, int wy, int x, int y, int button) {
+	scenes[currentScene]->mouseDragged(wx, wy, x, y, button);
 }
-void sceneManager::mousePressed(int x, int y, int button) {
-	scenes[currentScene]->mousePressed(x, y, button);
+void sceneManager::mousePressed(int wx, int wy, int x, int y, int button) {
+	scenes[currentScene]->mousePressed(wx, wy, x, y, button);
 }
-void sceneManager::mouseReleased(int x, int y, int button) {
-	scenes[currentScene]->mouseReleased(x, y, button);
+void sceneManager::mouseReleased(int wx, int wy, int x, int y, int button) {
+	scenes[currentScene]->mouseReleased(wx, wy, x, y, button);
 }
 
 

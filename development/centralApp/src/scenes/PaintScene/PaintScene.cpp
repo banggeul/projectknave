@@ -323,7 +323,7 @@ void PaintScene::draw() {
 
 
 // ------------------------------------------------
-void PaintScene::mousePressed(int x, int y, int button) {
+void PaintScene::mousePressed(int wx, int wy, int x, int y, int button) {
 	
 	float mouseNormX = x * window.invWidth;
     float mouseNormY = y * window.invHeight;
