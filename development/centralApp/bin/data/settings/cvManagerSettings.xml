@@ -7,7 +7,7 @@
            1 = PEOPLE    
            2 = STARS    -->
 
-	<sceneId>2</sceneId>
+	<sceneId>1</sceneId>
 	
 	<sceneInfo>
 
@@ -19,10 +19,10 @@
 
 		<scene1>
 			<nVideoSources>2</nVideoSources>
-			<video0>testMovies/silhouettes_0_320.mov</video0>
-			<video1>testMovies/silhouettes_0_320.mov</video1>
-			<videoGrabberSource0>6</videoGrabberSource0>
-			<videoGrabberSource1>8</videoGrabberSource1>
+			<video0>testMovies/better-silhouette.mov</video0>
+			<video1>testMovies/better-silhouette.mov</video1>
+			<videoGrabberSource0>0</videoGrabberSource0>
+			<videoGrabberSource1>1</videoGrabberSource1>
 		</scene1>
 
 		<scene2>
