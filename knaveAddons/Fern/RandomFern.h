@@ -6,6 +6,7 @@ class RandomFern {
 public:
 	static vector<ofxSvg> leaves;
 
+	ofPoint pos;
 	FernStyle style;
 	Fern fern;
 	ofxSvg* leaf;
