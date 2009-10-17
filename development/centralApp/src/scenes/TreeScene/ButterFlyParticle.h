@@ -36,7 +36,7 @@ public:
 		cohesion.strength		= .15;
 		
 		alpha = 0;
-		alphaD = 200;
+		alphaD = 100;
 		
 		scale					= ofRandom(0.1, 0.2);
 	}

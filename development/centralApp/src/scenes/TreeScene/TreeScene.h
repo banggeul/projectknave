@@ -22,6 +22,7 @@ public:
 	
 	vector <int> butterFlyColor;
 	
+	void cleanUpScene();
 	void setup();
 	void update();
 	void draw();
@@ -53,7 +54,7 @@ public:
 	int						curStem;
 	
 	ofxXmlSettings			xmlSaver;
-	ofImage theDot;
+	ofImage theDot, theDotS;
 	
 	// ---------------------- Tree People
 	vector <TreeBlob>				treeBlobs;

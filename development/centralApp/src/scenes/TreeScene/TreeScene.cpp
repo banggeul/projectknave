@@ -9,8 +9,10 @@ void TreeScene::setup() {
 	butterFlyColor.push_back(0x6ac539);
 	butterFlyColor.push_back(0xff5500);
 	butterFlyColor.push_back(0xff0009);
-	 
+	
 	theDot.loadImage("sceneAssets/monsters/dot.png");
+	theDotS.loadImage("sceneAssets/trees/littleDot.png");
+	
 	
 	
 	// ------------ Control Panel For Trees
@@ -21,9 +23,13 @@ void TreeScene::setup() {
 	panel.addSlider("Tree Delay", "TREE_DELAY", 1.3, 0.0, 10.0, false);
 	panel.addSlider("Bottom Offset", "BOTTOM_OFFSET", 100, 0.0, 500.0, false);
 	panel.addSlider("People Scale", "PEOPLE_SCALE", 2.4, 1.0, 5.0, false);
+	panel.addSlider("people glow", "PEOPLE_GLOW", 20.4, 0.0, 255.0, false);
+	
+	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
+	
 	
 	panel.loadSettings("settings/panels_xml/treeScenePanel.xml");
-
+	
 	
 	// ------------ The Ferr Contour
 	building.setupBuilding("buildingRefrences/buidlingFiles/treeFerryContour.xml");
@@ -54,17 +60,39 @@ void TreeScene::setup() {
 	tempButterFly.addFile("sceneAssets/trees/Butterfly_003.svg");
 	tempButterFly.addFile("sceneAssets/trees/Butterfly_004.svg");
 	
-	for (int i = 0; i < 60; i++){
-		ButterFlyParticle bf;
-		bf.setInitialCondition(ofRandom(200, OFFSCREEN_WIDTH), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
-		bf.setupButterfly();
-		
-		butterflys.push_back(bf);
-		butterflys.back().img = &theDot;
-		butterflys.back().color = butterFlyColor[(int)ofRandom(0, butterFlyColor.size()-1)];
+	if(butterflys.size() < MAX_BUTTERFLYS) {
+		for (int i = 0; i < MAX_BUTTERFLYS; i++){
+			ButterFlyParticle bf;
+			bf.setInitialCondition(ofRandom(200, OFFSCREEN_WIDTH), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
+			bf.setupButterfly();
+			
+			butterflys.push_back(bf);
+			butterflys.back().img = &theDot;
+			butterflys.back().color = butterFlyColor[(int)ofRandom(0, butterFlyColor.size()-1)];
+		}
 	}
 	
 }
+
+
+//--------------------------------------------------------------
+void TreeScene::cleanUpScene() {
+	
+
+	for(int i=treeBlobs.size()-1; i>=0; i--) {
+		treeBlobs.erase(treeBlobs.begin() + i);
+	}
+	treeBlobs.clear();
+	
+	
+	for(int i=trees.size()-1; i>=0; i--) {
+		trees.erase(trees.begin() + i);
+	}
+	trees.clear();
+	
+	
+}
+
 
 //--------------------------------------------------------------
 void TreeScene::keyPressed(int key) {
@@ -117,6 +145,9 @@ void TreeScene::updateFlocking() {
 		for(int q=0; q<tracker->blobs.size(); q++) {
 			
 			ofRectangle newRec = tracker->blobs[q].boundingRect;
+			
+			float forceFactor = (newRec.width * newRec.height) / (packet.width*packet.height);
+			
 			newRec.x		*= TREE_SCALE;
 			newRec.y		*= TREE_SCALE;
 			newRec.width	*= TREE_SCALE;
@@ -124,14 +155,10 @@ void TreeScene::updateFlocking() {
 			ofPoint center   = tracker->blobs[q].centroid * TREE_SCALE;
 			
 			
-			butterflys[i].addAttractionForce(center.x, center.y - 20, 200, 1.5);
+			butterflys[i].addAttractionForce(center.x, center.y - 20, 200, 1.0);
 			
-			//			butterflys[i].addAttractionForce(tracker->blobs[q].centroid.x, tracker->blobs[q].centroid.y, 20+barea*250, 1.5+(barea*2.0));
-			//			butterflys[i].addAttractionForce(mouseX, mouseY,200, 2.0);
 			
 		}
-		// this was something we tried in class (partitcle move away from mouse...)
-		//particles[i].addRepulsionForce(mouseX, mouseY, 150, 0.4);
 	}
 	
 	for (int i = 0; i < butterflys.size(); i++){
@@ -139,11 +166,11 @@ void TreeScene::updateFlocking() {
 		butterflys[i].addDampingForce();
 		butterflys[i].update();
 	}
-		
+	
 	// wrap torroidally.
 	for (int i = 0; i < butterflys.size(); i++){
 		ofxVec2f pos = butterflys[i].pos;
-			
+		
 		float offx = ((OFFSCREEN_WIDTH - W)/2);
 		float offy = (OFFSCREEN_HEIGHT - H);
 		float gap  = 20;
@@ -173,7 +200,7 @@ void TreeScene::update() {
 	// --------------------- add some fern
 	if((int)ofRandom(0, 30) == 10) {
 		if(ferns.size() <= 10) {	// just 10 for now
-		//	ferns.push_back(RandomFern());
+			//	ferns.push_back(RandomFern());
 			printf("-- new fern --\n");
 			
 		}
@@ -192,9 +219,9 @@ void TreeScene::update() {
 			trees.back().initTree(0, 0, (int)ofRandom(20, 50));	// <--- i need a init pos
 			trees.back().img = &theDot;
 			trees.back().id = treeBlobs[i].id;
-				
+			
 			for(int j=0; j<tracker->blobs.size(); j++) {
-
+				
 				ofRectangle newRec = tracker->blobs[j].boundingRect;
 				newRec.x		*= TREE_SCALE;
 				newRec.y		*= TREE_SCALE;
@@ -203,10 +230,10 @@ void TreeScene::update() {
 				
 				trees.back().rect	  = newRec;
 				trees.back().center   = tracker->blobs[j].centroid * TREE_SCALE;
-			
+				
 				// init the tree pos
 				trees.back().treeBaseD   = trees.back().center;
-				trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height;
+				trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height + H;
 				trees.back().treeBase = trees.back().treeBaseD;
 			}
 		}
@@ -245,7 +272,8 @@ void TreeScene::update() {
 		newRec.y		*= TREE_SCALE;
 		newRec.width	*= TREE_SCALE;
 		newRec.height	*= TREE_SCALE;
-			
+		newRec.height   += 30;
+		
 		for(int j=0; j<trees.size(); j++) {
 			if(lookID == trees[j].id) {
 				trees[j].frameAge = 0;// tracker->blobs[i].frameAge;
@@ -359,9 +387,30 @@ void TreeScene::draw() {
 	
 	// draw the people
 	for(int i=0; i<packet.nBlobs; i++) {
-		ofSetColor(255, 255, 255);
-		ofFill();
 		
+		
+		if(panel.getValueB("BPEOPLE_GLOW")) {
+			// drop shadow
+			ofEnableAlphaBlending();
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			for (int j = 0; j < packet.nPts[i]; j+=2) {
+				float x = packet.pts[i][j].x * TREE_SCALE;
+				float y = packet.pts[i][j].y * TREE_SCALE;
+				
+				
+				ofSetRectMode(OF_RECTMODE_CENTER);
+				ofSetColor(255, 255, 255, panel.getValueF("PEOPLE_GLOW"));
+				theDotS.draw(x, y, 55, 55);
+				ofSetRectMode(OF_RECTMODE_CORNER);
+			}
+			glDisable(GL_BLEND);
+			ofDisableAlphaBlending();
+		}
+		
+		// people
+		ofSetColor(50, 50, 50);
+		ofFill();
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++) {
 			
@@ -371,6 +420,10 @@ void TreeScene::draw() {
 			ofVertex(x, y);
 		}
 		ofEndShape(true);
+		
+		
+		
+		
 	}
 	
 	

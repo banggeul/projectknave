@@ -10,6 +10,8 @@
 class MagicTree {
 	
 public:
+	
+	
 	float				trunkGirth;
 	int					totalTreePts;
 	int					treePtsCount;
@@ -36,6 +38,13 @@ public:
 	
 	// the fade in and out
 	float alpha;
+	
+	
+	
+	// Branches
+	int					numBranches;
+	vector <MagicTree>  children;
+	
 	
 	
 	
@@ -87,6 +96,10 @@ public:
 		
 		// color & alpha
 		alpha = 255;
+	
+		
+		// num of brack i can have
+		numBranches = 3;
 		
 	}
 	
@@ -168,7 +181,7 @@ public:
 		// ease the tree around
 		treeBaseD   = center;
 		treeBaseD.y = rect.y + rect.height;
-		treeBase += (treeBaseD-treeBase) / 10.0;
+		treeBase += (treeBaseD-treeBase) / 40.0;
 		
 		
 		
@@ -230,6 +243,10 @@ public:
 			// and need to add a new point
 			if(growInc == 0) {
 				treePtsCount ++;
+				
+				if(treePtsCount % 2 == 0) {
+					printf("-- add a branch here ---\n");
+				}
 				/*
 				cnt ++;
 				if(cnt > length) cnt = length;
@@ -334,30 +351,30 @@ public:
 				
 			}
 			glEnd();
-			
-			
-			for(int i=1; i<count; i++) {
-				
-				pos1 = pnts[i];
-				pos2 = pnts[i-1];
-				perp.set(pos1 - pos2);
-				perp.perpendicular(scr);
-				
-				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
-				float thickness = trunkGirth - (n * trunkGirth/1.6);
-				float offx		= (perp.x * thickness);
-				float offy		= perp.y * thickness;
-				
-				ofxVec2f v1(pos1.x - offx, pos1.y - offy);
-				ofxVec2f v2;
-				v2.x = v1.y;
-				v2.y = -v1.x;
-				//glVertex3f(pos1.x - offx, pos1.y - offy, 0);
-				//glVertex3f(pos1.x + offx, pos1.y + offy, 0);
-				ofLine(v1.x, v1.y, v2.x, v2.y);
-			}
-			
-		
+		//	
+//			
+//			for(int i=1; i<count; i++) {
+//				
+//				pos1 = pnts[i];
+//				pos2 = pnts[i-1];
+//				perp.set(pos1 - pos2);
+//				perp.perpendicular(scr);
+//				
+//				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
+//				float thickness = trunkGirth - (n * trunkGirth/1.6);
+//				float offx		= (perp.x * thickness);
+//				float offy		= perp.y * thickness;
+//				
+//				ofxVec2f v1(pos1.x - offx, pos1.y - offy);
+//				ofxVec2f v2;
+//				v2.x = v1.y;
+//				v2.y = -v1.x;
+//				//glVertex3f(pos1.x - offx, pos1.y - offy, 0);
+//				//glVertex3f(pos1.x + offx, pos1.y + offy, 0);
+//				ofLine(v1.x, v1.y, v2.x, v2.y);
+//			}
+//			
+//		
 			
 			
 			
