@@ -114,8 +114,12 @@ void StarScene::update(){
 					PM.particles[PM.particles.size()-1].radius = 30;
 					PM.particles[PM.particles.size()-1].energy = 0.20f;
 					
-					//PM.VF.addIntoField( (float)SOBJ[j].center.x / (float)videoGray.width, (float)SOBJ[j].center.y / (float)videoGray.height, ofxVec2f(SOBJ[j].vel.x*0.05, SOBJ[j].vel.y*0.05), 0.22);
+					PM.VF.addIntoField( ((float)SOBJ[j].center.x *scalex ) / (float)OFFSCREEN_WIDTH, (float)(SOBJ[j].center.y*scaley)/ (float)OFFSCREEN_HEIGHT, ofxVec2f(SOBJ[j].vel.x*0.0003, SOBJ[j].vel.y*0.0003), 0.09);
 					PM.particles[PM.particles.size()-1].findLockTarget(temp.getPixels(), temp.width, temp.height);
+					
+					
+					cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
+					
 					/*
 					 
 					 //------------------------------------- make some particles
