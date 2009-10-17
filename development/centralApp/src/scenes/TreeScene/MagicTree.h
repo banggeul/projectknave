@@ -70,11 +70,10 @@ public:
 	MagicTree() {
 		
 		// the base of the trees
-		treeBase	= 0;
-		treeBaseD	= 0;
+		treeBase		= 0;
+		treeBaseD		= 0;
 		
-		
-		trunkGirth		= 100;	
+		trunkGirth		= 20;	
 		totalTreePts	= 0;
 		treePtsCount	= 0;
 	
@@ -133,14 +132,6 @@ public:
 		des				= root;
 		
 		setAngle(0, 1);
-		
-		// init the tree pos
-		treeBaseD   = center;
-		treeBaseD.y = rect.y + rect.height;
-		treeBase += (treeBaseD-treeBase) / 10.0;
-		
-		
-		
 		
 		printf("--- new branch[%i] ---\n", pid);
 		
@@ -343,6 +334,33 @@ public:
 				
 			}
 			glEnd();
+			
+			
+			for(int i=1; i<count; i++) {
+				
+				pos1 = pnts[i];
+				pos2 = pnts[i-1];
+				perp.set(pos1 - pos2);
+				perp.perpendicular(scr);
+				
+				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
+				float thickness = trunkGirth - (n * trunkGirth/1.6);
+				float offx		= (perp.x * thickness);
+				float offy		= perp.y * thickness;
+				
+				ofxVec2f v1(pos1.x - offx, pos1.y - offy);
+				ofxVec2f v2;
+				v2.x = v1.y;
+				v2.y = -v1.x;
+				//glVertex3f(pos1.x - offx, pos1.y - offy, 0);
+				//glVertex3f(pos1.x + offx, pos1.y + offy, 0);
+				ofLine(v1.x, v1.y, v2.x, v2.y);
+			}
+			
+		
+			
+			
+			
 			
 		}
 		

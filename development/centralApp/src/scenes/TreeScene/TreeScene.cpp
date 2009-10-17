@@ -1,9 +1,15 @@
 #include "TreeScene.h"
 
+
 // ------------------------------------------
 void TreeScene::setup() {
 	
-	
+	butterFlyColor.push_back(0xd1007e);
+	butterFlyColor.push_back(0x00a3c4);
+	butterFlyColor.push_back(0x6ac539);
+	butterFlyColor.push_back(0xff5500);
+	butterFlyColor.push_back(0xff0009);
+	 
 	theDot.loadImage("sceneAssets/monsters/dot.png");
 	
 	
@@ -14,7 +20,10 @@ void TreeScene::setup() {
 	panel.setWhichPanel("Triggers");
 	panel.addSlider("Tree Delay", "TREE_DELAY", 1.3, 0.0, 10.0, false);
 	panel.addSlider("Bottom Offset", "BOTTOM_OFFSET", 100, 0.0, 500.0, false);
+	panel.addSlider("People Scale", "PEOPLE_SCALE", 2.4, 1.0, 5.0, false);
 	
+	panel.loadSettings("settings/panels_xml/treeScenePanel.xml");
+
 	
 	// ------------ The Ferr Contour
 	building.setupBuilding("buildingRefrences/buidlingFiles/treeFerryContour.xml");
@@ -39,11 +48,20 @@ void TreeScene::setup() {
 	load();
 	
 	// ------------ Get some Flocling butterflys in
+	ButterflyAnimation tempButterFly;
+	tempButterFly.addFile("sceneAssets/trees/Butterfly_001.svg");
+	tempButterFly.addFile("sceneAssets/trees/Butterfly_002.svg");
+	tempButterFly.addFile("sceneAssets/trees/Butterfly_003.svg");
+	tempButterFly.addFile("sceneAssets/trees/Butterfly_004.svg");
+	
 	for (int i = 0; i < 60; i++){
-		ButterFly bf;
-		bf.setInitialCondition(ofRandom(200, 500), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
+		ButterFlyParticle bf;
+		bf.setInitialCondition(ofRandom(200, OFFSCREEN_WIDTH), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
 		bf.setupButterfly();
+		
 		butterflys.push_back(bf);
+		butterflys.back().img = &theDot;
+		butterflys.back().color = butterFlyColor[(int)ofRandom(0, butterFlyColor.size()-1)];
 	}
 	
 }
@@ -98,7 +116,15 @@ void TreeScene::updateFlocking() {
 		
 		for(int q=0; q<tracker->blobs.size(); q++) {
 			
-			float barea  = (float)(tracker->blobs[q].boundingRect.height*tracker->blobs[q].boundingRect.width) / (float)(packet.width*packet.height);
+			ofRectangle newRec = tracker->blobs[q].boundingRect;
+			newRec.x		*= TREE_SCALE;
+			newRec.y		*= TREE_SCALE;
+			newRec.width	*= TREE_SCALE;
+			newRec.height	*= TREE_SCALE;
+			ofPoint center   = tracker->blobs[q].centroid * TREE_SCALE;
+			
+			
+			butterflys[i].addAttractionForce(center.x, center.y - 20, 200, 1.5);
 			
 			//			butterflys[i].addAttractionForce(tracker->blobs[q].centroid.x, tracker->blobs[q].centroid.y, 20+barea*250, 1.5+(barea*2.0));
 			//			butterflys[i].addAttractionForce(mouseX, mouseY,200, 2.0);
@@ -111,24 +137,20 @@ void TreeScene::updateFlocking() {
 	for (int i = 0; i < butterflys.size(); i++){
 		butterflys[i].addFlockingForce();
 		butterflys[i].addDampingForce();
-		//butterflys[i].update();
-		butterflys[i].pos.x -= 10.0;
+		butterflys[i].update();
 	}
-	
-	
+		
 	// wrap torroidally.
 	for (int i = 0; i < butterflys.size(); i++){
 		ofxVec2f pos = butterflys[i].pos;
-		
-		//	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
-		
-		float offx = ((OFFSCREEN_WIDTH - packet.width)/2);
-		float offy = (OFFSCREEN_HEIGHT-packet.height);
-		
-		if (pos.x < -(OFFSCREEN_WIDTH-offx)) pos.x = OFFSCREEN_WIDTH-offx;
-		if (pos.x > OFFSCREEN_WIDTH-offx) pos.x = 0;
-		if (pos.y < -OFFSCREEN_HEIGHT) pos.y = OFFSCREEN_HEIGHT;
-		if (pos.y > OFFSCREEN_WIDTH) pos.y = 0;
+			
+		float offx = ((OFFSCREEN_WIDTH - W)/2);
+		float offy = (OFFSCREEN_HEIGHT - H);
+		float gap  = 20;
+		if (pos.x < -offx)						pos.x = OFFSCREEN_WIDTH-offx;
+		if (pos.x > OFFSCREEN_WIDTH-offx)		pos.x = -offx;
+		if (pos.y < -(offy+gap))				pos.y = offy;
+		if (pos.y > offy)						pos.y = - (offy + gap);
 		
 		butterflys[i].pos = pos;
 	}
@@ -144,7 +166,7 @@ void TreeScene::updateFlocking() {
 void TreeScene::update() {
 	
 	panel.update();
-	
+	TREE_SCALE = panel.getValueF("PEOPLE_SCALE");
 	
 	
 	
@@ -297,7 +319,9 @@ void TreeScene::drawTop() {
 // ---------------------------------------------------------
 void TreeScene::draw() {
 	
-	
+	ofSetColor(0, 25, 255);
+	ofFill();
+	ofRect(-300, -500, 1000000, 100000);
 	
 	
 	ofEnableAlphaBlending();
@@ -335,7 +359,7 @@ void TreeScene::draw() {
 	
 	// draw the people
 	for(int i=0; i<packet.nBlobs; i++) {
-		ofSetColor(255, i*20, 255);
+		ofSetColor(255, 255, 255);
 		ofFill();
 		
 		ofBeginShape();

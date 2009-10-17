@@ -12,13 +12,15 @@
 #include "TreeBlob.h"
 #include "MagicTree.h"
 #include "particle.h"
-#include "ButterFly.h"
-
+#include "ButterFlyParticle.h"
+#include "ButterflyAnimation.h"
 
 
 class TreeScene : public baseScene {
 	
 public: 
+	
+	vector <int> butterFlyColor;
 	
 	void setup();
 	void update();
@@ -44,7 +46,7 @@ public:
 	
 	// ---------------------- offset & scale
 	float					W, H;
-	
+	float					TREE_SCALE;
 	
 	// ---------------------- key and mouse
 	int						minSpawnToGrowW, minSpawnToGrowH;
@@ -54,13 +56,13 @@ public:
 	ofImage theDot;
 	
 	// ---------------------- Tree People
-	vector <TreeBlob>		treeBlobs;
-	vector <ButterFly>		butterflys;
-	vector <MagicTree>		trees;
+	vector <TreeBlob>				treeBlobs;
+	vector <ButterFlyParticle>		butterflys;
+	vector <MagicTree>				trees;
 	
 	// ---------------------- Ferns
-	vector <RandomFern>		ferns;
-	int						fernTimer;
+	vector <RandomFern>				ferns;
+	int								fernTimer;
 	
 	
 	
