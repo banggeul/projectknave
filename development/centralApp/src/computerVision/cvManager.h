@@ -31,66 +31,68 @@ enum {
 typedef struct {
 	computerVisionPacket packet;
 	int nBytesRead;
-} partialReadObject;			
+} partialReadObject;
 
 
 class cvManager {
-	
+
 	public:
-	
-	
+
+
 	cvManager();
 	~cvManager();
-		
+
 	//changing cameras or switching from/to the camera mode
 	//requires the app to be restarted - mabe we can change this?
 	void setupCamera(int which, int deviceNumber, int width, int height);
 	void setupVideo(string videoPath);
 	void setupCV();
-	
+
 	void setFBOStich(int fboW, int fboH);
-	
+
 	void setupNonCV();
 	void setupGUI();
 	void updateGUI();
-	
+
+	void setScene(int curScene);
+
 	void mouseDragged(int x, int y, int button);
 	void mousePressed(int x, int y, int button);
 	void mouseReleased();
-	
+
 	ofxControlPanel panel;
 
-	
+
 	bool isFrameNew();
-	
+
 	//do all our openCV allocation
-	//---------------------------		
-		
+	//---------------------------
+
 	//good for adjusting the color balance, brightness etc
 	void openCameraSettings(int which=0);
-	
+
 	void update();
-	
+
 	void draw();
 
 	//-------------
-	//-------------	
+	//-------------
 	ofVideoPlayer  	VP[2];
 	ofVideoGrabber 	VG[2];
-	
-	
+
+
 	ofPoint		warpFrom[4];
 	ofPoint		warpTo[4];
-	
+
 	//int					threshold;
 	//int					maxBlobSize, minBlobSize;
-	
+
 	bool					bUsingVideoGrabber;
-	bool					bSetup;	
+	bool					bSetup;
 	int						width, height;
 	int						inputW, inputH;
 
-	
+
 	ofxCvColorImage			VideoFrame;
 	ofxCvGrayscaleImage		GreyFrame;
 	ofxCvGrayscaleImage		GreyFramePostWarp;
@@ -99,29 +101,29 @@ class cvManager {
 	ofxCvGrayscaleImage		diffImage;
 	ofxCvGrayscaleImage		PresenceFrameDialate;
 	ofxCvContourFinder		Contour;
-	
+
 	int						nWhitePixels;
 	int						nMovingPixels;
-	
-	
+
+
 	//-----------------------------------
-	//		* fbo stiching * 
+	//		* fbo stiching *
 	bool					bUseFBOSticher;
 	stricherRenderManager	stichManger;
 	ofRectangle				stichGui;
 	ofImage					dualImage;
-	
+
 	//-----------------------------------
-	//		* packet * 
-	
+	//		* packet *
+
 	void					fillPacket();
 	cvStrokeResampler		SR;
 	computerVisionPacket	*	packet;
-	
-	
+
+
 	//-----------------------------------
-	//		* settings * 
-	
+	//		* settings *
+
 	ofxXmlSettings			XML;
 	int						id;		 // sender?  receiver?
 	int						sceneId;
@@ -129,43 +131,43 @@ class cvManager {
 	int						nVideos;
 	int						videoSource[2];
 	string					videoFile[2];
-	
-	
-	
+
+
+
 	//-----------------------------------
-	//		* network * 
-	
-	
+	//		* network *
+
+
 	void					setupReceiver();
 	void					receiveFromNetwork();
-	
+
 	void					setupSender();
 	void					sendToNetwork();
-	
+
 	bool					bNetworkSetup;
 	ofxUDPManager			manager;
 	string					IP;
 	unsigned short			port;
 	unsigned char *			packetData;
-	
+
 	ofxTCPServer					TCPServer;
 	ofxTCPClient					tcpClient;
 	vector < partialReadObject * >	partialReadObjects;
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	int connectTime;
 	int deltaTime;
 	bool weConnected;
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 };
 

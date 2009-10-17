@@ -78,6 +78,7 @@ void cvManager::setupNonCV(){
 	setupCV();
 	setupGUI();
 
+	panel.loadSettings("settings/panels_xml/cvManagerPanel_" + ofToString(sceneId) + ".xml");
 
 	if(bLive) printf("\ncamera - w:%i h:%i\n", inputW, inputH);
 	else 	  printf("\nvideo - w:%i h:%i\n", inputW, inputH);
@@ -110,9 +111,10 @@ void cvManager::setupGUI() {
 	panel.setWhichPanel("input");
 	panel.addToggle("Video 0 Settings", "CAMERA_0_SETTING", false);
 	panel.addToggle("Video 1 Settings", "CAMERA_1_SETTING", false);
+
+	panel.addSlider("scene id", "SCENE_ID", 0, 0, 4, true);
+
 	panel.addToggle("save coords", "STICH_COORDS", false);
-
-
 
 	panel.setWhichPanel("binary / blob");
 	panel.addSlider("horizontal offset", "CV_MANAGER_PANEL_HORIZONTAL_OFFSET", 0, -320, 320, false);
@@ -147,25 +149,13 @@ void cvManager::setupGUI() {
 	warpTo[1].set(VideoFrame.width, 0);
 	warpTo[2].set(VideoFrame.width, VideoFrame.height);
 	warpTo[3].set(0, VideoFrame.height);
-
-
-
-	//Slider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
-
-	panel.loadSettings("settings/panels_xml/cvManagerPanel.xml");
-
 }
 
 void cvManager::updateGUI(){
-
-
-
 	warpFrom[0].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTA", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTA", 1));
 	warpFrom[1].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTB", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTB", 1));
 	warpFrom[2].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTC", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTC", 1));
 	warpFrom[3].set( panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTD", 0), panel.getValueI("CV_MANAGER_PANEL_VIDEO_PTD", 1));
-
-
 }
 
 
@@ -203,14 +193,17 @@ void cvManager::fillPacket(){
 		ofxCvBlob& blob = Contour.blobs[i];
 		vector<ofPoint>& points = blob.pts;
 		for(int j = 0; j < points.size(); j++) {
-			points[j].x = points[j].x * xScale;
-			points[j].x += xOffset;
-			points[j].y = points[j].y * yScale;
-			points[j].y += yOffset;
+			points[j].x = (points[j].x * xScale) + xOffset;
+			points[j].y = (points[j].y * yScale) + yOffset;
 		}
+		ofRectangle& boundingRect = blob.boundingRect;
+		boundingRect.x = (boundingRect.x * xScale) + xOffset;
+		boundingRect.y = (boundingRect.y * yScale) + yOffset;
+		boundingRect.width = (boundingRect.width * xScale);
+		boundingRect.height = (boundingRect.height * yScale);
 	}
 
-	memset( (char *)(packet), 0, sizeof(computerVisionPacket));
+	memset((char *)(packet), 0, sizeof(computerVisionPacket));
 
 	int nCentroids = MIN(Contour.nBlobs, MAX_N_CENTROIDS);
 	packet->nCentroids = nCentroids;
@@ -335,7 +328,7 @@ void cvManager::setFBOStich(int fboW, int fboH) {
 	if(bSetup || !bUseFBOSticher) return;
 
     stichManger.allocateForNScreens(nVideos, fboW, fboH);
-    stichManger.loadFromXml("settings/fboStichSettings.xml");
+    stichManger.loadFromXml("settings/stichSettings/fboStichSettings_0.xml");
     stichGui   = ofRectangle(0, 0, fboW, fboH);
 	dualImage.allocate(fboW, fboH, OF_IMAGE_COLOR);
 
@@ -395,16 +388,22 @@ bool cvManager::isFrameNew(){
 	return false;
 }
 
+void cvManager::setScene(int curScene) {
+	if(sceneId != curScene) {
+		sceneId = curScene;
+		panel.loadSettings("settings/panels_xml/cvManagerPanel_" + ofToString(sceneId) + ".xml");
+		stichManger.loadFromXml("settings/stichSettings/fboStichSettings_" + ofToString(sceneId) + ".xml");
+	}
+}
+
 
 //standard video processing
 //---------------------------
 void cvManager::update(){
-
-
-
 	panel.update();
 	updateGUI();
 
+	setScene(panel.getValueI("SCENE_ID"));
 
 	// open video settings
 	bool bCamSettings_0 = panel.getValueB("CAMERA_0_SETTING");
@@ -930,138 +929,3 @@ void cvManager::draw() {
 
 	panel.draw();
 }
-
-
-
-
-
-//void trackingManager::setupGui(){
-//
-//	panel.setup("cv panel", 700, 20, 300, 450);
-//	panel.addPanel("image adjustment", 1, false);
-//	panel.addPanel("edge fixer", 1, false);
-//	panel.addPanel("blob detection", 1, false);
-//	panel.addPanel("glint detection", 1, false);
-//
-//	if (IM.mode == INPUT_VIDEO){
-//		panel.addPanel("video file settings", 1, false);
-//	} else {
-//		panel.addPanel("live video settings", 1, false);
-//	}
-//
-//	//---- gaze
-//	panel.setWhichPanel("image adjustment");
-//	panel.setWhichColumn(0);
-//
-//	panel.addToggle("flip horizontal ", "B_RIGHT_FLIP_X", false);
-//	panel.addToggle("flip vertical ", "B_RIGHT_FLIP_Y", false);
-//
-//	panel.addToggle("use contrast / bri", "B_USE_CONTRAST", true);
-//	panel.addSlider("contrast ", "CONTRAST", 0.28f, 0.0, 1.0f, false);
-//	panel.addSlider("brightness ", "BRIGHTNESS", -0.02f, -1.0, 3.0f, false);
-//
-//	panel.addToggle("use gamma ", "B_USE_GAMMA", true);
-//	panel.addSlider("gamma ", "GAMMA", 0.57f, 0.01, 3.0f, false);
-//
-//	panel.addSlider("threshold ", "THRESHOLD_GAZE", threshold, 0, 255, true);
-//
-//
-//
-//
-//	panel.setWhichPanel("blob detection");
-//	panel.addToggle("use dilate", "B_USE_DILATE", true);
-//	panel.addSlider("dilate num ", "N_DILATIONS", 0, 0, 10, true);
-//    panel.addSlider("min blob","MIN_BLOB",10*10,0,5000,true);
-//    panel.addSlider("max blob","MAX_BLOB",100*100,0,50500,true);
-//
-//	//---- tracker edges
-//	panel.setWhichPanel("edge fixer");
-//	panel.setWhichColumn(0);
-//	panel.addSlider("x position ", "EDGE_MASK_X", 320, 0, 640, true);
-//	panel.addSlider("y position ", "EDGE_MASK_Y", 240, 0, 640, true);
-//	panel.addSlider("inner radius ", "EDGE_MASK_INNER_RADIUS", 250, 0, 500, true);
-//	panel.addSlider("outer radius ", "EDGE_MASK_OUTER_RADIUS", 350, 0, 600, true);
-//
-//
-//	panel.setWhichPanel("glint detection");
-//	panel.setWhichColumn(0);
-//	panel.addSlider("glint threshold ", "GLINT_THRESHOLD", 80,0,255, false);
-//	panel.addSlider("glint min size ", "GLINT_MIN_SIZE", 10,0,1000, true);
-//	panel.addSlider("glint max size ", "GLINT_MAX_SIZE", 1000,0,10000, true);
-//
-//
-//
-//
-//	if (IM.mode == INPUT_VIDEO){
-//		panel.setWhichPanel("video file settings");
-//		// TODO: add theo's video playing things.... [zach]
-//	} else {
-//		panel.setWhichPanel("live video settings");
-//		panel.addToggle("load video settings", "VIDEO_SETTINGS", false);
-//	}
-//
-//
-//
-//	panel.loadSettings("settings/trackingSettings.xml");
-//
-//
-//}
-//
-//void trackingManager::updateGui(){
-//
-//	tracker.flip(  panel.getValueB("B_RIGHT_FLIP_X"),  panel.getValueB("B_RIGHT_FLIP_Y") );
-//
-//	minBlob = panel.getValueI("MIN_BLOB");
-//	maxBlob = panel.getValueI("MAX_BLOB");
-//
-//	threshold				= panel.getValueI("THRESHOLD_GAZE");
-//
-//	tracker.gamma			= panel.getValueF("GAMMA");
-//	tracker.bUseGamma		= panel.getValueB("B_USE_GAMMA");
-//
-//	tracker.contrast		= panel.getValueF("CONTRAST");
-//	tracker.brightness		= panel.getValueF("BRIGHTNESS");
-//	tracker.bUseContrast	= panel.getValueB("B_USE_CONTRAST");
-//
-//	tracker.nDilations		= panel.getValueI("N_DILATIONS");
-//	tracker.bUseDilate		= panel.getValueB("B_USE_DILATE");
-//
-//	int oldx				= tracker.edgeMaskStartPos.x;
-//	int oldy				= tracker.edgeMaskStartPos.y;
-//	int oldir				= tracker.edgeMaskInnerRadius;
-//	int oldor				= tracker.edgeMaskOuterRadius;
-//
-//	tracker.edgeMaskStartPos.x		= panel.getValueI("EDGE_MASK_X");
-//	tracker.edgeMaskStartPos.y		= panel.getValueI("EDGE_MASK_Y");
-//	tracker.edgeMaskInnerRadius	= panel.getValueI("EDGE_MASK_INNER_RADIUS");
-//	tracker.edgeMaskOuterRadius	= panel.getValueI("EDGE_MASK_OUTER_RADIUS");
-//
-//	tracker.glintThreshold = panel.getValueI("GLINT_THRESHOLD");
-//	tracker.minGlintSize = panel.getValueI("GLINT_MIN_SIZE");
-//	tracker.maxGlintSize = panel.getValueI("GLINT_MAX_SIZE");
-//
-//	if (	oldx	!= tracker.edgeMaskStartPos.x  ||
-//		oldy	!= tracker.edgeMaskStartPos.y  ||
-//		oldir	!= tracker.edgeMaskInnerRadius ||
-//		oldor	!= tracker.edgeMaskOuterRadius	){
-//
-//		tracker.calculateEdgePixels();
-//
-//	}
-//
-//	if (IM.mode != INPUT_VIDEO){
-//		panel.setWhichPanel("live video settings");
-//		if (panel.getValueB("VIDEO_SETTINGS") == true){
-//
-//#ifdef TARGET_OSX
-//			// since macs fuck up bad fullscreen with video settings
-//			ofSetFullscreen(false);
-//#endif
-//			IM.vidGrabber.videoSettings();
-//			panel.setValueB("VIDEO_SETTINGS", false);
-//		}
-//	}
-//
-//}
-
-
