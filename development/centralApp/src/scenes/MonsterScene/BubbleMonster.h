@@ -51,7 +51,7 @@ public:
 	// settings
 	bool				bMonster;
 	bool				bDebug;
-	
+	bool				bJustBecameMonster;
 	
 	// monster
 	int					monsterID;
@@ -83,6 +83,7 @@ public:
 	
 	//-------------------------------------------------------------- init
 	BubbleMonster() {
+		bJustBecameMonster = false;
 		bMonster  = false;
 		monsterID = -1;
 		bDebug	  = false;
@@ -265,6 +266,18 @@ public:
 				}
 			}
 			
+			// just became a monster
+			if(!bJustBecameMonster) {
+				ofxOscMessage msg;
+				msg.setAddress("/bang");							//	bang
+				msg.addStringArg("becameMonster");						//	new monster
+				msg.addIntArg(3);									//	SCENE 3
+				msg.addIntArg(monsterMode);					//  what kind of monster are we
+				msg.addIntArg(monsterID);									//	monster ID
+				msg.addIntArg(numEyes);
+				ofxDaito::sendCustom(msg);
+				bJustBecameMonster = true;
+			}
 		}
 		
 		// ---------------------------------- will come back to this
@@ -447,56 +460,56 @@ public:
 		}
 		
 		/*
-		// ------------------------------------ MEGA a spiker monster (SMOOTHER)
-		if(monsterMode == MEGA_SPIKER || monsterMode == MEGA_SPIKER_SOFT) {
-			
-			ofxVec2f	norml, normlIn;
-			ofxVec2f	diff;
-			ofxPoint2f	mid;
-			ofxPoint2f	normalScaled;
-			
-			// draw the shape of the body
-			ofFill();
-			ofBeginShape();
-			for(int i=0; i<contourSmooth.size(); i++) {
-				ofCurveVertex(contourSmooth[i].x, contourSmooth[i].y);
-			}
-			ofEndShape(true);
-			
-			
-			
-			// the spike HELL YA
-			for(int k=1; k<contourSimple.size(); k+=5) {
-				
-				diff = contourSimple[k] - contourSimple[k-1];
-				diff.normalize();
-				norml.set(diff.y, -diff.x);
-				
-				normlIn.set(-diff.y, diff.x);
-				
-				normalScaled  = contourSimple[k] + (norml * (50+(area*60)));				
-				
-				
-				if(monsterMode == MEGA_SPIKER) {
-					glLineWidth(6.0);
-					ofLine(contourSimple[k].x, contourSimple[k].y,
-						   normalScaled.x, normalScaled.y);
-					glLineWidth(1.0);
-				} else {
-					
-					
-					float offset = 10;
-					if(normalScaled.x > pos.x) offset = -10;
-					
-					glPushMatrix();
-					glTranslatef(contourSimple[k].x+offset, contourSimple[k].y-20, 0);
-					ofEllipse(0, 0, 10, 40);
-					glPopMatrix();
-				}
-				
-			}
-		}
-		*/
+		 // ------------------------------------ MEGA a spiker monster (SMOOTHER)
+		 if(monsterMode == MEGA_SPIKER || monsterMode == MEGA_SPIKER_SOFT) {
+		 
+		 ofxVec2f	norml, normlIn;
+		 ofxVec2f	diff;
+		 ofxPoint2f	mid;
+		 ofxPoint2f	normalScaled;
+		 
+		 // draw the shape of the body
+		 ofFill();
+		 ofBeginShape();
+		 for(int i=0; i<contourSmooth.size(); i++) {
+		 ofCurveVertex(contourSmooth[i].x, contourSmooth[i].y);
+		 }
+		 ofEndShape(true);
+		 
+		 
+		 
+		 // the spike HELL YA
+		 for(int k=1; k<contourSimple.size(); k+=5) {
+		 
+		 diff = contourSimple[k] - contourSimple[k-1];
+		 diff.normalize();
+		 norml.set(diff.y, -diff.x);
+		 
+		 normlIn.set(-diff.y, diff.x);
+		 
+		 normalScaled  = contourSimple[k] + (norml * (50+(area*60)));				
+		 
+		 
+		 if(monsterMode == MEGA_SPIKER) {
+		 glLineWidth(6.0);
+		 ofLine(contourSimple[k].x, contourSimple[k].y,
+		 normalScaled.x, normalScaled.y);
+		 glLineWidth(1.0);
+		 } else {
+		 
+		 
+		 float offset = 10;
+		 if(normalScaled.x > pos.x) offset = -10;
+		 
+		 glPushMatrix();
+		 glTranslatef(contourSimple[k].x+offset, contourSimple[k].y-20, 0);
+		 ofEllipse(0, 0, 10, 40);
+		 glPopMatrix();
+		 }
+		 
+		 }
+		 }
+		 */
 		
 		// ------------------------------------  a spiker monster (convex)
 		if(monsterMode == SPIKER_MONSTER) {
