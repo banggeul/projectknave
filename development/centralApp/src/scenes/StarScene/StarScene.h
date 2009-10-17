@@ -60,7 +60,7 @@ public:
 	
 	vector < starObject > SOBJ;
 	
-
+	bool	bFinal;
 };
 
 

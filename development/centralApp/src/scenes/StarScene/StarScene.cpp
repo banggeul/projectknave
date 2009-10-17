@@ -22,7 +22,7 @@ void StarScene::setup(){
 
 	bAllocatedYet = false;
 	
-	
+	bFinal = false;
 	
 }
 
@@ -98,7 +98,7 @@ void StarScene::update(){
 				if (pct > 0.1f){
 					
 					
-					
+					if (!bFinal){
 					PM.particles.erase(PM.particles.begin());
 					
 					groupableParticle tempParticle;
@@ -116,9 +116,9 @@ void StarScene::update(){
 					
 					PM.VF.addIntoField( ((float)SOBJ[j].center.x *scalex ) / (float)OFFSCREEN_WIDTH, (float)(SOBJ[j].center.y*scaley)/ (float)OFFSCREEN_HEIGHT, ofxVec2f(SOBJ[j].vel.x*0.0003, SOBJ[j].vel.y*0.0003), 0.09);
 					PM.particles[PM.particles.size()-1].findLockTarget(temp.getPixels(), temp.width, temp.height);
+					}
 					
-					
-					cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
+					///cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
 					
 					/*
 					 
@@ -196,13 +196,17 @@ void StarScene::announceChange(int change){
 
 void StarScene::keyPressed(int key){
 
+	
+	
+	
 	switch (key){
-		case '0': announceChange(0); PM.mode = 0; break;
-		case '1': announceChange(1); PM.mode = 1; break;
-		case '2': announceChange(2); PM.mode = 2; break;
-		case '3': announceChange(3); PM.mode = 3; break;
-		case '4': announceChange(4); PM.mode = 4; break;
-		case '5': announceChange(5); PM.mode = 5; break;
+		case '0': bFinal = false;announceChange(0); PM.mode = 0; break;
+		case '1': bFinal = false;announceChange(1); PM.mode = 1; break;
+		case '2': bFinal = false;announceChange(2); PM.mode = 2; break;
+		case '3': bFinal = false;announceChange(3); PM.mode = 3; break;
+		case '4': bFinal = false;announceChange(4); PM.mode = 4; break;
+		case '5': bFinal = false;announceChange(5); PM.mode = 5; break;
+		case '6': bFinal = true; PM.mode = 5; break;
 	}
 
 }
