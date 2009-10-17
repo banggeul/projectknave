@@ -115,13 +115,18 @@ void cvManager::setupGUI() {
 
 
 	panel.setWhichPanel("binary / blob");
+	panel.addSlider("horizontal offset", "CV_MANAGER_PANEL_HORIZONTAL_OFFSET", 0, -320, 320, false);
+	panel.addSlider("vertical offset", "CV_MANAGER_PANEL_VERTICAL_OFFSET", 0, -240, 240, false);
+	panel.addSlider("horizontal scale", "CV_MANAGER_PANEL_HORIZONTAL_SCALE", 1, 0.01, 3, false);
+	panel.addSlider("vertical scale", "CV_MANAGER_PANEL_VERTICAL_SCALE", 1, 0.01, 3, false);
+
 	panel.addToggle("flip horiz", "CV_MANAGER_PANEL_VIDEO_FLIP_HORIZ", false);
 	panel.addToggle("flip vertical", "CV_MANAGER_PANEL_VIDEO_FLIP_VERT", false);
 	panel.addToggle("invert", "CV_MANAGER_PANEL_VIDEO_INVERT", false);
 	panel.addSlider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
 
 
-	panel.addSlider("min blob size (pct of video)",  "CV_MANAGER_PANEL_MIN_BLOB", 0.01, 0,0.25, false);
+	panel.addSlider("min blob size (pct of video)",  "CV_MANAGER_PANEL_MIN_BLOB", 0.02, 0.01,0.25, false);
 	panel.addSlider("max blob size (pct of video)",  "CV_MANAGER_PANEL_MAX_BLOB", 0.5, 0,1, false);
 
 
@@ -189,6 +194,21 @@ void cvManager::mouseReleased(){
 //--------------------------------------------------------------
 void cvManager::fillPacket(){
 
+	float xScale = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_SCALE");
+	float yScale = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_SCALE");
+	float xOffset = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_OFFSET");
+	float yOffset = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_OFFSET");
+
+	for(int i = 0; i < Contour.nBlobs; i++) {
+		ofxCvBlob& blob = Contour.blobs[i];
+		vector<ofPoint>& points = blob.pts;
+		for(int j = 0; j < points.size(); j++) {
+			points[j].x = points[j].x * xScale;
+			points[j].x += xOffset;
+			points[j].y = points[j].y * yScale;
+			points[j].y += yOffset;
+		}
+	}
 
 	memset( (char *)(packet), 0, sizeof(computerVisionPacket));
 
@@ -204,7 +224,6 @@ void cvManager::fillPacket(){
 	packet->width = VideoFrame.width;						// TODO: is videoFrame the right measurement here
 	packet->height = VideoFrame.height;
 	packet->nBlobs = nBlobs;
-
 
 	for (int i = 0; i < nBlobs; i++){
 
@@ -590,7 +609,7 @@ void cvManager::update(){
 	int minBlobSize = panel.getValueF("CV_MANAGER_PANEL_MIN_BLOB") * nPixels;
 	int maxBlobSize = panel.getValueF("CV_MANAGER_PANEL_MAX_BLOB") * nPixels;
 
-	Contour.findContours(PresenceFrameDialate, minBlobSize, maxBlobSize, 50, true, true);
+	Contour.findContours(PresenceFrameDialate, minBlobSize, maxBlobSize, MAX_N_CENTROIDS, true, true);
 
 	fillPacket();	// THIS IS FOR THE NETWORK COMMUNICATON
 }

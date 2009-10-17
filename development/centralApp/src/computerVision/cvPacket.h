@@ -6,7 +6,7 @@
 
 #define MAX_N_BLOBS					20
 #define MAX_BLOB_LENGTH				384
-#define MAX_N_CENTROIDS 200
+#define MAX_N_CENTROIDS 50
 
 // this is a packet which repreents computer vision info for this given frame.
 
