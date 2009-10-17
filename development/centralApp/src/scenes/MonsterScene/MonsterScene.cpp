@@ -533,7 +533,7 @@ void MonsterScene::keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void MonsterScene::mousePressed(int x, int y, int button) {
+void MonsterScene::mousePressed(int wx, int wy, int x, int y, int button) {
 	
 	float bx = mouseX;
 	float by = mouseY;
