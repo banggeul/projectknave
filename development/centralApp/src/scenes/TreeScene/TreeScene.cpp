@@ -11,9 +11,25 @@ void TreeScene::setup() {
 	//		leaves.push_back(ofxSvg());
 	//		leaves.back().loadFile("sceneAssets/trees/Fern_Leaf_"+ofToString(i)+".svg");
 	//	}
-	minSpawnToGrowW = 120;
-	minSpawnToGrowH = 120;
+	
+	W = 1.0;	
+	H = 1.0;
+	
+	bGotMyFirstPacket	= false;
+	minSpawnToGrowW		= 120;
+	minSpawnToGrowH		= 120;
 	load();
+	
+	
+	for (int i = 0; i < 60; i++){
+		ButterFly bf;
+		bf.setInitialCondition(ofRandom(200, 500), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
+		bf.setupButterfly();
+		butterflys.push_back(bf);
+	}
+	
+	theDot.loadImage("sceneAssets/monsters/dot.png");
+	
 }
 
 // ------------------------------------------
@@ -36,25 +52,96 @@ void TreeScene::keyPressed(int key) {
 	
 }
 
+
+
+
+
+
+//--------------------------------------------------------------
+void TreeScene::updateFlocking() {
+	
+	// on every frame 
+	// we reset the forces
+	// add in any forces on the particle
+	// perfom damping and
+	// then update
+	
+	for (int i = 0; i < butterflys.size(); i++){
+		butterflys[i].resetForce();
+	}
+	
+	for (int i = 0; i < butterflys.size(); i++){
+		for (int j = 0; j < butterflys.size(); j++){
+			if (i != j){
+				butterflys[i].addForFlocking(butterflys[j]);	
+			}
+		}
+		
+		
+		for(int q=0; q<tracker->blobs.size(); q++) {
+			
+			float barea  = (float)(tracker->blobs[q].boundingRect.height*tracker->blobs[q].boundingRect.width) / (float)(packet.width*packet.height);
+			
+			//			butterflys[i].addAttractionForce(tracker->blobs[q].centroid.x, tracker->blobs[q].centroid.y, 20+barea*250, 1.5+(barea*2.0));
+			//			butterflys[i].addAttractionForce(mouseX, mouseY,200, 2.0);
+			
+		}
+		// this was something we tried in class (partitcle move away from mouse...)
+		//particles[i].addRepulsionForce(mouseX, mouseY, 150, 0.4);
+	}
+	
+	for (int i = 0; i < butterflys.size(); i++){
+		butterflys[i].addFlockingForce();
+		butterflys[i].addDampingForce();
+		//butterflys[i].update();
+		butterflys[i].pos.x -= 10.0;
+	}
+	
+	
+	// wrap torroidally.
+	for (int i = 0; i < butterflys.size(); i++){
+		ofxVec2f pos = butterflys[i].pos;
+		
+		//	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
+		
+		float offx = ((OFFSCREEN_WIDTH - packet.width)/2);
+		float offy = (OFFSCREEN_HEIGHT-packet.height);
+		
+		if (pos.x < -(OFFSCREEN_WIDTH-offx)) pos.x = OFFSCREEN_WIDTH-offx;
+		if (pos.x > OFFSCREEN_WIDTH-offx) pos.x = 0;
+		if (pos.y < -OFFSCREEN_HEIGHT) pos.y = OFFSCREEN_HEIGHT;
+		if (pos.y > OFFSCREEN_WIDTH) pos.y = 0;
+		
+		butterflys[i].pos = pos;
+	}
+	
+	
+	
+}
+
+
+
+
 // ------------------------------------------
 void TreeScene::update() {
 	
 	
+	
 	// --------------------- Tree People
-	
-	for(int i=0; i<treePeople.size(); i++) {
-		treePeople[i].update();	
+	for(int i=0; i<trees.size(); i++) {
+		trees[i].update();	
 	}
-	
-	
-	
-	for(int i=treePeople.size()-1; i>=0; i--) {
+	// clean up the trees
+	for(int i=trees.size()-1; i>=0; i--) {
 		
-		if(treePeople[i].bDead) {
-			treePeople[i].cleanUp();
-			treePeople.erase(treePeople.begin() + i);
+		if(trees[i].bDead) {
+			trees[i].cleanUp();
+			trees.erase(trees.begin() + i);
+			printf("tree deleted \n");
 		}
 	}
+	
+	
 	
 	
 	
@@ -62,44 +149,20 @@ void TreeScene::update() {
 	for(int i=0; i<tracker->blobs.size(); i++) {
 		
 		int lookID = tracker->blobs[i].id;
+		float barea  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
 		
-		for(int j=treePeople.size()-1; j>=0; j--) {
-			
-			// yes we match
-			if(treePeople[j].id == lookID) {
-				
-				// the contour (fixed)
-				treePeople[j].pos = tracker->blobs[i].centroid;
-				treePeople[j].rect = tracker->blobs[i].boundingRect;
-			//	treePeople[j].area = tracker->blobs[i].boundingRect.height;
-				
-				treePeople[j].area  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
-				
-				
-				
-				//monsters[j].updateContourPnts(tracker->blobs[i].pts);
-				
-				//
-				//				// a simple contour
-				//				monsters[j].contourSimple.assign(tracker->blobs[i].pts.size(), ofPoint());
-				//				contourAnalysis.simplify(tracker->blobs[i].pts, monsters[j].contourSimple, 0.50);
-				//				
-				//				
-				//				// a smooth contour
-				//				monsters[j].contourSmooth.assign(monsters[j].contourSimple.size(), ofPoint());
-				//				contourAnalysis.smooth(monsters[j].contourSimple, monsters[j].contourSmooth, 0.2);
-				//				
-				//				
-				//				// a convex contour
-				//				monsters[j].contourConvex.assign(monsters[j].contourSimple.size(), ofPoint());
-				//				contourAnalysis.convexHull(monsters[j].contourSimple, monsters[j].contourConvex);
-				//				
+		for(int j=0; j<trees.size(); j++) {
+			if(lookID == trees[j].id) {
+				trees[j].treeBase = tracker->blobs[i].centroid * TREE_SCALE;
+				trees[j].frameAge = tracker->blobs[i].frameAge;
 				
 			}
 		}
+		
+		
 	}
 	
-	
+	updateFlocking();
 	
 	
 	/*
@@ -134,6 +197,24 @@ void TreeScene::update() {
 	 }
 	 }
 	 */
+	
+	
+	
+	
+	
+	
+	// --------------------- packet info
+	if(packet.frameNumber >= 0 && !bGotMyFirstPacket) {
+		printf("got my first packet - %i\n", packet.frameNumber);
+		bGotMyFirstPacket = true;
+		
+		W = packet.width * TREE_SCALE;
+		H = 100 + (packet.height * TREE_SCALE);
+	}
+	
+	
+	
+
 }
 
 // ---------------------------------------------------------
@@ -142,7 +223,7 @@ void TreeScene::draw() {
 	ofEnableAlphaBlending();
 	glPushMatrix();
 	//glTranslatef(mouseX, mouseY, 0);
-	glTranslatef(((OFFSCREEN_WIDTH - packet.width)/2), (OFFSCREEN_HEIGHT-packet.height), 0);
+	glTranslatef(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), 0);
 	
 	for(int i=0; i<packet.nBlobs; i++) {
 		ofSetColor(255, i*20, 255);
@@ -151,8 +232,8 @@ void TreeScene::draw() {
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++) {
 			
-			float x = packet.pts[i][j].x;
-			float y = packet.pts[i][j].y;
+			float x = packet.pts[i][j].x * TREE_SCALE;
+			float y = packet.pts[i][j].y * TREE_SCALE;
 			
 			ofVertex(x, y);
 		}
@@ -160,14 +241,22 @@ void TreeScene::draw() {
 	}
 	
 	
+	for(int i = 0; i < butterflys.size(); i++){
+		butterflys[i].draw();
+	}
 	
-	// the tree people
-	for(int i=0; i<treePeople.size(); i++) {
-		treePeople[i].draw();	
+	// the big trees - funky style
+	for (int i = 0; i < trees.size(); i++){
+		trees[i].draw();
 	}
 	
 	
 	glPopMatrix();
+	
+	
+	ofNoFill();
+	ofSetColor(245, 2, 2);
+	ofRect(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), W, H);
 	
 }
 
@@ -190,10 +279,19 @@ void TreeScene::blobOn( int x, int y, int bid, int order ) {
 	
 	// else make a Tree
 	else {
-		if(blober.boundingRect.width > minSpawnToGrowW || blober.boundingRect.height > minSpawnToGrowH) {
-			treePeople.push_back(TreePerson());
-			treePeople.back().init( tracker->getById(bid) );
-		}
+		//if(blober.boundingRect.width >= minSpawnToGrowW || blober.boundingRect.height >= minSpawnToGrowH) {
+	//	treePeople.push_back(TreePerson());
+	//	treePeople.back().init( tracker->getById(bid) );
+	//	treePeople.back().tree.img = &theDot;
+		//}
+		trees.push_back(MagicTree());
+		
+		float tx = x * TREE_SCALE;
+		float ty = y * TREE_SCALE;
+		trees.back().initTree(tx, ty, 10);
+		trees.back().img = &theDot;
+		trees.back().id = bid;
+		trees.back().frameAge = tracker->getById(bid).frameAge;
 	}
 	
 	
@@ -218,12 +316,12 @@ void TreeScene::blobMoved( int x, int y, int bid, int order ) {
 void TreeScene::blobOff( int x, int y, int bid, int order ) {	
 	
 	printf("tree off - %i\n", bid);
-	for(int i=treePeople.size()-1; i>=0; i--) {
-		if(treePeople[i].id == bid) {
+	for(int i=trees.size()-1; i>=0; i--) {
+		if(trees[i].id == bid) {
 			
-			treePeople[i].bFadeOut = true;
-			//treePeople.erase(treePeople.begin() + i);
-			
+			trees[i].id = -1;
+			trees[i].bNoBlobAnymore = true;
+		
 		}
 	}
 }
@@ -254,7 +352,7 @@ void TreeScene::load() {
 		
 		minSpawnToGrowW = xmlSaver.getValue("minSpawnToGrowW", 100.0);
 		minSpawnToGrowH = xmlSaver.getValue("minSpawnToGrowH", 100.0);
-				
+		
 	}
 	
 }
@@ -263,28 +361,28 @@ void TreeScene::load() {
 
 void TreeScene::save() {
 	/*
-	
-	string fileToSave = "settings/treeSettings.xml";
-	
-	xmlSaver.clear();
-	
-	xmlSaver.addTag("windowPnts");
-	xmlSaver.pushTag("windowPnts");
-	for(int i=0; i<windowPnts.size(); i++) {
-		xmlSaver.addTag("wnd");
-		xmlSaver.pushTag("wnd", i);
-		
-		xmlSaver.setValue("pnt:x", windowPnts[i].pos.x, 0);
-		xmlSaver.setValue("pnt:y", windowPnts[i].pos.y, 1);
-		
-		xmlSaver.popTag();
-	}
-	
-	xmlSaver.popTag();
-	xmlSaver.saveFile(fileToSave);
-	
-	printf("--- monster settings saved [%s]---\n", fileToSave.c_str());
-	*/
+	 
+	 string fileToSave = "settings/treeSettings.xml";
+	 
+	 xmlSaver.clear();
+	 
+	 xmlSaver.addTag("windowPnts");
+	 xmlSaver.pushTag("windowPnts");
+	 for(int i=0; i<windowPnts.size(); i++) {
+	 xmlSaver.addTag("wnd");
+	 xmlSaver.pushTag("wnd", i);
+	 
+	 xmlSaver.setValue("pnt:x", windowPnts[i].pos.x, 0);
+	 xmlSaver.setValue("pnt:y", windowPnts[i].pos.y, 1);
+	 
+	 xmlSaver.popTag();
+	 }
+	 
+	 xmlSaver.popTag();
+	 xmlSaver.saveFile(fileToSave);
+	 
+	 printf("--- monster settings saved [%s]---\n", fileToSave.c_str());
+	 */
 }
 
 

@@ -5,8 +5,7 @@
 #include "TreeConstants.h"
 #include "ofCvTrackedBlob.h"
 #include "MagicTree.h"
-#include "Fern.h"
-#include "RandomFern.h"
+
 
 class TreePerson {
 	
@@ -21,13 +20,8 @@ public:
 	
 	int				age;
 	bool			bGrowATree, bFadeOut, bDead;
-	
-	// the tree
-	int				numTreePts;
-	int				ptsCount;
-	ofxVec2f	   *pts;
-	
 	MagicTree		tree;
+	
 	
 	ofPoint			colorD, color;
 	float			alpha;
@@ -35,7 +29,6 @@ public:
 	float rate;
 	
 	float treeAge;
-	//RandomFern fern;
 	
 	
 	void cleanUp() {
@@ -56,7 +49,7 @@ public:
 		rate = ofRandom(5, 10);
 	}
 	
-
+	
 	// --------------------------------------------
 	void init(ofCvTrackedBlob &blob) {
 		
@@ -78,22 +71,29 @@ public:
 		//string numI = ofToString((int)ofRandom(0, 2));
 		//fern.addLeaf("sceneAssets/trees/Fern_Leaf_001.svg");
 		
+		
+		
 		color = 0;
 		colorD.x = ofRandom(0, 255);
 		colorD.y = ofRandom(0, 255);
 		colorD.z = ofRandom(0, 255);
+		alpha = 255;
 	}	
 	
 	
 	// -------------------------------------------- update 
 	void update() {
 		
+		return;
+		
 		age ++;
 		
 		if(age > 20 && !bGrowATree) {
 			printf("--- start growing the tree [%i]---\n", id);	
 			bGrowATree = true;
-			tree.initTree(pos.x, rect.y + (rect.height/1.3));
+		//	tree.initTree(pos.x, rect.y + (rect.height/1.3), (int)ofRandom(10, 30));
+			
+			
 		}
 		
 		// ok we are alive and growing
@@ -101,23 +101,29 @@ public:
 			
 			treeAge += 0.3;
 			
-			//tree.root.x = pos.x;
-			//tree.root.y = rect.y + (rect.height/1.3); 
 			
 		}
+		
 		
 		
 		color += (colorD-color) / rate;
-		
-		
 		if(bFadeOut) {
-			alpha -= 10.0;
+			
+		
+			bool allLeavesIn = true;
+			for(int i=0; i<tree.theLeaves.size(); i++) {
+				if(!tree.theLeaves[i].bDone) allLeavesIn = false;
+			}
+			
+			if(bFadeOut && allLeavesIn) {
+				
+				alpha -= 10.0;
+
+			}
+			
 			
 		}
-		
-		
 		if(alpha <= 0) {
-			
 			bDead = true;	
 		}
 		
@@ -144,75 +150,29 @@ public:
 		 ptsCount ++;
 		 if(ptsCount >= ptsCount) ptsCount = numTreePts-1;
 		 
-				 */
-		tree.update();
-
-	}
-	
-	
-	// --------------------------------------------	
-	void drawTheTree() {
-		/*
-		int drawMode = 1;
-		
-		if(drawMode == 0) {
-			glBegin(GL_LINE_STRIP);
-			for(int i=1; i<ptsCount; i++) {
-				glVertex2f(pts[i].x, pts[i].y);
-				glVertex2f(pts[i-1].x, pts[i-1].y);
-			}
-			glEnd();
-		}
-		
-		if(drawMode == 1) {
-			
-			// the plant
-			ofxVec3f pos1, pos2;
-			ofxVec3f perp;
-			ofxVec3f scr;
-			scr.set(0, 0, 1);
-			
-			
-			ofNoFill();
-			ofSetColor(255, 255, 255);
-			glBegin(GL_QUAD_STRIP);
-			for(int i=1; i<ptsCount; i++) {
-				
-				pos1 = pts[i];
-				pos2 = pts[i-1];
-				perp.set(pos1 - pos2);
-				perp.perpendicular(scr);
-				
-				float n = ofMap((float)i, 1.0, (float)ptsCount-1, 0.0, 1.0);
-				float thick     = area * 220;
-				float thickness =  thick - (n * thick);
-				
-				float xOff        = perp.x * thickness;
-				float yOff        = perp.y * thickness;
-				
-				glVertex2f(pos1.x - xOff, pos1.y - yOff);
-				glVertex2f(pos1.x + xOff, pos1.y + yOff);
-				
-			}
-			glEnd();
-			
-		}
-	*/	
+		 */
+		//tree.update();
 	}
 	
 	// --------------------------------------------
 	void draw() {
 		
+		ofEnableAlphaBlending();
+		
+		// bounds
 		ofNoFill();
+		ofSetColor(255, 255, 255);
 		ofRect(rect.x, rect.y, rect.width, rect.height);
 		
+		// tree lovely
 		tree.draw();
-		
+	
 		
 		ofSetColor(25, 55, 225);
 		ofDrawBitmapString(ofToString(area), pos.x, pos.y);
-		drawTheTree();
+		//drawTheTree();
 		
+		ofDisableAlphaBlending();
 		
 	}
 	
