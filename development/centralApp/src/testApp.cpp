@@ -148,7 +148,7 @@ void testApp::draw() {
 		ofPopStyle();
 		
 		ofEnableAlphaBlending();
-		//mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+		mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 		ofDisableAlphaBlending();
 		
 		MRM.endOffscreenDraw();
