@@ -277,6 +277,7 @@ public:
 				msg.addIntArg(numEyes);
 				ofxDaito::sendCustom(msg);
 				bJustBecameMonster = true;
+				printf("--- just bacame a monster --\n");
 			}
 		}
 		
