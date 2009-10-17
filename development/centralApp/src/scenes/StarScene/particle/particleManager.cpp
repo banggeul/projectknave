@@ -17,7 +17,7 @@ particleManager::particleManager(){
 //---------------------------------------------------------------------------------
 void particleManager::setupWorld(){
 
-setupBins(ofGetWidth(), ofGetHeight());
+setupBins(OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 
 
 //------------------------------------- make some particles
@@ -299,7 +299,7 @@ void particleManager::update(){
 
 	for(int i = 0; i < particles.size(); i++){
 
-        ofxVec2f velFromVF = VF.readFromField(particles[i].pos.x / (float)ofGetWidth(), particles[i].pos.y / (float)ofGetHeight());
+        ofxVec2f velFromVF = VF.readFromField(particles[i].pos.x / (float)OFFSCREEN_WIDTH, particles[i].pos.y / (float)OFFSCREEN_HEIGHT);
 
         particles[i].resetForce();
         particles[i].bitFlagW = 0;
@@ -495,7 +495,7 @@ void particleManager::update(){
 	for (int i = 0; i< VFs.size(); i++){
 
 		if (mode !=5){
-        VF.addIntoField( (VFs[i].point.x)/(float)ofGetWidth(), VFs[i].point.y/(float)ofGetHeight(), VFs[i].diffPoint*0.001  , 0.093 * 1.6);
+        VF.addIntoField( (VFs[i].point.x)/(float)OFFSCREEN_WIDTH, VFs[i].point.y/(float)OFFSCREEN_HEIGHT, VFs[i].diffPoint*0.001  , 0.093 * 1.6);
 		}
 	}
 
