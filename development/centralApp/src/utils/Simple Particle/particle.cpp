@@ -10,9 +10,9 @@ particle::particle(){
 	alignment.distance		= 80;
 	cohesion.distance		= 90;
 	
-	seperation.strength		= .03;
-    alignment.strength		= .015;
-	cohesion.strength		= .015;
+	seperation.strength		= .93;
+    alignment.strength		= .15;
+	cohesion.strength		= .15;
 	
 }
 
