@@ -228,7 +228,7 @@ void HandScene::update(){
 
 
 
-	float spotSize = 32;
+	float spotSize = 20;
 	float spotCenter = spotSize / 2;
 
 	for (int i = 0; i < BSM.shapes.size(); i++){

@@ -20,7 +20,7 @@
 #include "ofxDaito.h"
 
 
-#define NEON_SILHOUETTE_SIZE 9
+#define NEON_SILHOUETTE_SIZE 7
 
 
 typedef struct {

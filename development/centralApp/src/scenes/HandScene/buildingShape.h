@@ -12,7 +12,7 @@
 #include "ofMain.h"
 #include "ofxDisplayList.h"
 
-#define BUILDING_HIGHLIGHT_SIZE 8
+#define BUILDING_HIGHLIGHT_SIZE 4
 
 class buildingShape {
 
