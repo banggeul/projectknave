@@ -34,7 +34,7 @@ public:
 	void mouseDragged(int wx, int wy, int x, int y, int button);
 	void mousePressed(int wx, int wy, int x, int y, int button);
 	void mouseReleased(int wx, int wy, int x, int y, int button);
-	
+	bool bDebug;
 	
 	void load();
 	void save();

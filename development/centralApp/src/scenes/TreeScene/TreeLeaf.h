@@ -15,7 +15,7 @@ public:
 	bool		bDone;
 	ofImage * img;
 	float r;
-	
+	float alpha;
 	
 	
 	TreeLeaf() {
@@ -25,12 +25,14 @@ public:
 		color.g = 255;
 		color.b = 255;
 		color.a = 0;
+		alpha = 0;
+		r = ofRandom(10, 20);
 	}
 	
 	void update() {
-		color.a += 20.0;
-		if(color.a >= 255) {
-			color.a = 255;
+		if(!bDone) alpha += 10.0;
+		if(alpha >= 255) {
+			alpha = 255;
 			bDone = true;
 		}
 		
@@ -38,15 +40,16 @@ public:
 	
 	void draw() {
 		
-		
-		ofSetColor(color.r, color.g, color.b, color.a);
+		ofEnableAlphaBlending();
+		ofSetColor(color.r, color.g, color.b, alpha);
 		ofFill();
 		if(img) {
 			ofSetRectMode(OF_RECTMODE_CENTER);
-			img->draw(pos.x, pos.y, r*5, r*5);
+			img->draw(pos.x, pos.y, r*2, r*2);
 			ofSetRectMode(OF_RECTMODE_CORNER);
 		}
-		ofCircle(pos.x, pos.y, r);
+		ofEllipse(pos.x, pos.y, r, r);
+		ofDisableAlphaBlending();
 		
 	}
 	

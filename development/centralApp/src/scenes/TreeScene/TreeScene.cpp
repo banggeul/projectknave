@@ -3,7 +3,7 @@
 
 // ------------------------------------------
 void TreeScene::setup() {
-	
+	bDebug = true;
 	butterFlyColor.push_back(0xd1007e);
 	butterFlyColor.push_back(0x00a3c4);
 	butterFlyColor.push_back(0x6ac539);
@@ -24,6 +24,7 @@ void TreeScene::setup() {
 	panel.addSlider("Bottom Offset", "BOTTOM_OFFSET", 100, 0.0, 500.0, false);
 	panel.addSlider("People Scale", "PEOPLE_SCALE", 2.4, 1.0, 5.0, false);
 	panel.addSlider("people glow", "PEOPLE_GLOW", 20.4, 0.0, 255.0, false);
+	panel.addSlider("tree", "TREE_OFF", 20.4, 0.0, 555.0, false);
 	
 	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
 	
@@ -78,7 +79,7 @@ void TreeScene::setup() {
 //--------------------------------------------------------------
 void TreeScene::cleanUpScene() {
 	
-
+	
 	for(int i=treeBlobs.size()-1; i>=0; i--) {
 		treeBlobs.erase(treeBlobs.begin() + i);
 	}
@@ -98,6 +99,8 @@ void TreeScene::cleanUpScene() {
 void TreeScene::keyPressed(int key) {
 	// keys for the ferry
 	building.keyPressed(key);	
+	
+	if(key == 'd') bDebug = !bDebug;
 }
 
 //--------------------------------------------------------------
@@ -201,6 +204,7 @@ void TreeScene::update() {
 	if((int)ofRandom(0, 30) == 10) {
 		if(ferns.size() <= 10) {	// just 10 for now
 			//	ferns.push_back(RandomFern());
+			//	ferns.back().pos = 0;
 			printf("-- new fern --\n");
 			
 		}
@@ -272,7 +276,7 @@ void TreeScene::update() {
 		newRec.y		*= TREE_SCALE;
 		newRec.width	*= TREE_SCALE;
 		newRec.height	*= TREE_SCALE;
-		newRec.height   += 30;
+		newRec.height   += panel.getValueF("TREE_OFF");
 		
 		for(int j=0; j<trees.size(); j++) {
 			if(lookID == trees[j].id) {
@@ -341,43 +345,48 @@ void TreeScene::update() {
 
 // ---------------------------------------------------------
 void TreeScene::drawTop() {
-	panel.draw();
+	if(bDebug) panel.draw();
 }
 
 // ---------------------------------------------------------
 void TreeScene::draw() {
 	
-	ofSetColor(0, 25, 255);
-	ofFill();
-	ofRect(-300, -500, 1000000, 100000);
+	/*
+	 
+	 // draw the ferns
+	 for(int i=0; i<ferns.size(); i++) {
+	 ofPushStyle();
+	 glPushMatrix();
+	 glTranslatef(ferns[i].pos.x, ferns[i].pos.y, 0);
+	 //glRotatef(0, 0, 0, 1);
+	 ferns[i].draw(1.0);
+	 glPopMatrix();
+	 ofPopStyle();
+	 }
+	 
+	 */
+	//
+	//	ofSetColor(0, 25, 255);
+	//	ofFill();
+	//	ofRect(-300, -500, 10000, 10000);
 	
 	
 	ofEnableAlphaBlending();
 	glPushMatrix();
-	//glTranslatef(mouseX, mouseY, 0);
 	glTranslatef(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), 0);
 	
 	
-	// draw the ferns
-	for(int i=0; i<ferns.size(); i++) {
-		ofPushStyle();
-		glPushMatrix();
-		glTranslatef(ferns[i].pos.x, ferns[i].pos.y, 0);
-		glRotatef(0, 0, 0, 1);
-		//ferns[i].draw(1.0);
-		glPopMatrix();
-		ofPopStyle();
-	}
 	
-	// The Tree Blobs
-	for(int i=0; i<treeBlobs.size(); i++) {
-		ofFill();
-		ofSetColor(200, 40, 255);
-		ofCircle(i*85, 0, 40);
-		ofSetColor(255, 255, 255);
-		ofDrawBitmapString("id: "+ofToString(treeBlobs[i].id) +"\n"+ ofToString(treeBlobs[i].age), i*78, 10);
+	if(bDebug) {	
+		// The Tree Blobs
+		for(int i=0; i<treeBlobs.size(); i++) {
+			ofFill();
+			ofSetColor(200, 40, 255);
+			ofCircle(i*85, 0, 40);
+			ofSetColor(255, 255, 255);
+			ofDrawBitmapString("id: "+ofToString(treeBlobs[i].id) +"\n"+ ofToString(treeBlobs[i].age), i*78, 10);
+		}
 	}
-	
 	
 	
 	// the big trees - funky style
@@ -409,7 +418,7 @@ void TreeScene::draw() {
 		}
 		
 		// people
-		ofSetColor(50, 50, 50);
+		ofSetColor(150, 150, 150);
 		ofFill();
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++) {
@@ -433,15 +442,13 @@ void TreeScene::draw() {
 	}
 	
 	
-	
-	
 	glPopMatrix();
 	
-	
-	ofNoFill();
-	ofSetColor(245, 2, 2);
-	ofRect(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), W, H);
-	
+	if(bDebug) {
+		ofNoFill();
+		ofSetColor(245, 2, 2);
+		ofRect(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), W, H);
+	}
 }
 
 

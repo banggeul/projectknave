@@ -2,7 +2,7 @@
 #include "ofMain.h"
 #include "ofxVectorMath.h"
 #include "TreeLeaf.h"
-
+#include "TreeBranch.h"
 
 #define MAX_TREE_PNTS 10
 
@@ -11,7 +11,7 @@ class MagicTree {
 	
 public:
 	
-	
+	int					growMod;
 	float				trunkGirth;
 	int					totalTreePts;
 	int					treePtsCount;
@@ -42,8 +42,8 @@ public:
 	
 	
 	// Branches
-	int					numBranches;
-	vector <MagicTree>  children;
+	int						numBranches;
+	vector <TreeBranch>		children;
 	
 	
 	
@@ -74,7 +74,6 @@ public:
 	
 	
 	
-	
 	// ------------------------------------------------------ The Magic Tree
 	MagicTree() {
 		
@@ -85,18 +84,18 @@ public:
 		trunkGirth		= 20;	
 		totalTreePts	= 0;
 		treePtsCount	= 0;
-	
+		growMod			= 4;	
 		
 		// blob information
 		frameAge		= 0;
 		bNoBlobAnymore  = false;
 		bDead			= false;
 		id				= -1;
-		
+	
 		
 		// color & alpha
 		alpha = 255;
-	
+		
 		
 		// num of brack i can have
 		numBranches = 3;
@@ -120,7 +119,7 @@ public:
 		spawn			= false;
 		life			= 10.0;
 		
-	
+		
 		theta			= ofRandomf();
 		angle			= 0;
 		
@@ -191,13 +190,12 @@ public:
 			if(alpha <= 0) {
 				bDead = true;	
 			}
-			
-			return;	
+			return;
 		}
 		
 		
 		if(bDoneDrowing && !bMadeLeaves) {
-			printf("--- done growing ---\n");
+		/*	printf("--- done growing ---\n");
 			numLeaves = (int)ofRandom(30, 100);
 			for(int i=0; i<numLeaves; i++) {
 				theLeaves.push_back(TreeLeaf());
@@ -205,11 +203,12 @@ public:
 				theLeaves.back().img = img;
 			}
 			bMadeLeaves = true;
-			
+		*/	
 		}
 		
 		for(int i=0; i<theLeaves.size(); i++) {
 			theLeaves[i].update();
+			if(theLeaves[i].bDone) theLeaves[i].color.a = alpha;
 		}
 		
 		
@@ -244,28 +243,31 @@ public:
 			if(growInc == 0) {
 				treePtsCount ++;
 				
-				if(treePtsCount % 2 == 0) {
+				if(treePtsCount % growMod == 0) {
 					printf("-- add a branch here ---\n");
+					children.push_back(TreeBranch());
+					children.back().pos = pos;
+					children.back().makeBranch(pos);
 				}
 				/*
-				cnt ++;
-				if(cnt > length) cnt = length;
-				
-				life *= 0.66;
-				
-				if(pid < 2 && cnt > 3) { 						
-					spawn = true;
-				//	children.push_back(TreeBranch());
-				//	children.back().pid = pid + 1;
-				//	children.back().initBranch(pos.x, pos.y, life);
-				//	children.back().setAngle(ofRandom(-75.0, 75.0), (int)ofRandom(0, 1));
-					
-					//printf("-- add branch[%f] --\n", life);
-					
-				}
+				 cnt ++;
+				 if(cnt > length) cnt = length;
+				 
+				 life *= 0.66;
+				 
+				 if(pid < 2 && cnt > 3) { 						
+				 spawn = true;
+				 //	children.push_back(TreeBranch());
+				 //	children.back().pid = pid + 1;
+				 //	children.back().initBranch(pos.x, pos.y, life);
+				 //	children.back().setAngle(ofRandom(-75.0, 75.0), (int)ofRandom(0, 1));
+				 
+				 //printf("-- add branch[%f] --\n", life);
+				 
+				 }
 				 */
 			}
-				 
+			
 			
 			
 			
@@ -286,9 +288,23 @@ public:
 		
 		
 		// update all the children
-	//	for(int i=0; i<children.size(); i++) {
-	//		children[i].update();	
-	//	}
+		for(int i=0; i<children.size(); i++) {
+			children[i].update();	
+			children[i].alpha = alpha;
+			if(children[i].bDone && !children[i].bMadeLeave) {
+				children[i].bMadeLeave = true;
+				int makeNum = ofRandom(30, 60);
+				for(int j=0; j<makeNum; j++) {
+					float nj = (float)j / (float)(makeNum-1);
+					theLeaves.push_back(TreeLeaf());
+					theLeaves.back().pos.x = children[i].p2.x + cos(nj * TWO_PI) * ofRandom(-60, 60);
+					theLeaves.back().pos.y = children[i].p2.y + sin(nj * TWO_PI) * ofRandom(-60, 60);
+					theLeaves.back().img = img;
+
+					//theLeaves.back().pos = children[i].p2;
+				}
+			}
+		}
 		
 	}
 	
@@ -302,13 +318,13 @@ public:
 		
 		
 		// some blod ID
-		ofFill();
-		ofSetColor(0, 0, 255, alpha);
-		ofCircle(0, 0, 40);
-		
-		ofSetColor(255, 255, 255);
-		ofDrawBitmapString(ofToString(frameAge), -10, 10);
-		
+	//	ofFill();
+//		ofSetColor(0, 0, 255, alpha);
+//		ofCircle(0, 0, 40);
+//		
+//		ofSetColor(255, 255, 255);
+//		ofDrawBitmapString(ofToString(frameAge), -10, 10);
+//		
 		
 		
 		int count = treePtsCount+1;
@@ -351,35 +367,47 @@ public:
 				
 			}
 			glEnd();
-		//	
-//			
-//			for(int i=1; i<count; i++) {
-//				
-//				pos1 = pnts[i];
-//				pos2 = pnts[i-1];
-//				perp.set(pos1 - pos2);
-//				perp.perpendicular(scr);
-//				
-//				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
-//				float thickness = trunkGirth - (n * trunkGirth/1.6);
-//				float offx		= (perp.x * thickness);
-//				float offy		= perp.y * thickness;
-//				
-//				ofxVec2f v1(pos1.x - offx, pos1.y - offy);
-//				ofxVec2f v2;
-//				v2.x = v1.y;
-//				v2.y = -v1.x;
-//				//glVertex3f(pos1.x - offx, pos1.y - offy, 0);
-//				//glVertex3f(pos1.x + offx, pos1.y + offy, 0);
-//				ofLine(v1.x, v1.y, v2.x, v2.y);
-//			}
-//			
-//		
+			//	
+			//			
+			//			for(int i=1; i<count; i++) {
+			//				
+			//				pos1 = pnts[i];
+			//				pos2 = pnts[i-1];
+			//				perp.set(pos1 - pos2);
+			//				perp.perpendicular(scr);
+			//				
+			//				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
+			//				float thickness = trunkGirth - (n * trunkGirth/1.6);
+			//				float offx		= (perp.x * thickness);
+			//				float offy		= perp.y * thickness;
+			//				
+			//				ofxVec2f v1(pos1.x - offx, pos1.y - offy);
+			//				ofxVec2f v2;
+			//				v2.x = v1.y;
+			//				v2.y = -v1.x;
+			//				//glVertex3f(pos1.x - offx, pos1.y - offy, 0);
+			//				//glVertex3f(pos1.x + offx, pos1.y + offy, 0);
+			//				ofLine(v1.x, v1.y, v2.x, v2.y);
+			//			}
+			//			
+			//		
 			
 			
 			
 			
 		}
+		
+		
+		for(int i=0; i<children.size(); i++) {
+			children[i].draw();
+		}
+		
+		
+		for(int i=0; i<theLeaves.size(); i++) {
+			theLeaves[i].draw();
+		}
+		
+		
 		
 		glPopMatrix();
 		
@@ -391,30 +419,25 @@ public:
 		
 		
 		
-		
-		
-		for(int i=0; i<theLeaves.size(); i++) {
-			theLeaves[i].draw();
-		}
-		
-		
-		
-		// nodes
-		ofFill();
-		ofSetColor(4, 4, 4);
-		for(int i=0; i<treePtsCount; i++) {
-			ofCircle(pnts[i].x, pnts[i].y, 2);
-		}
-		
-		
-		// top node
-		ofFill();
-		ofSetColor(224, 24, 114);
-		ofCircle(pos.x, pos.y, 5);
-		
-		
-		ofLine(pos.x, pos.y, pos.x+dir.x, pos.y+dir.y);
-		
+		//
+//		
+//		
+//		// nodes
+//		ofFill();
+//		ofSetColor(4, 4, 4);
+//		for(int i=0; i<treePtsCount; i++) {
+//			ofCircle(pnts[i].x, pnts[i].y, 2);
+//		}
+//		
+//		
+//		// top node
+//		ofFill();
+//		ofSetColor(224, 24, 114);
+//		ofCircle(pos.x, pos.y, 5);
+//		
+//		
+//		ofLine(pos.x, pos.y, pos.x+dir.x, pos.y+dir.y);
+//		
 		
 		
 	}		
