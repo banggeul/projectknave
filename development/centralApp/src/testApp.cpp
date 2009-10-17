@@ -24,7 +24,10 @@ void testApp::setup() {
 	SM.setup();
 	RM.setup();
 	CVM.setupNonCV();	// this order is all wonky now.
-	//CVM.setupScene(SM.currentScene);
+
+	// give every scene the stitched image reference
+	for(int i = 0; i < SM.numScenes; i++)
+		SM.scenes[i]->stitchedImage = &(CVM.VideoFrame);
 
 	// Mega Render Manager
 	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen
