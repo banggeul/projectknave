@@ -38,7 +38,7 @@ for(int j = 0; j < particles.size(); j ++){
 
 void particleManager::computeStatistics(){
 	
-	bool bSkipFirst200 = true;
+	bool bSkipFirst200 = false;
 	
 	
 	avgVelocity.set(0,0);
