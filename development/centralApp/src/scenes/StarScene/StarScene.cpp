@@ -99,23 +99,26 @@ void StarScene::update(){
 					
 					
 					if (!bFinal){
-					PM.particles.erase(PM.particles.begin());
 					
-					groupableParticle tempParticle;
-					
-					PM.particles.push_back(tempParticle);
 					
 					float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
 					float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
 					
-					PM.particles[PM.particles.size()-1].setInitialCondition(SOBJ[j].center.x*scalex, SOBJ[j].center.y*scaley,0,0);
-					//PM.particles[PM.particles.size()-1].addForce(velx*1000, vely*1000);
-					PM.particles[PM.particles.size()-1].drag = ofRandom(0.0717, 0.08);
-					PM.particles[PM.particles.size()-1].radius = 30;
-					PM.particles[PM.particles.size()-1].energy = 0.20f;
-					
+						if (SOBJ[j].center.y*scaley > (1024/1.8) || 
+							fabs(SOBJ[j].center.x*scalex - 1793/2) < 150){
+							PM.particles.erase(PM.particles.begin());
+							groupableParticle tempParticle;
+							PM.particles.push_back(tempParticle);
+							PM.particles[PM.particles.size()-1].setInitialCondition(SOBJ[j].center.x*scalex, SOBJ[j].center.y*scaley,0,0);
+							//PM.particles[PM.particles.size()-1].addForce(velx*1000, vely*1000);
+							PM.particles[PM.particles.size()-1].drag = ofRandom(0.0717, 0.08);
+							PM.particles[PM.particles.size()-1].radius = 30;
+							PM.particles[PM.particles.size()-1].energy = 0.20f;
+							PM.particles[PM.particles.size()-1].findLockTarget(temp.getPixels(), temp.width, temp.height);
+						}
+						
 					PM.VF.addIntoField( ((float)SOBJ[j].center.x *scalex ) / (float)OFFSCREEN_WIDTH, (float)(SOBJ[j].center.y*scaley)/ (float)OFFSCREEN_HEIGHT, ofxVec2f(SOBJ[j].vel.x*0.0003, SOBJ[j].vel.y*0.0003), 0.09);
-					PM.particles[PM.particles.size()-1].findLockTarget(temp.getPixels(), temp.width, temp.height);
+					
 					}
 					
 					///cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
