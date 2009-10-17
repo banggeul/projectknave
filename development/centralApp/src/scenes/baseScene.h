@@ -36,12 +36,13 @@ public:
 	virtual void cleanUpScene() {}
 
 	// key board & mouse
-	virtual void keyPressed(int key){}
+	virtual void keyPressed(int key) {}
 	virtual void keyReleased(int key){}
-	virtual void mouseMoved(int x, int y){}
-	virtual void mouseDragged(int x, int y, int button){}
-	virtual void mousePressed(int x, int y, int button){}
-	virtual void mouseReleased(int x, int y, int button){}
+	virtual void mouseMoved(int wx, int wy, int x, int y ){}
+	virtual void mouseDragged(int wx, int wy, int x, int y, int button){}
+	virtual void mousePressed(int wx, int wy, int x, int y, int button){}
+	virtual void mouseReleased(int wx, int wy, int x, int y, int button){}
+	
 
 	// blob tracking
 	virtual void blobOn( int x, int y, int bid, int order ) {}
