@@ -39,7 +39,7 @@ void PaintScene::setup() {
 	
 	
 	handImgW = 640;
-	handImgH = 480;
+	handImgH = 240;
 	
 	
 	handImage.setUseTexture(false);
@@ -179,7 +179,7 @@ void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
 			if (PO.COBJ[i].nFramesFound > 0){
 				
 				
-				printf ("drawing in %i stored pt %i \n", whichBlob, i);
+				//printf ("drawing in %i stored pt %i \n", whichBlob, i);
 				
 				//	ofPoint		center;
 				//ofPoint		previousCenter;
