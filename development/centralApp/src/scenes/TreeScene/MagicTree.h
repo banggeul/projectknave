@@ -10,17 +10,32 @@
 class MagicTree {
 	
 public:
+	float				trunkGirth;
+	int					totalTreePts;
+	int					treePtsCount;
 	
-	int totalTreePts;
-	int treePtsCount;
-	
-	
+	bool				bDoneDrowing;
 	bool				bMadeLeaves;
-	ofImage	*				img;
+	ofImage	*			img;
 	int					numLeaves;
 	vector <TreeLeaf>	theLeaves;
 	
-	bool bDoneDrowing;
+	
+	// blob information
+	int					frameAge;
+	int					id;
+	bool				bDead;
+	bool				bNoBlobAnymore;
+	ofxVec2f			center;
+	ofRectangle			rect;
+	
+	// tree position
+	ofxVec2f			root, rootD;
+	ofxVec2f			treeBase, treeBaseD;
+	
+	
+	// the fade in and out
+	float alpha;
 	
 	
 	
@@ -41,7 +56,7 @@ public:
 	
 	ofxVec2f	* pnts;
 	//int			length;
-	float		girth;
+	
 	
 	float		life;
 	float		theta;
@@ -49,19 +64,6 @@ public:
 	ofxVec2f	pos, vel, des;
 	
 	
-	// blob information
-	int			frameAge;
-	int			id;
-	bool		bDead;
-	bool		bNoBlobAnymore;
-	
-	// tree position
-	ofxVec2f	root, rootD;
-	ofxVec2f	treeBase, treeBaseD;
-	
-	
-	// the fade in and out
-	float alpha;
 	
 	
 	// ------------------------------------------------------ The Magic Tree
@@ -72,9 +74,9 @@ public:
 		treeBaseD	= 0;
 		
 		
-		
-		totalTreePts = 0;
-		treePtsCount = 0;
+		trunkGirth		= 100;	
+		totalTreePts	= 0;
+		treePtsCount	= 0;
 	
 		
 		// blob information
@@ -106,10 +108,7 @@ public:
 		spawn			= false;
 		life			= 10.0;
 		
-		
-		//	refBranches		= NULL;
-		girth			= 10.0;
-		//length			= numPnts;
+	
 		theta			= ofRandomf();
 		angle			= 0;
 		
@@ -135,7 +134,10 @@ public:
 		
 		setAngle(0, 1);
 		
-		
+		// init the tree pos
+		treeBaseD   = center;
+		treeBaseD.y = rect.y + rect.height;
+		treeBase += (treeBaseD-treeBase) / 10.0;
 		
 		
 		
@@ -173,7 +175,10 @@ public:
 		
 		
 		// ease the tree around
-		//root += (rootD - root) / 20;
+		treeBaseD   = center;
+		treeBaseD.y = rect.y + rect.height;
+		treeBase += (treeBaseD-treeBase) / 10.0;
+		
 		
 		
 		if(bNoBlobAnymore) {
@@ -329,7 +334,7 @@ public:
 				perp.perpendicular(scr);
 				
 				float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
-				float thickness = girth - (n * girth/1.6);
+				float thickness = trunkGirth - (n * trunkGirth/1.6);
 				float offx		= (perp.x * thickness);
 				float offy		= perp.y * thickness;
 				

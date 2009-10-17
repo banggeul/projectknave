@@ -151,7 +151,7 @@ void TreeScene::update() {
 	// --------------------- add some fern
 	if((int)ofRandom(0, 30) == 10) {
 		if(ferns.size() <= 10) {	// just 10 for now
-			ferns.push_back(RandomFern());
+		//	ferns.push_back(RandomFern());
 			printf("-- new fern --\n");
 			
 		}
@@ -170,7 +170,23 @@ void TreeScene::update() {
 			trees.back().initTree(0, 0, (int)ofRandom(20, 50));	// <--- i need a init pos
 			trees.back().img = &theDot;
 			trees.back().id = treeBlobs[i].id;
+				
+			for(int j=0; j<tracker->blobs.size(); j++) {
+
+				ofRectangle newRec = tracker->blobs[j].boundingRect;
+				newRec.x		*= TREE_SCALE;
+				newRec.y		*= TREE_SCALE;
+				newRec.width	*= TREE_SCALE;
+				newRec.height	*= TREE_SCALE;
+				
+				trees.back().rect	  = newRec;
+				trees.back().center   = tracker->blobs[j].centroid * TREE_SCALE;
 			
+				// init the tree pos
+				trees.back().treeBaseD   = trees.back().center;
+				trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height;
+				trees.back().treeBase = trees.back().treeBaseD;
+			}
 		}
 		
 		
@@ -201,10 +217,18 @@ void TreeScene::update() {
 		int lookID = tracker->blobs[i].id;
 		float barea  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
 		
+		ofRectangle newRec = tracker->blobs[i].boundingRect;
+		
+		newRec.x		*= TREE_SCALE;
+		newRec.y		*= TREE_SCALE;
+		newRec.width	*= TREE_SCALE;
+		newRec.height	*= TREE_SCALE;
+			
 		for(int j=0; j<trees.size(); j++) {
 			if(lookID == trees[j].id) {
-				trees[j].treeBase = tracker->blobs[i].centroid * TREE_SCALE;
-				trees[j].frameAge =0;// tracker->blobs[i].frameAge;
+				trees[j].frameAge = 0;// tracker->blobs[i].frameAge;
+				trees[j].rect	  = newRec;
+				trees[j].center   = tracker->blobs[i].centroid * TREE_SCALE;
 				
 			}
 		}
@@ -287,7 +311,8 @@ void TreeScene::draw() {
 		ofPushStyle();
 		glPushMatrix();
 		glTranslatef(ferns[i].pos.x, ferns[i].pos.y, 0);
-		ferns[i].draw(1.0);
+		glRotatef(0, 0, 0, 1);
+		//ferns[i].draw(1.0);
 		glPopMatrix();
 		ofPopStyle();
 	}
@@ -303,8 +328,12 @@ void TreeScene::draw() {
 	
 	
 	
+	// the big trees - funky style
+	for (int i = 0; i < trees.size(); i++){
+		trees[i].draw();
+	}
 	
-	
+	// draw the people
 	for(int i=0; i<packet.nBlobs; i++) {
 		ofSetColor(255, i*20, 255);
 		ofFill();
@@ -321,14 +350,12 @@ void TreeScene::draw() {
 	}
 	
 	
+	// draw the butter flys
 	for(int i = 0; i < butterflys.size(); i++){
 		butterflys[i].draw();
 	}
 	
-	// the big trees - funky style
-	for (int i = 0; i < trees.size(); i++){
-		trees[i].draw();
-	}
+	
 	
 	
 	glPopMatrix();
