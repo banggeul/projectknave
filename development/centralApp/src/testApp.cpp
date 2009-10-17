@@ -178,16 +178,10 @@ void testApp::draw() {
 			float diff = ofGetHeight() - height;
 			if (diff < 0) diff = 0;
 			MRM.myOffscreenTexture.draw(0,diff,width, height);
+
+			ofSetColor(255,255,255);
+			SM.drawTop();
 		}
-	}
-
-
-	// ----------------------------------
-	//  -------- Debug Scenese ----------
-	// ----------------------------------
-	if(drawMode==DRAW_SCENE) {
-		ofSetColor(255,255,255);
-		SM.drawTop();
 	}
 
 	// ----------------------------------
