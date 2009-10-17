@@ -81,4 +81,10 @@ void StarScene::draw(){
 
 
 	PM.draw();
+	
+	
+}
+
+void StarScene::drawTop(){
+	stitchedImage->draw(0,0);
 }

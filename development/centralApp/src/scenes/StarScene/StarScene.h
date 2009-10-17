@@ -20,7 +20,8 @@ public:
 	void setup();
 	void update();
 	void draw();
-
+	void drawTop();
+	
 	int tempC;
 
 	void announceChange(int change);
