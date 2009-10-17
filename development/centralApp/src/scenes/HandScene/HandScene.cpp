@@ -513,7 +513,7 @@ void HandScene::keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void HandScene::mousePressed(int x, int y, int button) {
+void HandScene::mousePressed(int wx, int wy, int x, int y, int button) {
 
 	ferryBuilding.mousePressed(x, y, button);
 	/*
