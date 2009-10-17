@@ -283,8 +283,12 @@ public:
 	void draw() {
 		
 		ofEnableAlphaBlending();
+		
 		glPushMatrix();
 		glTranslatef(treeBase.x, treeBase.y, 0);
+		
+		
+		// some blod ID
 		ofFill();
 		ofSetColor(0, 0, 255, alpha);
 		ofCircle(0, 0, 40);
@@ -292,12 +296,6 @@ public:
 		ofSetColor(255, 255, 255);
 		ofDrawBitmapString(ofToString(frameAge), -10, 10);
 		
-		glPopMatrix();
-		ofDisableAlphaBlending();
-		
-		
-		
-		return;
 		
 		
 		int count = treePtsCount+1;

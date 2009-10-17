@@ -5,12 +5,16 @@
 #include "baseScene.h"
 
 #include "TreeConstants.h"
-#include "Stem.h"
-#include "TreePerson.h"
-#include "ofxSvg.h"
 
+
+#include "RandomFern.h"
+#include "ofxControlPanel.h"
+#include "TreeBlob.h"
+#include "MagicTree.h"
 #include "particle.h"
 #include "ButterFly.h"
+
+
 
 class TreeScene : public baseScene {
 	
@@ -19,11 +23,15 @@ public:
 	void setup();
 	void update();
 	void draw();
+	void drawTop();
 	void updateFlocking();
 	
 	// ---------------------- key and mouse
-	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
+	void mouseDragged(int wx, int wy, int x, int y, int button);
+	void mousePressed(int wx, int wy, int x, int y, int button);
+	void mouseReleased(int wx, int wy, int x, int y, int button);
+	
 	
 	void load();
 	void save();
@@ -41,18 +49,25 @@ public:
 	// ---------------------- key and mouse
 	int						minSpawnToGrowW, minSpawnToGrowH;
 	int						curStem;
-	Stem					stems[MAX_STEMS];
 	
 	ofxXmlSettings			xmlSaver;
 	ofImage theDot;
+	
 	// ---------------------- Tree People
-	vector <TreePerson>		treePeople;
+	vector <TreeBlob>		treeBlobs;
 	vector <ButterFly>		butterflys;
 	vector <MagicTree>		trees;
 	
+	// ---------------------- Ferns
+	vector <RandomFern>		ferns;
+	int						fernTimer;
+	
+	
+	
 	// ---------------------- Pcket info
 	bool					bGotMyFirstPacket;
-	
+	ofxControlPanel			panel;
+
 	
 };
 
