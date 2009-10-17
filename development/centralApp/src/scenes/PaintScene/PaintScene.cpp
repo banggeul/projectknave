@@ -3,156 +3,262 @@
 
 
 void PaintScene::setup() {
-
-	// box2d
-	box2d.init();
-	box2d.setGravity(0, 10);
-	box2d.checkBounds(true);
-	box2d.setFPS(30.0);
-
-	//box2d.getWorld()->SetContactListener(this);
-
-
-	// build the building for box2d
-	for(int i=0; i<building.shapes.size(); i++) {
-		buildingBoundsShape.push_back(ofxBox2dLine());
-		buildingBoundsShape.back().clear();
-		buildingBoundsShape.back().setWorld(box2d.getWorld());
-
-		for(int j=0; j<building.shapes[i].pnts.size(); j++) {
-			float bx = building.shapes[i].pnts[j].x;
-			float by = building.shapes[i].pnts[j].y;
-			ofPoint pos = getPointInPreview(bx, by);
-			buildingBoundsShape.back().addPoint(pos.x, pos.y);
-		}
-		buildingBoundsShape.back().createShape();
+	
+	
+	lastFrameRendered = -1;
+	// pass in this : 
+	
+	for (int i = 0; i < MAX_PARTICLES; i++){
+		particleSystem.particles[i].myApp = this;
 	}
-
-	// load the ferry contour
-	bGotMyFirstPacket = false;
-	ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/paintFerryContour.xml");
-	printf("- paint ferry building loaded -\n");
-
-}
-
-//--------------------------------------------------------------
-void PaintScene::createBuildingContour() {
-	for(int i=0; i<box2dBuilding.size(); i++) {
-		box2dBuilding[i].destroyShape();
-	}
-	box2dBuilding.clear();
-
-
-	// build the building for box2d
-	for(int i=0; i<ferryBuilding.shapes.size(); i++) {
-		box2dBuilding.push_back(ofxBox2dLine());
-		box2dBuilding.back().setWorld(box2d.getWorld());
-		box2dBuilding.back().clear();
-
-		for(int j=0; j<ferryBuilding.shapes[i].pnts.size(); j++) {
-			float bx = ferryBuilding.shapes[i].pnts[j].x;
-			float by = ferryBuilding.shapes[i].pnts[j].y;
-
-			//bx -= ((OFFSCREEN_WIDTH - packet.width)/2);
-			//by -= (OFFSCREEN_HEIGHT-packet.height);
-
-
-
-			box2dBuilding.back().addPoint(bx, by);
-		}
-		box2dBuilding.back().createShape();
-	}
-
-	printf("-- building shape made --\n");
+	
+	particleSystem.myApp = this;
+	
+	// setup fluid stuff
+	fluidSolver.setup(100, 100);
+    fluidSolver.enableRGB(true).setFadeSpeed(0.005).setDeltaT(0.5).setVisc(0.00015).setColorDiffusion(0);
+	fluidDrawer.setup(&fluidSolver);
+	
+	
+	fluidCellsX			= 150; //200;
+	
+	drawFluid			= true;
+	drawParticles		= true;
+	renderUsingVA		= true;
+	
+	
+	window.width		= 1793;
+	window.height		= 1024;
+	
+	window.invWidth		= 1.0f/window.width;
+	window.invHeight	= 1.0f/window.height;
+	window.aspectRatio	= window.width * window.invHeight;
+	window.aspectRatio2 = window.aspectRatio * window.aspectRatio;
+	
+	resizeFluid = true;
+	
+	
+	handImgW = 640;
+	handImgH = 480;
+	
+	
+	handImage.setUseTexture(false);
+	handImage.allocate(handImgW, handImgH);
+	
+	handImageTemporallyBlurred.setUseTexture(false);
+	handImageTemporallyBlurred.allocate(handImgW, handImgH);
+	handImageTemporallyBlurredInvert.allocate(handImgW, handImgH);
+	
+	handImage.preAllocate(MAX_BLOB_LENGTH);
+	
+	
 }
 
 // ------------------------------------------------
 void PaintScene::update(){
-
-
-	box2d.update();
-
-	// ground points
-	for(int i=0; i<NUM_GROUND_PNTS; i++) {
-		float n = (float)i / (float)(NUM_GROUND_PNTS-1);
-		groundPnts[i].x = n * OFFSCREEN_WIDTH;
-		groundPnts[i].y = OFFSCREEN_HEIGHT -  (60 + (cos((n*ofGetElapsedTimef())) * 80.0) );
-	}
-
-
-	// do we have a new packet
+	
+	
 	if (lastFrameRendered !=  packet.frameNumber){
-
-
-
-
-
-
-		/*
-		// a smooth contour
-		monsters[j].contourSmooth.assign(monsters[j].contourSimple.size(), ofPoint());
-		contourAnalysis.smooth(monsters[j].contourSimple, monsters[j].contourSmooth, 0.2);
-
-
-		// a convex contour
-		monsters[j].contourConvex.assign(monsters[j].contourSimple.size(), ofPoint());
-		contourAnalysis.convexHull(monsters[j].contourSimple, monsters[j].contourConvex);
-		*/
-
-
-
-		// clear out all the body shapes
-		for(int i=0; i<bodyShapes.size(); i++) {
-			bodyShapes[i].destroyShape();
-		}
-		bodyShapes.clear();
-
-
-		if(packet.nBlobs > 0) {
-			// now build the body shapes
-			for(int i=0; i<packet.nBlobs; i++) {
-
-
-				// a simple contour
-				simpleContour.assign(packet.nPts[i], ofPoint());
-				contourAnalysis.simplify(tracker->blobs[i].pts, simpleContour, 0.50);
-
-				bodyShapes.push_back(ofxBox2dLine());
-				bodyShapes.back().setWorld(box2d.getWorld());
-				bodyShapes.back().clear();
-
-				for(int j=simpleContour.size()-1; j>=0; j--) {
-					float x = simpleContour[j].x + ((OFFSCREEN_WIDTH - packet.width)/2);
-					float y = (OFFSCREEN_HEIGHT-packet.height) + simpleContour[j].y;
-					bodyShapes.back().addPoint(x, y);
-				}
-				bodyShapes.back().createShape();
+		
+		handImage.set(0);
+		
+		for (int i = 0; i < packet.nBlobs; i++){
+			int nPts = packet.nPts[i];
+			if (!packet.bAmInner[i]){
+				handImage.drawBlobIntoMeWithPreallocatedPts(packet.pts[i], nPts, 100);
 			}
-
 		}
-
+		
+		for (int i = 0; i < packet.nBlobs; i++){
+			int nPts = packet.nPts[i];
+			if (packet.bAmInner[i]){
+				handImage.drawBlobIntoMeWithPreallocatedPts(packet.pts[i], nPts, 0);
+			}
+		}
+		
+		handImage.blur();
+		
+		handImageTemporallyBlurred -= 50;
+		handImageTemporallyBlurred.blur();
+		handImageTemporallyBlurred.blur();
+		handImageTemporallyBlurred += handImage;
+		
+		handImageTemporallyBlurredInvert = handImageTemporallyBlurred;
+		handImageTemporallyBlurredInvert.invert();
+		
 
 	}
-
-
-
-
-	// paint
-	for(int i=0; i<paintBalls.size(); i++) {
-		paintBalls[i].update();
+	
+	
+	
+	
+	
+	trackBlobs();
+	
+	if(resizeFluid) 	{
+		fluidSolver.setSize(fluidCellsX, fluidCellsX / window.aspectRatio);
+		fluidDrawer.setup(&fluidSolver);
+		resizeFluid = false;
 	}
+	
 
-
-	if(packet.frameNumber >= 0 && !bGotMyFirstPacket) {
-		printf("got my first packet - %i\n", packet.frameNumber);
-		bGotMyFirstPacket = true;
-		contourAnalysis.setSize(packet.width, packet.height);
-		createBuildingContour();
+	
+	fluidSolver.update();
+	
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
+	
+	
+	for (int i = 0; i < packet.nBlobs; i++){
+		
+		// try to find my color :
+		
+		ofPoint myColor;
+		myColor.set(255,0,255);
+		
+		for (int j = 0; j < POBJ.size(); j++){
+			if (POBJ[j].bFoundThisFrame && POBJ[j].whoThisFrame == i){
+				
+				// now, let's do some FUN stuff with the contours pts found this frame. 
+				
+				// seperate function?
+				
+				//printf("----------  drawing %i \n", i);
+				drawPaintObjectIntoFluid( POBJ[j], i);
+				
+				
+				
+			}
+		}
+		
+				
 	}
+	
+	
+	
+	
+	/*
+	for (int i = 0; i < packet.nBlobs; i++){
+		for (int j = 0; j < packet.nPts[i]; j+=10){
+			
+			if (ofGetFrameNum() % 3 == 0){
+			int x = packet.pts[i][j].x * scalex;
+			int y = packet.pts[i][j].y * scaley;
+			float mouseNormX = x * window.invWidth;
+			float mouseNormY = y * window.invHeight;
+			 addToFluid(mouseNormX, mouseNormY, 0.001, 0, true);
+				
+			}
+			//glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
+		}
+	}
+	 */
+	
+	
+	/*
+	 float mouseNormX = x * window.invWidth;
+	 float mouseNormY = y * window.invHeight;
+	 
+	 
+	 addToFluid(mouseNormX, mouseNormY, 0.1, 0, true);
+	 
+	 */
+}
 
-	// what was the last frame
-	lastFrameRendered = packet.frameNumber;
 
+// ------------------------------------------------
+void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
+	
+	
+	for (int i = 0; i < PO.COBJ.size(); i+=8){
+		if ( PO.COBJ[i].bFoundThisFrame) {
+			
+			if (PO.COBJ[i].nFramesFound > 0){
+				
+				
+				printf ("drawing in %i stored pt %i \n", whichBlob, i);
+				
+				//	ofPoint		center;
+				//ofPoint		previousCenter;
+				
+				float vx =  PO.COBJ[i].center.x -  PO.COBJ[i].previousCenter.x;
+				float vy =  PO.COBJ[i].center.y -  PO.COBJ[i].previousCenter.y;
+				float px = PO.COBJ[i].center.x ;
+				float py = PO.COBJ[i].center.y;
+				
+				float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+				float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+				
+				
+				vx *= window.invWidth * scalex;
+				vy *= window.invHeight * scaley;
+				px *= window.invWidth * scalex;
+				py *= window.invHeight * scaley;
+				
+				addToFluid(px, py, vx*0.1, vy*0.1, true);
+				
+			} else {
+				
+				float px = PO.COBJ[i].center.x ;
+				float py = PO.COBJ[i].center.y;
+				
+				float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+				float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+				
+				px *= window.invWidth * scalex;
+				py *= window.invHeight * scaley;
+				
+				addToFluid(px, py, 0,0, true);
+				
+				
+			}
+		}
+	}
+		
+	
+	
+	
+	
+}
+
+
+// add force and dye to fluid, and create particles
+void PaintScene::addToFluid(float x, float y, float dx, float dy, bool addColor, bool addForce) {
+    float speed = dx * dx  + dy * dy * window.aspectRatio2;    // balance the x and y components of speed with the screen aspect ratio
+	//printf("%f, %f\n", dx, dy);
+    if(speed > 0) {
+        if(x<0) x = 0; 
+        else if(x>1) x = 1;
+        if(y<0) y = 0; 
+        else if(y>1) y = 1;
+		
+        float colorMult = 50;
+        float velocityMult = 30;
+		
+        int index = fluidSolver.getIndexForNormalizedPosition(x, y);
+		
+		if(addColor) {
+			msaColor drawColor;
+			int hue = lroundf((x + y) * 180 + ofGetFrameNum()) % 360;
+			drawColor.setHSV(hue, 1, 1);
+			
+			fluidSolver.r[index]  += drawColor.r * colorMult;
+			fluidSolver.g[index]  += drawColor.g * colorMult;
+			fluidSolver.b[index]  += drawColor.b * colorMult;
+			
+			//if(drawParticles) particleSystem.addParticles(x * window.width, y * window.height, 10);
+		}
+		
+		if(addForce) {
+			fluidSolver.u[index] += dx * velocityMult;
+			fluidSolver.v[index] += dy * velocityMult;
+		}
+		
+		//if(!drawFluid && ofGetFrameNum()%5 ==0) fadeToColor(0, 0, 0, 0.1);
+    }
 }
 
 
@@ -160,85 +266,57 @@ void PaintScene::update(){
 // ------------------------------------------------
 void PaintScene::draw() {
 
-	// The Ground
-	/*ofFill();
-	 ofSetColor(0, 255, 52);
-	 ofBeginShape();
-	 ofVertex(0, OFFSCREEN_HEIGHT);
-	 ofVertex(0, OFFSCREEN_HEIGHT-130);
-
-	 for(int i=0; i<NUM_GROUND_PNTS; i++) {
-	 ofVertex(groundPnts[i].x, groundPnts[i].y);
-	 }
-
-	 ofVertex(OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT-130);
-	 ofVertex(OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-	 ofEndShape();
-	 */
-
-	ferryBuilding.drawContour();
-
-
-	// draw the shape of the building for box2d
-	for(int i=0; i<buildingBoundsShape.size(); i++) {
-		buildingBoundsShape[i].draw();
+	
+	if(drawFluid) {
+		glColor3f(1, 1, 1);
+		fluidDrawer.draw(0, 0, window.width, window.height);
 	}
-
-
-	/*
-	// People
-	glPushMatrix();
-	glTranslatef(0, 0, 0);
-
-	for(int i=0; i<packet.nBlobs; i++) {
-		ofSetColor(255, i*20, 255-(i*40), 100);
-		ofFill();
+	if(drawParticles) particleSystem.updateAndDraw();
+	
+	
+	
+	
+	ofEnableAlphaBlending();
+	glBlendFunc(GL_DST_COLOR, GL_ZERO);
+	ofSetColor(255, 255, 255);
+	handImageTemporallyBlurredInvert.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	ofEnableAlphaBlending();
+	
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
+	
+	ofPushStyle();
+	glLineWidth(10);
+	for (int i = 0; i < packet.nBlobs; i++){
+		
+		/*glBegin(GL_LINE_LOOP);
+		 for (int j = 0; j < packet.nPts[i]; j++){
+		 glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
+		 }
+		 glEnd();
+		 */
+		
+		ofSetColor(255, 255, 255, 100);
+		ofNoFill();
 		ofEnableSmoothing();
-		ofBeginShape();
-		for (int j = 0; j < packet.nPts[i]; j++) {
-
-			float x = packet.pts[i][j].x + ((OFFSCREEN_WIDTH - packet.width)/2);
-			float y = (OFFSCREEN_HEIGHT-packet.height) + packet.pts[i][j].y;
-
-			ofVertex(x, y);
+		glBegin(GL_LINE_LOOP);
+		for (int j = 0; j < packet.nPts[i]; j++){
+			glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
 		}
-		ofEndShape(true);
+		glEnd();
+		
+		ofSetColor(255, 255, 255, 85);
+		/*ofBeginShape();
+		 for (int j = 1; j < packet.nPts[i]; j+=3){
+		 ofCurveVertex(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
+		 }
+		 ofEndShape(true);*/
 	}
-	glPopMatrix();
-	*/
-
-	ofFill();
-	// --------------------- Contour
-	for(int i=0; i<bodyShapes.size(); i++) {
-		bodyShapes[i].draw();
-	}
-
-
-
-	ofFill();
-	ofSetColor(255, 9, 9);
-	ofBeginShape();
-	for (int j=0; j<simpleContour.size(); j++) {
-
-		float cx = simpleContour[j].x;// + ((OFFSCREEN_WIDTH - packet.width)/2);
-		float cy = simpleContour[j].y;//(OFFSCREEN_HEIGHT-packet.height) + simpleContour[j].y;
-		ofVertex(cx, cy);
-	}
-	ofEndShape(true);
-
-	// --------------------- building shape
-	for(int i=0; i<box2dBuilding.size(); i++) {
-		box2dBuilding[i].draw();
-	}
-
-	// --------------------- paint
-	for(int i=0; i<paintBalls.size(); i++) {
-		paintBalls[i].draw();
-	}
-	for(int i=0; i<paint.size(); i++) {
-		paint[i].draw();
-	}
-
+	ofPopStyle();
+	
 
 }
 
@@ -246,50 +324,141 @@ void PaintScene::draw() {
 
 // ------------------------------------------------
 void PaintScene::mousePressed(int x, int y, int button) {
+	
+	float mouseNormX = x * window.invWidth;
+    float mouseNormY = y * window.invHeight;
 
-	printf("--- adding a paint ball ---\n");
-	PaintBall ball;
-	ball.init(&box2d, x, y);
-	paintBalls.push_back(ball);
-	ferryBuilding.mousePressed(x, y, button);
-
+	
+	 addToFluid(mouseNormX, mouseNormY, 0.1, 0, true);
 }
 
 //--------------------------------------------------------------
 void PaintScene::keyPressed(int key) {
 
-	ferryBuilding.keyPressed(key);
+}
 
-	if(key == ' ') {
-		createBuildingContour();
+
+
+
+static int trackerPaintCount = 0;
+
+void PaintScene::trackBlobs(){
+	
+	// TRACKING
+	int nBlobs = packet.nBlobs;
+	bool bFoundThisFrame [nBlobs];
+	for (int i = 0;  i < nBlobs; i++){
+		bFoundThisFrame[i] = false;
+	}
+	
+	for (int i = 0; i < POBJ.size(); i++){
+		POBJ[i].bFoundThisFrame = false;
+		POBJ[i].whoThisFrame = -1;
+	}
+	
+	for (int i = 0; i < POBJ.size(); i++){
+		
+		
+		float minDistance = 1000000;
+		int minIndex = -1;
+		
+		for (int j = 0; j < nBlobs; j++){
+			
+			if (bFoundThisFrame[j]) continue;
+			// try to find the closest "hand" to this object, withing a range
+			float diffx = POBJ[i].center.x - packet.centroid[j].x;
+			float diffy =  POBJ[i].center.y - packet.centroid[j].y;
+			float distance = sqrt(diffx * diffx + diffy*diffy);
+			
+			if (minDistance > distance){
+				minDistance = distance;
+				minIndex = j;
+			}
+		}
+		
+		
+		if (minIndex != -1 && minDistance < 200){
+			bFoundThisFrame[minIndex] = true;
+			// kk we are close, so let's mark and keep rolling:
+			POBJ[i].center.set(packet.centroid[minIndex].x, packet.centroid[minIndex].y, 0);
+			POBJ[i].bFoundThisFrame = true;
+			POBJ[i].whoThisFrame = minIndex;
+			POBJ[i].energy += 0.1f;
+			POBJ[i].energy = MIN(POBJ[i].energy, 1);
+			
+			POBJ[i].trackContour(packet.pts[minIndex], packet.nPts[minIndex]);
+		}
+	}
+	
+	
+	// ok for ALL non found blobs, add them to the vector
+	for (int i = 0;  i < nBlobs; i++){
+		if (bFoundThisFrame[i] == false){
+			// make some $ in POBJ
+			paintObject temp;
+			POBJ.push_back( temp);
+			POBJ[POBJ.size()-1].bFoundThisFrame = true;
+			POBJ[POBJ.size()-1].whoThisFrame = i;
+			POBJ[POBJ.size()-1].energy = 0.3;
+			POBJ[POBJ.size()-1].id = trackerPaintCount;
+			POBJ[POBJ.size()-1].center.x = packet.centroid[i].x;
+			POBJ[POBJ.size()-1].center.y = packet.centroid[i].y;
+			
+			POBJ[POBJ.size()-1].trackContour(packet.pts[i], packet.nPts[i]);
+			
+			// let's pick a random color word:
+			
+			
+			// this wasn't so great.  maybe if they were SUPER bright, the problem is I kind of need equality in terms of brightness
+			// across the color spectrum.  so I bumped to something else....
+			/*
+			 float xp = (int)(ofRandom(0,1) * (neon.width-1));
+			 float yp = (int)(ofRandom(0,1) * (neon.height-1));
+			 int pixelPos = (yp*neon.width + xp) * 3;
+			 */
+			float random = ofRandom(0,1);
+			if (random < 0.25){
+				POBJ[POBJ.size()-1].myColor.set(255,255,0);
+			} else if (random >= 0.25 && random < 0.5) {
+				POBJ[POBJ.size()-1].myColor.set(255,0,255);
+			} else if (random >= 0.5f && random < 0.75f){
+				POBJ[POBJ.size()-1].myColor.set(0,255,255);
+			} else {
+				POBJ[POBJ.size()-1].myColor.set(255,255,255);
+			}
+			
+			
+			trackerPaintCount ++;
+			bFoundThisFrame[i] = true;
+		}
+	}
+	
+	
+	// do some other stuff, delete off old ones:
+	for (int i = 0;  i < POBJ.size(); i++){
+		if (POBJ[i].bFoundThisFrame == false){
+			POBJ[i].energy *= 0.9f;
+		}
+	}
+	
+	std::vector<paintObject >::iterator iter = POBJ.begin();
+	while (iter != POBJ.end())
+	{
+		if ((*iter).energy <= 0.05)
+		{
+			
+			// seems to work!
+			//printf("removing a packet with ID  %i \n", (*iter)->packetID);
+			//delete (*iter);	// this should !!! free memory.  please check
+			
+			iter = POBJ.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
 	}
 }
-
-/*
-//--------------------------------------------------------------
-void PaintScene::Add(const b2ContactPoint* point){
-	b2Vec2 p = point->position;
-	p *= OFX_BOX2D_SCALE;
-	//	myApp->contact_points.push_back(p);
-	//	p = point->velocity;
-	//	myApp->contact_velocities.push_back(p);
-
-
-	SimplePaint bub;
-	bub.pos.x = p.x;
-	bub.pos.y = p.y;
-
-	//bub.setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
-	//bub.setup(box2d.getWorld(), 9, 9, 20);
-	paint.push_back(bub);
-
-	printf("-- add some paint herer --\n");
-}
-void PaintScene::Remove(const b2ContactPoint* point){
-	printf("-- time to remove --\n");
-
-}*/
-
 
 
 

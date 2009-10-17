@@ -15,8 +15,17 @@
 #include "ofxContourAnalysis.h"
 #include "SimplePaint.h"
 
+#include "ofxMSAFluid.h"
+#include "ParticleSystem.h"
+#include "msaColor.h"
+
 
 #define NUM_GROUND_PNTS 20
+
+
+#include "paintObject.h"
+#include "ofxCvGrayscaleAdvanced.h"
+
 
 
 
@@ -32,44 +41,45 @@ public:
 	// ---------------------- mouse & keyboard
 	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
+	
+	
+	void trackBlobs();
+	vector < paintObject > POBJ;
+	
+	void drawPaintObjectIntoFluid(paintObject & PO, int whichBlob);
+	
+	
+	int	handImgW, handImgH;
+	ofxCvGrayscaleAdvanced				handImage;
+	ofxCvGrayscaleAdvanced				handImageTemporallyBlurred;
+	ofxCvGrayscaleAdvanced				handImageTemporallyBlurredInvert;
+	int lastFrameRendered;
+	
+	
+	int					fluidCellsX;
+	bool				resizeFluid;
+	bool				drawFluid;
+	bool				drawParticles;
+	bool				renderUsingVA;
+	
+	void addToFluid(float x, float y, float dx, float dy, bool addColor = true, bool addForce = true);
 
-	// ---------------------- ground
-	ofxVec2f groundPnts[NUM_GROUND_PNTS];
+	// cache these for slightly better performance
+	struct {
+		int				width;
+		int				height;
+		float			invWidth;
+		float			invHeight;
+		float			aspectRatio;
+		float			aspectRatio2;
+	} window;
 	
 	
 	
-	// ---------------------- Ferry Building
+	ofxMSAFluidSolver	fluidSolver;
+	ofxMSAFluidDrawer	fluidDrawer;	
 	
-	FerryBuilding				ferryBuilding;
-	vector <ofxBox2dLine>		box2dBuilding;
-	void						createBuildingContour();
-
-	
-	// ---------------------- Packets
-	
-	bool						bGotMyFirstPacket;
-	int							lastFrameRendered;
-
-	// ----------------------	Contour Shape
-	vector <ofPoint>			simpleContour;
-	vector <ofPoint>			smoothContour;
-	vector <ofxBox2dLine>		bodyShapes;
-	ofxContourAnalysis			contourAnalysis;
-	
-	
-	
-	// ----------------------	Box2D
-	
-	ofxBox2d					box2d;
-	vector <ofxBox2dLine>		buildingBoundsShape;
-	vector <PaintBall>			paintBalls;
-	vector <SimplePaint>		paint;
-	
-	
-	// a bit of a hack
-	//void Add(const b2ContactPoint* point);
-	//void Remove(const b2ContactPoint* point);
-	
+	ParticleSystem		particleSystem;
 	
 };
 
