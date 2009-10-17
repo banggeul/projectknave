@@ -518,7 +518,7 @@ void particleManager::draw(){
 		}
 	}
 
-    VF.draw(0,0,ofGetWidth(), ofGetHeight(), 20);
+   // VF.draw(0,0,ofGetWidth(), ofGetHeight(), 20);
 
     // triangle mother fucker
 
