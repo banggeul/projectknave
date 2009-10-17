@@ -236,6 +236,7 @@ void ofCvBlobTracker::trackBlobs( const vector<ofxCvBlob>& _blobs ) {
 			if( blobs[i].id != -1 ) {
 				ofCvTrackedBlob *oldblob = &(*prev)[matrix[best_error_ndx][i]];
                 
+				blobs[i].frameAge = 33;
 				blobs[i].deltaLoc.x = (blobs[i].centroid.x - oldblob->centroid.x);
 				blobs[i].deltaLoc.y = (blobs[i].centroid.y - oldblob->centroid.y);
 

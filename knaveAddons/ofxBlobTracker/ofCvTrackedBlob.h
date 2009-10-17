@@ -18,7 +18,8 @@ class ofCvTrackedBlob : public ofxCvBlob {
   public:
 
     int id;
-    
+    int frameAge;
+	
     ofPoint deltaLoc;
     ofPoint deltaLocTotal;
     ofPoint predictedPos;
@@ -35,6 +36,7 @@ class ofCvTrackedBlob : public ofxCvBlob {
     
 
     ofCvTrackedBlob() {
+		frameAge = 0;
         id = -1;
         area = 0.0f;
         length = 0.0f;
