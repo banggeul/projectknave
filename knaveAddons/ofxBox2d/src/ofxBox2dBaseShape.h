@@ -42,6 +42,9 @@ public:
 		if(alive) destroyShape();
 	}
 	
+	virtual void setMyData() {
+	}
+	
 	//------------------------------------------------ 
 	virtual void setElasticity(float val) {
 		bounce = val;
@@ -165,6 +168,7 @@ public:
 				P.Normalize();
 				b2Vec2 F = amt * D;
 				body->ApplyForce(F, P);
+				
 			}
 		}
 	}

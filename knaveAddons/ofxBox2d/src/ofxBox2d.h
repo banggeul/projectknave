@@ -40,19 +40,19 @@ public:
 
 	// ------------------------------------------------------ 
 	ofxBox2d();
-	void init();
-	void setFPS(float theFps) { fps = theFps; }
+	void	init();
+	void	setFPS(float theFps) { fps = theFps; }
 	
-	void mousePressed(ofMouseEventArgs &e);
-	void mouseDragged(ofMouseEventArgs &e);
-	void mouseReleased(ofMouseEventArgs &e);
+	void	mousePressed(ofMouseEventArgs &e);
+	void	mouseDragged(ofMouseEventArgs &e);
+	void	mouseReleased(ofMouseEventArgs &e);
 	
 	b2World* getWorld()		 { return world; }
 	int		 getBodyCount()  { return world->GetBodyCount(); }
 	int		 getJointCount() { return world->GetJointCount(); }
 	
-	void enableGrabbing() { bEnableGrabbing = true; };
-	void disableGrabbing() { bEnableGrabbing = false; };
+	void	enableGrabbing() { bEnableGrabbing = true; };
+	void	disableGrabbing() { bEnableGrabbing = false; };
 	
 	void setGravity(float x, float y);
 	void setGravity(ofPoint pt);

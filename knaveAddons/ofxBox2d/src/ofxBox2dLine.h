@@ -86,6 +86,8 @@ public:
 		body->SetMassFromShapes();
 		
 		bShapeCreated = true;
+		
+		setMyData();
 	}
 	
 	//------------------------------------------------
