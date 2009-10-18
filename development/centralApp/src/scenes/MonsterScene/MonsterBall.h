@@ -5,20 +5,20 @@
 
 
 class MonsterBall : public ofxBox2dCircle {
-	
+
 public:
-	
+
 	ofImage * img;
 	ofColor		color;
 	MonsterBall() {
 		img = NULL;
 	}
-	
+
 	void draw() {
-		
+
 		ofPoint pos = getPosition();
 		float	r   = getRadius();
-		
+
 		ofSetColor(color.r, color.g, color.b, color.a);
 		ofFill();
 		if(img) {
@@ -27,7 +27,9 @@ public:
 			ofSetRectMode(OF_RECTMODE_CORNER);
 		}
 		ofCircle(pos.x, pos.y, r);
-
+		ofNoFill();
+		ofSetColor(40, 40, 40);
+		ofCircle(pos.x, pos.y, r);
 	}
-	
+
 };
