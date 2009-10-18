@@ -15,10 +15,12 @@
 
 class ofxDaito {
 private:
+	static bool enableOutput;
 	static ofxXmlSettings xml;
 	static vector<ofxOscSender> senders;
 	static void send(ofxOscMessage& msg);
 public:
+	static void toggleOutput();
 	static void setup(string settings, bool verbose = true);
 	static void scene(int scene);
 	static void bang(int scene,	string eventName,	float energy = 1.0f, float pan = 0.5f);

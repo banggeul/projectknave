@@ -2,10 +2,13 @@
 
 ofxXmlSettings ofxDaito::xml;
 vector<ofxOscSender> ofxDaito::senders;
+bool ofxDaito::enableOutput = true;
 
 void ofxDaito::send(ofxOscMessage& msg) {
-	for(int i = 0; i < senders.size(); i++) {
-		senders[i].sendMessage(msg);
+	if(enableOutput) {
+		for(int i = 0; i < senders.size(); i++) {
+			senders[i].sendMessage(msg);
+		}
 	}
 }
 
@@ -49,4 +52,8 @@ void ofxDaito::bang(int scene,
 	msg.addFloatArg(energy);
 	msg.addFloatArg(pan);
 	send(msg);
+}
+
+void ofxDaito::toggleOutput() {
+	enableOutput = !enableOutput;
 }
