@@ -17,7 +17,7 @@ void TreeScene::setup() {
 	
 	
 	// ------------ Control Panel For Trees
-	panel.setup("Tree Scene", 700, 10, 300, 750);
+	panel.setup("Tree Scene", 700, 10, 300, 950);
 	panel.addPanel("Triggers", 1, false);
 	
 	panel.setWhichPanel("Triggers");
@@ -35,6 +35,10 @@ void TreeScene::setup() {
 	panel.addSlider("Curve Y", "GROW_C_Y", 10.98, 0.0, 30.0, false);
 	panel.addSlider("Theta G", "GROW_T", 0.08, 0.0, 2.0, false);
 	panel.addSlider("Fade Rate", "FADE_RATE", 6.0, 1.0, 40.0, false);
+	panel.addSlider("Butterfly Scale", "BUTTERFLY_SCALE", 0.09, 0.0, 2.0, false);
+	panel.addSlider("Butterfly Speed", "BUTTERFLY_SPEED", 0.09, 0.0, 2.0, false);
+	panel.addSlider("People Color", "PEOPLE_COLOR", 0.0, 0.0, 255.0, false);
+	panel.addSlider("Tree Adding Time", "TREE_ADD_TIME", 1.0, 0.0, 2.0, false);
 
 	
 	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
@@ -72,7 +76,7 @@ void TreeScene::setup() {
 			ButterFlyParticle bf;
 			bf.setInitialCondition(ofRandom(200, OFFSCREEN_WIDTH), ofRandom(0, OFFSCREEN_HEIGHT), 0,0);
 			bf.setupButterfly();
-			
+			bf.scale = panel.getValueF("BUTTERFLY_SCALE");
 			butterflys.push_back(bf);
 			butterflys.back().img = &theDot;
 			butterflys.back().color = butterFlyColor[(int)ofRandom(0, butterFlyColor.size()-1)];
@@ -138,13 +142,10 @@ void TreeScene::updateFlocking() {
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
 	
-	// on every frame 
-	// we reset the forces
-	// add in any forces on the particle
-	// perfom damping and
-	// then update
-	
 	for (int i = 0; i < butterflys.size(); i++){
+		
+		butterflys[i].scale = panel.getValueF("BUTTERFLY_SCALE");
+		butterflys[i].damping = panel.getValueF("BUTTERFLY_SPEED");
 		butterflys[i].resetForce();
 	}
 	
@@ -171,7 +172,7 @@ void TreeScene::updateFlocking() {
 			center.y = tracker->blobs[q].centroid.y * scaley;
 			
 			
-			butterflys[i].addAttractionForce(center.x, center.y - 20, 200, 1.0);
+			butterflys[i].addAttractionForce(center.x, center.y - 20, 300, 1.5);
 			
 			
 		}
@@ -243,9 +244,10 @@ void TreeScene::update() {
 				treeBlobs[j].center     = center;
 				
 				// ok we are old enough lets make a blob
-				if(treeBlobs[j].age >= panel.getValueF("TREE_DELAY") && treeBlobs[j].bAlive == false) {
+				if(treeBlobs[j].age >= panel.getValueF("TREE_DELAY")) {
 					
-					printf("--- time to grow a tree here:%i---\n", treeBlobs[j].id);
+					treeBlobs[j].initTime = ofGetElapsedTimef();
+					treeBlobs[j].numTreesMade ++;
 					treeBlobs[j].bAlive = true;
 					
 					// time to grow a tree
@@ -360,7 +362,7 @@ void TreeScene::update() {
 		trees[i].curveRateY = panel.getValueF("GROW_C_Y");
 		trees[i].thetaRate = panel.getValueF("GROW_T");
 		trees[i].fadeRate = panel.getValueF("FADE_RATE");
-		
+		trees[i].addTime = panel.getValueF("TREE_ADD_TIME");
 		trees[i].growRate = panel.getValueF("GROW_RATE");
 		trees[i].update();	
 	}
@@ -469,7 +471,8 @@ void TreeScene::draw() {
 		}
 		
 		// people
-		ofSetColor(150, 150, 150);
+		float bc = panel.getValueF("PEOPLE_COLOR");
+		ofSetColor(bc, bc, bc);
 		ofFill();
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++) {

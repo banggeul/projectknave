@@ -2,86 +2,132 @@
 #include "ofMain.h"
 #include "ofxVectorMath.h"
 
+#define NUM_BRANCH_PTS 10
+
 class TreeBranch {
 	
 public:
+	
 	float	alpha;	
 	bool	bDone;
 	bool	bMadeLeave;
 	
-	ofPoint		pos;
-	ofxPoint2f  fern1P1, fern1P2, fern1des;
-	ofxPoint2f  fern2P1, fern2P2, fern2des;
-	float girth;
+	int				ptCount;
+	ofxPoint2f		pts[NUM_BRANCH_PTS];
 	
+	ofxPoint2f		pos, des, base;
+	float			girth, theta;
+	float			step;
+	
+	// -----------------------------------------
 	TreeBranch() {
-		girth = ofRandom(4, 10);
-		alpha = 255;
-		bDone = false;
-		bMadeLeave = false;
+		step		= 0;
+		ptCount		= 0;
+		girth		= ofRandom(10, 20);
+		alpha		= 255;
+		bDone		= false;
+		bMadeLeave  = false;
 	}
 	
+	
+	// -----------------------------------------	
 	void update() {
 		
-		fern1P2 += (fern1des - fern1P2) / 20.0;
-		fern2P2 += (fern2des - fern2P2) / 24.0;
-		
-		float dis1 = fern1P2.distance(fern1des);
-		float dis2 = fern2P2.distance(fern2des);
-		
-		if(dis1 <= 1.0 && dis2 <= 1.0) {
+		// add points along
+		if(!bDone && ptCount <= NUM_BRANCH_PTS-1) {
+			
+			// check to be safe
+			if(ptCount >= NUM_BRANCH_PTS) ptCount = NUM_BRANCH_PTS-1;
+			if(ptCount < 0)				  ptCount = 0;
+			
+			pts[ptCount].x = pos.x;
+			pts[ptCount].y = pos.y;// - theta;			
+			
+			ptCount ++;
+			theta += 2.0;
+		}
+		else {
 			bDone = true;
 		}
+
+		
+		pos += (des-pos) / 10.0;
+		
+		
 	}
 	
-	void makeBranch(ofPoint branchPos, int step) {
+	// -----------------------------------------	
+	void makeBranch(ofPoint branchPos, int stepIn, float dir) {
 		
-		fern1P1  = branchPos;
-		fern1P2  = branchPos;
-		fern1des = branchPos;
-		
-		fern2P1  = branchPos;
-		fern2P2  = branchPos;
-		fern2des = branchPos;
+		base = branchPos;
+		pos  = branchPos;
+		des  = pos;
+		des.y -= 30.0;
 		
 		
-		fern1des.x -= (step * ofRandom(2, 3));
-		fern2des.x += (step * ofRandom(2, 3));
+		des.x += (dir * stepIn);
 		
-		fern1des.y -= 33;
-		fern2des.y -= 33;
+		step = stepIn;
+		
+		girth = stepIn;
+		if(girth > 10) girth = 10;
+		if(girth < 2) girth = 2;
+		
 	}
 	
+	// -----------------------------------------	
 	void draw() {
+		
+		drawThick();
+		return;
+		
 		ofFill();
 		ofSetColor(255, 255, 255, alpha);
 		glLineWidth(girth);
 		
-		ofLine(fern1P1.x, fern1P1.y, fern1P2.x, fern1P2.y);
-		ofLine(fern2P1.x, fern2P1.y, fern2P2.x, fern2P2.y);
+		ofLine(base.x, base.y, pos.x, pos.y);
+		//ofLine(fern2P1.x, fern2P1.y, fern2P2.x, fern2P2.y);
 		
 		glLineWidth(1.0);
 		
 		//drawThick();
 	}
 	
-	
+	// -----------------------------------------	
 	void drawThick() {
 		
-		glBegin(GL_QUAD_STRIP);
-		for(int i=0; i<20; i++) {
+		if(ptCount > 2) {
+			ofxVec3f pos1, pos2;
+			ofxVec3f perp;
+			ofxVec3f scr;
+			scr.set(0, 0, 1);
 			
-			float ni  = (float)i / 19.0;
-			ofPoint p1;  
-			ofPoint p2;
+			glBegin(GL_QUAD_STRIP);
 			
-			p1.x = ni * fern1P2.x;
+			glVertex2f(base.x-3, base.y-3);
+			glVertex2f(base.x+3, base.y+3);
 			
-			glVertex2f(p1.x, p1.y);
-			glVertex2f(p2.x, p2.y);
+			for(int i=1; i<ptCount; i++) {
+				
+				pos1 = pts[i];
+				pos2 = pts[i-1];
+				perp.set(pos1 - pos2);
+				perp.perpendicular(scr);
+				
+				float n			= ofMap((float)i, 1.0, (float)(ptCount-1), 1.0, 0.0);				
+				float offx		= perp.x * sin(n) * (girth);
+				float offy		= perp.y * sin(n) * (girth);
+				
+				glVertex2f(pos1.x - offx, pos1.y - offy);
+				glVertex2f(pos1.x + offx, pos1.y + offy);
+				
+			}
 			
+			glVertex2f(base.x-3, base.y-3);
+			glVertex2f(base.x+3, base.y+3);
+			
+			glEnd();
 		}
-		glEnd();
 		
 	}
 	

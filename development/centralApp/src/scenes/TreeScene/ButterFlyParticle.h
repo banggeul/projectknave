@@ -25,13 +25,13 @@ public:
 	void setupButterfly() {
 		
 		radius = 20;
-		seperation.distance		= radius *2;
+		seperation.distance		= radius * 3;
 		alignment.distance		= 80;
 		cohesion.distance		= 90;
 		damping = 0.020;//0.07;
 		
 		
-		seperation.strength		= .93;
+		seperation.strength		= .983;
 		alignment.strength		= .15;
 		cohesion.strength		= .15;
 		

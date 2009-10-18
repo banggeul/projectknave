@@ -4,6 +4,7 @@
 class TreeBlob {
 
 public:
+	
 	ofRectangle rect;
 	ofPoint center;
 	int id;
@@ -11,8 +12,10 @@ public:
 	float age;
 	
 	bool  bAlive;
+	int	  numTreesMade;
 	
 	TreeBlob() {
+		numTreesMade = 0;
 		rect.x = 0;
 		rect.y = 0;
 		rect.width = 0;

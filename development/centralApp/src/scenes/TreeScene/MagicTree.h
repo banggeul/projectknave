@@ -15,7 +15,7 @@ public:
 	float thetaRate;
 	float growRate;
 	
-	
+	float				addTime;
 	int					growMod;
 	float				trunkGirth;
 	int					totalTreePts;
@@ -109,7 +109,7 @@ public:
 		
 		// num of brack i can have
 		numBranches = 3;
-		
+		addTime = 1.0;
 	}
 	
 	
@@ -122,6 +122,7 @@ public:
 	// ------------------------------------------------------ init
 	void initTree(float x, float y, int numPnts) {
 		
+		trunkGirth   = numPnts / 2.0;
 		totalTreePts = numPnts;
 		treePtsCount = 1;
 		
@@ -204,7 +205,7 @@ public:
 			
 			theta += thetaRate;
 			
-			if(growInc >= 1.0) {
+			if(growInc >= addTime) {
 				
 				des += dir;
 				des.x += cos(theta) * curveRateX;
@@ -218,13 +219,26 @@ public:
 			// we hit zero at this point
 			// and need to add a new point
 			if(growInc == 0) {
+				
 				treePtsCount ++;
 				
 				//	if(treePtsCount % growMod == 0) {
-				printf("-- add a branch here ---\n");
+				//printf("-- add a branch here ---\n");
+				
+				
+				
+				// Right
 				children.push_back(TreeBranch());
 				children.back().pos = pos;
-				children.back().makeBranch(pos, totalTreePts - treePtsCount);
+				children.back().makeBranch(pos, totalTreePts - treePtsCount, 10);
+				
+				// Left
+				children.push_back(TreeBranch());
+				children.back().pos = pos;
+				children.back().makeBranch(pos, totalTreePts - treePtsCount, -10);
+				
+				
+				
 				
 				//	}
 				/*
@@ -272,19 +286,18 @@ public:
 			}
 			
 			if(bReadyToFadeOut) {
-			
 				children[i].alpha = alpha;
-				
 			}
 		
 		}
 		
 		// start fading out
 		if (allBranchesDone && bDoneDrowing) {
-			
+			//printf("-- tree Done --\n");
 			bReadyToFadeOut = true;
 			
 			alpha -= fadeRate;
+			
 			if(alpha <= 0.0) {
 				
 				bDead = true;
@@ -335,7 +348,7 @@ public:
 			perp.perpendicular(scr);
 			
 			float n			= ofMap((float)i, 1.0, (float)count, 0.0, 1.0);
-			float thickness = trunkGirth - (n * trunkGirth/1.6);
+			float thickness = trunkGirth - (n * trunkGirth);
 			float offx		= (perp.x * thickness);
 			float offy		= perp.y * thickness;
 			
