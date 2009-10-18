@@ -80,6 +80,20 @@ void PaintScene::setup() {
 void PaintScene::update(){
 	
 	
+	
+	if (ofRandom(0,1) > 0.95){
+		float temp = ofRandom(0,0.2);
+		for (int i = 0; i < 5; i++){
+			ceilingDrip drip;
+			drips.push_back(drip);
+			drips[drips.size()-1].pctx = ofRandom(0.4 + temp,0.42 + temp);
+			drips[drips.size()-1].pcty = 0.0f;
+			drips[drips.size()-1].vely = ofRandom(0.02f, 0.015);
+			drips[drips.size()-1].colorMe.set(255,0,0);
+		}
+	}
+	
+	
 	if(resizeFluid) 	{
 		fluidSolver.setSize(fluidCellsX, fluidCellsX / window.aspectRatio);
 		fluidDrawer.setup(&fluidSolver);
