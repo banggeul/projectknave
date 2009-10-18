@@ -190,13 +190,13 @@ void TreeScene::updateFlocking() {
 		float screenW = 0;
 		float screenH = 0;
 		
-		float offx = ((OFFSCREEN_WIDTH - screenW)/2);
-		float offy = (OFFSCREEN_HEIGHT - screenH);
+		float offx = 0;//((OFFSCREEN_WIDTH - screenW)/2);
+		float offy = 0;//(OFFSCREEN_HEIGHT - screenH);
 		float gap  = 20;
-		if (pos.x < -offx)						pos.x = OFFSCREEN_WIDTH-offx;
-		if (pos.x > OFFSCREEN_WIDTH-offx)		pos.x = -offx;
-		if (pos.y < -(offy+gap))				pos.y = offy;
-		if (pos.y > offy)						pos.y = - (offy + gap);
+		if (pos.x < 0)							pos.x = OFFSCREEN_WIDTH;
+		if (pos.x > OFFSCREEN_WIDTH)			pos.x = 0;
+		if (pos.y < 0)							pos.y = OFFSCREEN_HEIGHT;
+		if (pos.y > OFFSCREEN_HEIGHT)			pos.y = 0;
 		
 		butterflys[i].pos = pos;
 	}
@@ -498,6 +498,7 @@ void TreeScene::draw() {
 	
 	
 	// draw the butter flys
+	
 	for(int i = 0; i < butterflys.size(); i++){
 		butterflys[i].draw();
 	}
