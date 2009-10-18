@@ -48,8 +48,8 @@ public:
 		fern1des.x -= (step * ofRandom(3, 6));
 		fern2des.x += (step * ofRandom(3, 6));
 		
-		fern1des.y -= 0;
-		fern2des.y -= 0;
+		fern1des.y -= 33;
+		fern2des.y -= 33;
 	}
 	
 	void draw() {
