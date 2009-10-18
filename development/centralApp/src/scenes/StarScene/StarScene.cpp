@@ -14,28 +14,28 @@ void StarScene::setup(){
 	tempC = (int)ofRandom(0, 255);
 	PM.setupWorld();
 
-
 	temp.loadImage("images/logoHalf.png");
 	temp.setImageType(OF_IMAGE_GRAYSCALE);
 	PM.findLockTarget(temp.getPixels(), temp.width, temp.height);
-	
+
 
 	bAllocatedYet = false;
-	
+
 	bFinal = false;
-	
+
+	skyImage.loadImage("images/flickr-joka2000-228053208-edit.jpg");
 }
 
 void StarScene::update(){
 
-	
+
 	track();
-	
+
 	if (!bAllocatedYet){
 		int w, h;
 		w = stitchedImage->width;
 		h = stitchedImage->height;
-		
+
 		videoGray.allocate(w,h);
 		videoGraySmoothed.allocate(w,h);
 		videoGrayTemporallySmoothed.allocate(w,h);
@@ -48,7 +48,7 @@ void StarScene::update(){
 		PM.particles[i].pos.set(OFFSCREEN_WIDTH*2 + i * 10, 500,0);
 	}
 */
-	
+
 
 /*
 
@@ -59,13 +59,13 @@ void StarScene::update(){
 	}
 
 */
-	
-	
-	
+
+
+
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)videoGray.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)videoGray.height;
 
-	
+
 	videoGray = *stitchedImage;
 	videoGraySmoothed = videoGray;
 	videoGray.erode_3x3();
@@ -74,37 +74,37 @@ void StarScene::update(){
 	videoGray.dilate_3x3();
 	videoGray.blur();
 	videoGray.threshold(127);
-	
+
 	videoGraySmoothed -= 100;
 	videoGraySmoothed += videoGray;
 	videoGraySmoothed.blur();
 	videoGraySmoothed.threshold(127);
-	
+
 	contours.findContours(videoGraySmoothed, 5, 10000, 40, false, false);
-						  
-		
+
+
 	videoGrayTemporallySmoothed.set(0);
-	
+
 	for (int i = 0; i < contours.nBlobs; i++){
-		
-		
+
+
 		for (int j = 0; j < SOBJ.size(); j++){
 			if (SOBJ[j].bFoundThisFrame && SOBJ[j].whoThisFrame == i){
 				float avgVel = SOBJ[j].avgVel;
-				
+
 				float pct = avgVel / 20.0f;
 				if (pct > 1) pct = 1;
-				
+
 				if (pct > 0.1f){
-					
-					
+
+
 					if (!bFinal){
-					
-					
+
+
 					float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
 					float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
-					
-						if (SOBJ[j].center.y*scaley > (1024/1.8) || 
+
+						if (SOBJ[j].center.y*scaley > (1024/1.8) ||
 							fabs(SOBJ[j].center.x*scalex - 1793/2) < 150){
 							PM.particles.erase(PM.particles.begin());
 							groupableParticle tempParticle;
@@ -116,68 +116,68 @@ void StarScene::update(){
 							PM.particles[PM.particles.size()-1].energy = 0.20f;
 							PM.particles[PM.particles.size()-1].findLockTarget(temp.getPixels(), temp.width, temp.height);
 						}
-						
+
 					PM.VF.addIntoField( ((float)SOBJ[j].center.x *scalex ) / (float)OFFSCREEN_WIDTH, (float)(SOBJ[j].center.y*scaley)/ (float)OFFSCREEN_HEIGHT, ofxVec2f(SOBJ[j].vel.x*0.0003, SOBJ[j].vel.y*0.0003), 0.09);
-					
+
 					}
-					
+
 					///cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
-					
+
 					/*
-					 
+
 					 //------------------------------------- make some particles
 					 particles.assign(1400, groupableParticle());
-					 
+
 					 //------------------------------------- properties, like drag and pos, etc, etc.
 					 for(int j = 0; j < particles.size(); j ++){
 					 particles[j].pos.set(ofxVec3f(ofRandom(0,1793), ofRandom(0,1024), 0));
 					 particles[j].vel.set(0,0,0);
 					 float drag = ofRandom(0.0717, 0.08);
 					 particles[j].drag = drag;
-					 
+
 					 particles[j].radius = 5;// + powf(ofRandom(0,1), 3) * 20;
 					 //if (j == 10)  particles[j].radius = 30;
 					 }
 					 }
-					 
+
 					 */
-					
-					
+
+
 				}
-				
+
 				if (pct > 0.01f)
-				videoGrayTemporallySmoothed.drawBlobIntoMe(contours.blobs[i], pct*255);
+				videoGrayTemporallySmoothed.drawBlobIntoMe(contours.blobs[i], 255);
 			}
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 	videoGrayTemporallySmoothed.blur();
-	
+
 	videoGrayTemporallySmoothed2 -= 6;
-	
+
 	videoGrayTemporallySmoothed2 += videoGrayTemporallySmoothed;
-	
+
 	videoGrayTemporallySmoothed2.blurHeavily();
-	
-	
-	
-	
-	
+
+
+
+
+
 	PM.update();
 						  /*
-	 
-						   
+
+
 	 int minArea,
 	 int maxArea,
 	 int nConsidered,
 	 bool bFindHoles,
 	 bool bUseApproximation
 	 */
-						  
-	
+
+
 	//videoGrayTemporallySmoothed.blur();
 	//videoGrayTemporallySmoothed += videoGraySmoothed;
 	//videoGrayTemporallySmoothed -= 7;
@@ -199,9 +199,9 @@ void StarScene::announceChange(int change){
 
 void StarScene::keyPressed(int key){
 
-	
-	
-	
+
+
+
 	switch (key){
 		case '0': bFinal = false;announceChange(0); PM.mode = 0; break;
 		case '1': bFinal = false;announceChange(1); PM.mode = 1; break;
@@ -215,15 +215,16 @@ void StarScene::keyPressed(int key){
 }
 
 void StarScene::draw(){
-
-	
-	ofSetColor(176,190,220);
+	ofSetColor(232, 236, 244);
 	videoGrayTemporallySmoothed2.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
-	
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	skyImage.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	glDisable(GL_BLEND);
+
 	ofSetColor(255, 255, 255);
 	PM.draw();
-	
-	
 }
 
 void StarScene::drawTop(){
@@ -238,64 +239,64 @@ void StarScene::drawTop(){
 static int starTrackerId = 0;
 
 void StarScene::track(){
-	
+
 	// TRACKING
 	int nBlobs = contours.nBlobs;
 	bool bFoundThisFrame [nBlobs];
 	for (int i = 0;  i < nBlobs; i++){
 		bFoundThisFrame[i] = false;
 	}
-	
+
 	for (int i = 0; i < SOBJ.size(); i++){
 		SOBJ[i].bFoundThisFrame = false;
 		SOBJ[i].whoThisFrame = -1;
 	}
-	
+
 	for (int i = 0; i < SOBJ.size(); i++){
-		
-		
+
+
 		float minDistance = 1000000;
 		int minIndex = -1;
-		
+
 		for (int j = 0; j < nBlobs; j++){
-			
+
 			if (bFoundThisFrame[j]) continue;
 			// try to find the closest "hand" to this object, withing a range
 			float diffx = SOBJ[i].center.x - contours.blobs[j].centroid.x;
 			float diffy =  SOBJ[i].center.y - contours.blobs[j].centroid.y;
 			float distance = sqrt(diffx * diffx + diffy*diffy);
-			
+
 			if (minDistance > distance){
 				minDistance = distance;
 				minIndex = j;
 			}
 		}
-		
-		
+
+
 		if (minIndex != -1 && minDistance < 50){
 			bFoundThisFrame[minIndex] = true;
 			// kk we are close, so let's mark and keep rolling:
 			SOBJ[i].center.set(contours.blobs[minIndex].centroid.x, contours.blobs[minIndex].centroid.y, 0);
-			
+
 			float dx = SOBJ[i].center.x - SOBJ[i].prevCenter.x;
 			float dy = SOBJ[i].center.y - SOBJ[i].prevCenter.y;
 			float speed = sqrt(dx*dx + dy*dy);
-			
+
 			SOBJ[i].vel = ofxVec2f(dx, dy);
-			
+
 			SOBJ[i].prevCenter.set(SOBJ[i].center.x, SOBJ[i].center.y);
 			SOBJ[i].avgVel = 0.91 * SOBJ[i].avgVel + 0.09f * speed;
-			
-			
-			
+
+
+
 			SOBJ[i].bFoundThisFrame = true;
 			SOBJ[i].whoThisFrame = minIndex;
 			SOBJ[i].energy += 0.1f;
 			SOBJ[i].energy = MIN(SOBJ[i].energy, 1);
 		}
 	}
-	
-	
+
+
 	// ok for ALL non found blobs, add them to the vector
 	for (int i = 0;  i < nBlobs; i++){
 		if (bFoundThisFrame[i] == false){
@@ -310,29 +311,29 @@ void StarScene::track(){
 			SOBJ[SOBJ.size()-1].center.y = contours.blobs[i].centroid.y;
 			SOBJ[SOBJ.size()-1].prevCenter.set(SOBJ[SOBJ.size()-1].center.x, SOBJ[SOBJ.size()-1].center.y);
 			SOBJ[SOBJ.size()-1].avgVel = 0;
-			
+
 			SOBJ[i].vel.set(0,0);
-			
+
 			starTrackerId ++;
 			bFoundThisFrame[i] = true;
 		}
 	}
-	
-	
+
+
 	// do some other stuff, delete off old ones:
 	for (int i = 0;  i < SOBJ.size(); i++){
 		if (SOBJ[i].bFoundThisFrame == false){
 			SOBJ[i].energy *= 0.9f;
 		}
 	}
-	
+
 	std::vector<starObject >::iterator iter = SOBJ.begin();
 	while (iter != SOBJ.end())
 	{
 		if ((*iter).energy <= 0.05)
 		{
-			
-			
+
+
 			iter = SOBJ.erase(iter);
 		}
 		else
@@ -340,6 +341,6 @@ void StarScene::track(){
 			++iter;
 		}
 	}
-	
-	
+
+
 }

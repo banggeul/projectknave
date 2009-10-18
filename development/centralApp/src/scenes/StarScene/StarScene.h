@@ -37,10 +37,10 @@ public:
 	void update();
 	void draw();
 	void drawTop();
-	
-	
+
+
 	void track();
-	
+
 	int tempC;
 
 	void announceChange(int change);
@@ -48,18 +48,19 @@ public:
 
 	 particleManager PM;
 		ofImage		temp;
-	
+		ofImage skyImage;
+
 	bool					bAllocatedYet;
 	ofxCvGrayscaleImage		videoGray;
 	ofxCvGrayscaleImage		videoGraySmoothed;
 	ofxCvGrayscaleAdvanced		videoGrayTemporallySmoothed;
 	ofxCvGrayscaleAdvanced		videoGrayTemporallySmoothed2;
 
-	
+
 	ofxCvContourFinder		contours;
-	
+
 	vector < starObject > SOBJ;
-	
+
 	bool	bFinal;
 };
 
