@@ -35,9 +35,7 @@ public:
 	void mousePressed(int wx, int wy, int x, int y, int button);
 	void mouseReleased(int wx, int wy, int x, int y, int button);
 	bool bDebug;
-	
-	void load();
-	void save();
+
 	
 	// ---------------------- blob tracking
 	void blobOn( int x, int y, int bid, int order );
@@ -45,16 +43,9 @@ public:
     void blobOff( int x, int y, int bid, int order );
 	
 	
-	// ---------------------- offset & scale
-	float					W, H;
-	float					TREE_SCALE;
-	
 	// ---------------------- key and mouse
-	int						minSpawnToGrowW, minSpawnToGrowH;
 	int						curStem;
-	
-	ofxXmlSettings			xmlSaver;
-	ofImage theDot, theDotS;
+	ofImage					theDot, theDotS;
 	
 	// ---------------------- Tree People
 	vector <TreeBlob>				treeBlobs;

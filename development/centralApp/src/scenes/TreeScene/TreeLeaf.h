@@ -7,17 +7,17 @@
 #include "TreeConstants.h"
 
 class TreeLeaf {
-
+	
 public:
-
+	
 	ofPoint		pos;
 	ofColor		color;
 	bool		bDone;
 	ofImage * img;
 	float r, rd, rv;
 	float alpha;
-
-float rate;
+	
+	float rate;
 	TreeLeaf() {
 		img = NULL;
 		bDone = false;
@@ -31,21 +31,21 @@ float rate;
 		rd = ofRandom(10, 20);
 		rate= ofRandom(5, 10);
 	}
-
+	
 	void update() {
 		if(!bDone) alpha += rate;
 		if(alpha >= 255) {
 			alpha = 255;
 			bDone = true;
 		}
-
-rv = (rv*0.8) + (rd-r) / 19.0;
-r += rv;
-
+		
+		rv = (rv*0.8) + (rd-r) / 19.0;
+		r += rv;
+		
 	}
-
+	
 	void draw() {
-
+		
 		ofEnableAlphaBlending();
 		ofSetColor(255,255,255, alpha);
 		ofFill();
@@ -55,13 +55,18 @@ r += rv;
 			ofSetRectMode(OF_RECTMODE_CORNER);
 		}
 		ofCircle(pos.x, pos.y, r);
-					ofNoFill();
+		ofNoFill();
 		ofSetColor(40, 100, 40);
 		ofCircle(pos.x, pos.y, r);
-	ofDisableAlphaBlending();
-
+		ofDisableAlphaBlending();
+		
 	}
-
-
-
+	
+	void drawTappered() {
+		
+		
+	}
+	
+	
+	
 };

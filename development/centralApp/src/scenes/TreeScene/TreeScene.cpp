@@ -3,6 +3,7 @@
 
 // ------------------------------------------
 void TreeScene::setup() {
+	
 	bDebug = true;
 	butterFlyColor.push_back(0xd1007e);
 	butterFlyColor.push_back(0x00a3c4);
@@ -21,10 +22,13 @@ void TreeScene::setup() {
 	
 	panel.setWhichPanel("Triggers");
 	panel.addSlider("Tree Delay", "TREE_DELAY", 1.3, 0.0, 10.0, false);
-	panel.addSlider("Bottom Offset", "BOTTOM_OFFSET", 100, 0.0, 500.0, false);
-	panel.addSlider("People Scale", "PEOPLE_SCALE", 2.4, 1.0, 5.0, false);
 	panel.addSlider("people glow", "PEOPLE_GLOW", 20.4, 0.0, 255.0, false);
-	panel.addSlider("tree", "TREE_OFF", 20.4, 0.0, 555.0, false);
+	panel.addSlider("tree bottom offset", "TREE_OFF", 20.4, -800, 800.0, false);
+	
+	panel.addSlider("tree grow w", "TREE_GROW_W", 100.0, 0.0, 1000.0, false);
+	panel.addSlider("tree grow h", "TREE_GROW_H", 100.0, 0.0, 1000.0, false);
+	panel.addSlider("tree min pts", "TREE_MIN", 10.0, 0.0, 20.0, false);
+	panel.addSlider("tree max pts", "TREE_MAX", 20.0, 20.0, 100.0, false);
 	
 	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
 	
@@ -46,13 +50,7 @@ void TreeScene::setup() {
 	
 	
 	// ------------ Settins 
-	W = 1.0;	
-	H = 1.0;
-	
 	bGotMyFirstPacket	= false;
-	minSpawnToGrowW		= 120;
-	minSpawnToGrowH		= 120;
-	load();
 	
 	// ------------ Get some Flocling butterflys in
 	ButterflyAnimation tempButterFly;
@@ -61,6 +59,7 @@ void TreeScene::setup() {
 	tempButterFly.addFile("sceneAssets/trees/Butterfly_003.svg");
 	tempButterFly.addFile("sceneAssets/trees/Butterfly_004.svg");
 	
+	// make the butterflys
 	if(butterflys.size() < MAX_BUTTERFLYS) {
 		for (int i = 0; i < MAX_BUTTERFLYS; i++){
 			ButterFlyParticle bf;
@@ -72,6 +71,7 @@ void TreeScene::setup() {
 			butterflys.back().color = butterFlyColor[(int)ofRandom(0, butterFlyColor.size()-1)];
 		}
 	}
+	
 	
 }
 
@@ -127,6 +127,10 @@ void TreeScene::mouseReleased(int wx, int wy, int x, int y, int button){
 //--------------------------------------------------------------
 void TreeScene::updateFlocking() {
 	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
 	// on every frame 
 	// we reset the forces
 	// add in any forces on the particle
@@ -151,11 +155,13 @@ void TreeScene::updateFlocking() {
 			
 			float forceFactor = (newRec.width * newRec.height) / (packet.width*packet.height);
 			
-			newRec.x		*= TREE_SCALE;
-			newRec.y		*= TREE_SCALE;
-			newRec.width	*= TREE_SCALE;
-			newRec.height	*= TREE_SCALE;
-			ofPoint center   = tracker->blobs[q].centroid * TREE_SCALE;
+			newRec.x		*= scalex;
+			newRec.y		*= scaley;
+			newRec.width	*= scalex;
+			newRec.height	*= scaley;
+			ofPoint center;
+			center.x = tracker->blobs[q].centroid.x * scalex;
+			center.y = tracker->blobs[q].centroid.y * scaley;
 			
 			
 			butterflys[i].addAttractionForce(center.x, center.y - 20, 200, 1.0);
@@ -174,8 +180,11 @@ void TreeScene::updateFlocking() {
 	for (int i = 0; i < butterflys.size(); i++){
 		ofxVec2f pos = butterflys[i].pos;
 		
-		float offx = ((OFFSCREEN_WIDTH - W)/2);
-		float offy = (OFFSCREEN_HEIGHT - H);
+		float screenW = 0;
+		float screenH = 0;
+		
+		float offx = ((OFFSCREEN_WIDTH - screenW)/2);
+		float offy = (OFFSCREEN_HEIGHT - screenH);
 		float gap  = 20;
 		if (pos.x < -offx)						pos.x = OFFSCREEN_WIDTH-offx;
 		if (pos.x > OFFSCREEN_WIDTH-offx)		pos.x = -offx;
@@ -196,55 +205,135 @@ void TreeScene::updateFlocking() {
 void TreeScene::update() {
 	
 	panel.update();
-	TREE_SCALE = panel.getValueF("PEOPLE_SCALE");
 	
+	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
-	
-	// --------------------- add some fern
-	if((int)ofRandom(0, 30) == 10) {
-		if(ferns.size() <= 10) {	// just 10 for now
-			//	ferns.push_back(RandomFern());
-			//	ferns.back().pos = 0;
-			printf("-- new fern --\n");
-			
-		}
-	}
 	
 	// --------------------- Tree Blobs
-	for(int i=0; i<treeBlobs.size(); i++) {
-		treeBlobs[i].age = (float)(ofGetElapsedTimef()-treeBlobs[i].initTime);	
-		if(treeBlobs[i].age > panel.getValueF("TREE_DELAY") && !treeBlobs[i].bAlive) {
-			treeBlobs[i].bAlive = true;	
+	for(int i=0; i<tracker->blobs.size(); i++) {
+		
+		int lookID = tracker->blobs[i].id;
+		
+		ofRectangle newRec = tracker->blobs[i].boundingRect;
+		newRec.x		*= scalex;
+		newRec.y		*= scaley;
+		newRec.width	*= scalex;
+		newRec.height	*= scaley;
+		
+		ofPoint center =  tracker->blobs[i].centroid;
+		center.x		= center.x * scalex;
+		center.y		= center.y * scaley;
+		
+		
+		for(int j=0; j<treeBlobs.size(); j++) {
 			
-			// time to grow a tree
-			printf("--- time to grow a tree:%i---\n", treeBlobs[i].id);
-			trees.push_back(MagicTree());
-			
-			trees.back().initTree(0, 0, (int)ofRandom(20, 50));	// <--- i need a init pos
-			trees.back().img = &theDot;
-			trees.back().id = treeBlobs[i].id;
-			
-			for(int j=0; j<tracker->blobs.size(); j++) {
+			// found you :)
+			if(lookID == treeBlobs[j].id) {
 				
-				ofRectangle newRec = tracker->blobs[j].boundingRect;
-				newRec.x		*= TREE_SCALE;
-				newRec.y		*= TREE_SCALE;
-				newRec.width	*= TREE_SCALE;
-				newRec.height	*= TREE_SCALE;
+				treeBlobs[j].age		= ofGetElapsedTimef() - treeBlobs[j].initTime; // getting older
+				treeBlobs[j].rect	    = newRec;
+				treeBlobs[j].center     = center;
 				
-				trees.back().rect	  = newRec;
-				trees.back().center   = tracker->blobs[j].centroid * TREE_SCALE;
+				// ok we are old enough lets make a blob
+				if(treeBlobs[j].age >= panel.getValueF("TREE_DELAY") && treeBlobs[j].bAlive == false) {
+					
+					printf("--- time to grow a tree here:%i---\n", treeBlobs[j].id);
+					treeBlobs[j].bAlive = true;
+					
+					// time to grow a tree
+					printf("--- time to grow a tree:%i---\n", treeBlobs[j].id);
+					trees.push_back(MagicTree());
+					
+					trees.back().initTree(0, 0, (int)ofRandom(panel.getValueF("TREE_MIN"), panel.getValueF("TREE_MAX")));	// <--- i need a init pos
+					trees.back().img	= &theDot;
+					trees.back().id		= treeBlobs[j].id; 
+					trees.back().rect	= treeBlobs[j].rect;
+					trees.back().center = treeBlobs[j].center;
+					
+					// init the tree pos
+					trees.back().treeBaseD   = trees.back().center;
+					trees.back().treeBaseD.y = (newRec.y + newRec.height);
+					trees.back().treeBase	 = trees.back().treeBaseD;
+					
+					
+				}
 				
-				// init the tree pos
-				trees.back().treeBaseD   = trees.back().center;
-				trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height + H;
-				trees.back().treeBase = trees.back().treeBaseD;
 			}
 		}
 		
-		
 	}
 	
+	
+	
+	// --------------------- The Magic Trees
+	/*
+	 for(int i=0; i<tracker->blobs.size(); i++) {
+	 
+	 int lookID = tracker->blobs[i].id;
+	 
+	 ofRectangle& newRec = tracker->blobs[i].boundingRect;
+	 newRec.x		*= scalex;
+	 newRec.y		*= scaley;
+	 newRec.width	*= scalex;
+	 newRec.height	*= scaley;
+	 
+	 for(int j=0; j<trees.size(); j++) {
+	 if(lookID == treeBlobs[j].id) {
+	 
+	 treeBlobs[j].age		= ofGetElapsedTimef() - treeBlobs[j].initTime;
+	 treeBlobs[j].rect	    = newRec;
+	 treeBlobs[j].center.x   = tracker->blobs[i].centroid.x * scalex;
+	 treeBlobs[j].center.y   = tracker->blobs[i].centroid.y * scaley;
+	 
+	 }
+	 }
+	 
+	 }
+	 */
+	
+	
+	
+	/*
+	 // --------------------- Tree Blobs
+	 for(int i=0; i<treeBlobs.size(); i++) {
+	 
+	 //treeBlobs[i].age = (float)(ofGetElapsedTimef()-treeBlobs[i].initTime);	
+	 
+	 
+	 if(treeBlobs[i].age > panel.getValueF("TREE_DELAY") && !treeBlobs[i].bAlive) {
+	 treeBlobs[i].bAlive = true;	
+	 
+	 // time to grow a tree
+	 printf("--- time to grow a tree:%i---\n", treeBlobs[i].id);
+	 trees.push_back(MagicTree());
+	 
+	 trees.back().initTree(0, 0, (int)ofRandom(20, 50));	// <--- i need a init pos
+	 trees.back().img = &theDot;
+	 trees.back().id = treeBlobs[i].id; 
+	 
+	 for(int j=0; j<tracker->blobs.size(); j++) {
+	 
+	 ofRectangle& newRec = tracker->blobs[j].boundingRect;
+	 newRec.x		*= scalex;
+	 newRec.y		*= scaley;
+	 newRec.width	*= scalex;
+	 newRec.height	*= scaley;
+	 
+	 trees.back().rect	    = newRec;
+	 trees.back().center.x   = tracker->blobs[j].centroid.x * scalex;
+	 trees.back().center.y   = tracker->blobs[j].centroid.y * scaley;
+	 
+	 // init the tree pos
+	 trees.back().treeBaseD   = trees.back().center;
+	 trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height + panel.getValueF("TREE_OFF");
+	 trees.back().treeBase	 = trees.back().treeBaseD;
+	 }
+	 }
+	 
+	 
+	 }
+	 */
 	
 	// --------------------- Tree People
 	for(int i=0; i<trees.size(); i++) {
@@ -265,70 +354,33 @@ void TreeScene::update() {
 	
 	
 	// --------------------- update the trees
-	for(int i=0; i<tracker->blobs.size(); i++) {
-		
-		int lookID = tracker->blobs[i].id;
-		float barea  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
-		
-		ofRectangle newRec = tracker->blobs[i].boundingRect;
-		
-		newRec.x		*= TREE_SCALE;
-		newRec.y		*= TREE_SCALE;
-		newRec.width	*= TREE_SCALE;
-		newRec.height	*= TREE_SCALE;
-		newRec.height   += panel.getValueF("TREE_OFF");
-		
-		for(int j=0; j<trees.size(); j++) {
-			if(lookID == trees[j].id) {
-				trees[j].frameAge = 0;// tracker->blobs[i].frameAge;
-				trees[j].rect	  = newRec;
-				trees[j].center   = tracker->blobs[i].centroid * TREE_SCALE;
-				
-			}
-		}
-		
-		
-	}
-	
-	updateFlocking();
-	
-	
-	/*
-	 float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
-	 float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	/*for(int i=0; i<tracker->blobs.size(); i++) {
 	 
-	 for (int i = 0; i < MAX_STEMS; i++) {
+	 int lookID = tracker->blobs[i].id;
+	 float barea  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
 	 
-	 if (stems[i].bALive) {
+	 ofRectangle& newRec = tracker->blobs[i].boundingRect;
 	 
+	 newRec.x		*= scalex;
+	 newRec.y		*= scaley;
+	 newRec.width	*= scalex;
+	 newRec.height	*= scaley;
+	 newRec.height   += panel.getValueF("TREE_OFF");
 	 
-	 for (int j = 0; j < building.shapes.size(); j++) {
-	 FerryShape& cur = building.shapes[j];
-	 for (int k = 0; k < cur.pnts.size() - 1; k++) {
-	 ofxPoint2f start = cur.pnts[k];
-	 ofxPoint2f stop = cur.pnts[k + 1];
-	 for(float q = 0; q < 1; q += .1) {
-	 ofxPoint2f interp = start.interpolate(stop, q);
-	 stems[i].head.addRepulsionForce(interp.x, interp.y, 30.0, 30.0);
-	 }
+	 for(int j=0; j<trees.size(); j++) {
+	 if(lookID == trees[j].id) {
+	 trees[j].frameAge  = 0;// tracker->blobs[i].frameAge;
+	 trees[j].rect	   = newRec;
+	 trees[j].center.x   = tracker->blobs[i].centroid.x * scalex;
+	 trees[j].center.y   = tracker->blobs[i].centroid.y * scaley;
 	 }
 	 }
 	 
-	 for(int j = 0; j < packet.nBlobs; j++) {
-	 for(int k = 0; k < packet.nPts[j]; k++) {
-	 ofPoint& cur = packet.pts[j][k];
-	 stems[i].head.addAttractionForce(cur.x * scalex, cur.y * scaley, 200, 1);
-	 }
-	 }
 	 
-	 stems[i].update();
-	 }
 	 }
 	 */
 	
-	
-	
-	
+	updateFlocking();
 	
 	
 	// --------------------- packet info
@@ -337,9 +389,6 @@ void TreeScene::update() {
 		bGotMyFirstPacket = true;
 		
 	}
-	
-	W = packet.width * TREE_SCALE;
-	H = panel.getValueF("BOTTOM_OFFSET") + (packet.height * TREE_SCALE);
 	
 }
 
@@ -351,48 +400,26 @@ void TreeScene::drawTop() {
 // ---------------------------------------------------------
 void TreeScene::draw() {
 	
-	/*
-	 
-	 // draw the ferns
-	 for(int i=0; i<ferns.size(); i++) {
-	 ofPushStyle();
-	 glPushMatrix();
-	 glTranslatef(ferns[i].pos.x, ferns[i].pos.y, 0);
-	 //glRotatef(0, 0, 0, 1);
-	 ferns[i].draw(1.0);
-	 glPopMatrix();
-	 ofPopStyle();
-	 }
-	 
-	 */
-	//
-	//	ofSetColor(0, 25, 255);
-	//	ofFill();
-	//	ofRect(-300, -500, 10000, 10000);
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
+	if(bDebug) {
+		ofSetColor(0, 25, 255);
+		ofFill();
+		ofRect(-300, -500, 10000, 10000);
+	}
 	
 	ofEnableAlphaBlending();
 	glPushMatrix();
-	glTranslatef(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), 0);
-	
-	
-	
-	if(bDebug) {	
-		// The Tree Blobs
-		for(int i=0; i<treeBlobs.size(); i++) {
-			ofFill();
-			ofSetColor(200, 40, 255);
-			ofCircle(i*85, 0, 40);
-			ofSetColor(255, 255, 255);
-			ofDrawBitmapString("id: "+ofToString(treeBlobs[i].id) +"\n"+ ofToString(treeBlobs[i].age), i*78, 10);
-		}
-	}
-	
+	glTranslatef(0, 0, 0);
 	
 	// the big trees - funky style
+	glPushMatrix();
+	glTranslatef(0, panel.getValueF("TREE_OFF"), 0);
 	for (int i = 0; i < trees.size(); i++){
 		trees[i].draw();
 	}
+	glPopMatrix();
 	
 	// draw the people
 	for(int i=0; i<packet.nBlobs; i++) {
@@ -404,9 +431,8 @@ void TreeScene::draw() {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			for (int j = 0; j < packet.nPts[i]; j+=2) {
-				float x = packet.pts[i][j].x * TREE_SCALE;
-				float y = packet.pts[i][j].y * TREE_SCALE;
-				
+				float x = packet.pts[i][j].x * scalex;
+				float y = packet.pts[i][j].y * scaley;	
 				
 				ofSetRectMode(OF_RECTMODE_CENTER);
 				ofSetColor(255, 255, 255, panel.getValueF("PEOPLE_GLOW"));
@@ -423,15 +449,27 @@ void TreeScene::draw() {
 		ofBeginShape();
 		for (int j = 0; j < packet.nPts[i]; j++) {
 			
-			float x = packet.pts[i][j].x * TREE_SCALE;
-			float y = packet.pts[i][j].y * TREE_SCALE;
+			float x = packet.pts[i][j].x * scalex;
+			float y = packet.pts[i][j].y * scaley;
 			
 			ofVertex(x, y);
 		}
 		ofEndShape(true);
 		
-		
-		
+		if(bDebug) {
+			ofNoFill();
+			ofSetColor(255, 35, 0);
+			ofRect(packet.rect[i].x * scalex, 
+				   packet.rect[i].y * scaley, 
+				   packet.rect[i].width * scalex, 
+				   packet.rect[i].height * scaley);
+			
+			
+			ofDrawBitmapString("w:"+ofToString(packet.rect[i].width)+"\n"+
+							   "h:"+ofToString(packet.rect[i].height)+"\n", 
+							   20+packet.rect[i].x * scalex, 
+							   20+packet.rect[i].y * scaley);
+		}
 		
 	}
 	
@@ -442,12 +480,30 @@ void TreeScene::draw() {
 	}
 	
 	
+	if(bDebug) {	
+		// The Tree Blobs
+		for(int i=0; i<treeBlobs.size(); i++) {
+			glPushMatrix();
+			glTranslatef(treeBlobs[i].center.x, treeBlobs[i].center.y, 0);
+			ofFill();
+			ofSetColor(200, 40, 255);
+			ofCircle(0, 0, 40);
+			ofSetColor(255, 255, 255);
+			ofDrawBitmapString("id: "+ofToString(treeBlobs[i].id) +"\n"+
+							   ofToString(treeBlobs[i].age), 0, 0);
+			glPopMatrix();
+		}
+	}
+	
+	
 	glPopMatrix();
 	
 	if(bDebug) {
+		float screenW = 0;
+		float screenH = 0;
 		ofNoFill();
 		ofSetColor(245, 2, 2);
-		ofRect(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), W, H);
+		ofRect(((OFFSCREEN_WIDTH - screenW)/2), (OFFSCREEN_HEIGHT-screenH), screenW, screenH);
 	}
 }
 
@@ -470,12 +526,21 @@ void TreeScene::blobOn( int x, int y, int bid, int order ) {
 	// else make a Tree
 	else {
 		
+		//	if(blober->boundingRect.width >= panel.getValueI("TREE_GROW_W") || 
+		//	   blober->boundingRect.height >= panel.getValueI("TREE_GROW_H")) {
+		
+		
+		
 		
 		treeBlobs.push_back(TreeBlob());
 		treeBlobs.back().id = bid;
 		treeBlobs.back().age = 0;
+		treeBlobs.back().bAlive = false;
+		
 		treeBlobs.back().initTime = ofGetElapsedTimef();
 		
+		printf("new tree blob  - %i\n", treeBlobs.back().id);
+		//	}
 		
 		//if(blober.boundingRect.width >= minSpawnToGrowW || blober.boundingRect.height >= minSpawnToGrowH) {
 		//	treePeople.push_back(TreePerson());
@@ -525,6 +590,7 @@ void TreeScene::blobOff( int x, int y, int bid, int order ) {
 	// clean up the tree blobs
 	for(int i=treeBlobs.size()-1; i>=0; i--) {
 		if(treeBlobs[i].id == bid) {
+			
 			treeBlobs.erase(treeBlobs.begin() + i);
 			printf("--- tree blob removed [%i] -- \n", bid);
 		}
@@ -542,53 +608,6 @@ void TreeScene::blobOff( int x, int y, int bid, int order ) {
 
 
 
-
-//--------------------------------------------------------------
-void TreeScene::load() {
-	
-	string theFile = "settings/treeSettings.xml";
-	
-	
-	printf("--- loading: %s ---\n", theFile.c_str());
-	
-	xmlSaver.clear();
-	
-	if(xmlSaver.loadFile(theFile)) {
-		
-		minSpawnToGrowW = xmlSaver.getValue("minSpawnToGrowW", 100.0);
-		minSpawnToGrowH = xmlSaver.getValue("minSpawnToGrowH", 100.0);
-		
-	}
-	
-}
-
-//--------------------------------------------------------------
-
-void TreeScene::save() {
-	/*
-	 
-	 string fileToSave = "settings/treeSettings.xml";
-	 
-	 xmlSaver.clear();
-	 
-	 xmlSaver.addTag("windowPnts");
-	 xmlSaver.pushTag("windowPnts");
-	 for(int i=0; i<windowPnts.size(); i++) {
-	 xmlSaver.addTag("wnd");
-	 xmlSaver.pushTag("wnd", i);
-	 
-	 xmlSaver.setValue("pnt:x", windowPnts[i].pos.x, 0);
-	 xmlSaver.setValue("pnt:y", windowPnts[i].pos.y, 1);
-	 
-	 xmlSaver.popTag();
-	 }
-	 
-	 xmlSaver.popTag();
-	 xmlSaver.saveFile(fileToSave);
-	 
-	 printf("--- monster settings saved [%s]---\n", fileToSave.c_str());
-	 */
-}
 
 
 

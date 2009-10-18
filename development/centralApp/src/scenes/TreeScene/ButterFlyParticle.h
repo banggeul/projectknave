@@ -38,7 +38,7 @@ public:
 		alpha = 0;
 		alphaD = 100;
 		
-		scale					= ofRandom(0.1, 0.2);
+		scale					= ofRandom(0.06, 0.1);
 	}
 	
 	float getHeading2D() {	
@@ -49,6 +49,7 @@ public:
 	
 	void draw() {
 		
+		ofFill();
 		alpha += (alphaD - alpha) / 20.0;
 		
 		ofEnableAlphaBlending();
