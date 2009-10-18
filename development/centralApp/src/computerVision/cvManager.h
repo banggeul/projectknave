@@ -102,6 +102,13 @@ class cvManager {
 	ofxCvGrayscaleImage		PresenceFrameDialate;
 	ofxCvContourFinder		Contour;
 
+	void positionContours(
+		ofxCvContourFinder& Contour,
+		float xScale, float yScale, float xOffset, float yOffset,
+		float width, float height);
+
+	void smoothContour(ofxCvContourFinder& contour);
+
 	int						nWhitePixels;
 	int						nMovingPixels;
 

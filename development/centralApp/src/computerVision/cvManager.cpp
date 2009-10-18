@@ -176,17 +176,13 @@ void cvManager::mouseReleased(){
 
 }
 
+void cvManager::positionContours(
+	ofxCvContourFinder& Contour,
+	float xScale, float yScale, float xOffset, float yOffset,
+	float width, float height) {
 
-//--------------------------------------------------------------
-void cvManager::fillPacket(){
-
-	float xScale = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_SCALE");
-	float yScale = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_SCALE");
-	float xOffset = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_OFFSET");
-	float yOffset = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_OFFSET");
-
-	float centerX = VideoFrame.width / 2;
-	float centerY = VideoFrame.height / 2;
+	float centerX = width / 2;
+	float centerY = height / 2;
 	xOffset += centerX;
 	yOffset += centerY;
 
@@ -209,6 +205,34 @@ void cvManager::fillPacket(){
 		centroid.x = ((centroid.x - centerX) * xScale) + xOffset;
 		centroid.y = ((centroid.y - centerY) * yScale) + yOffset;
 	}
+}
+
+void cvManager::smoothContour(ofxCvContourFinder& contour) {
+	vector<ofxCvBlob> base = contour.blobs;
+	for(int i = 0; i < contour.nBlobs; i++) {
+		vector<ofPoint>& points = contour.blobs[i].pts;
+		vector<ofPoint>& basePoints = base[i].pts;
+		for(int j = 1; j < points.size() - 1; j++) {
+			points[j] = (basePoints[j - 1] + basePoints[j] + basePoints[j + 1]) / 3.;
+		}
+	}
+}
+
+
+//--------------------------------------------------------------
+void cvManager::fillPacket(){
+
+	float xScale = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_SCALE");
+	float yScale = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_SCALE");
+	float xOffset = panel.getValueF("CV_MANAGER_PANEL_HORIZONTAL_OFFSET");
+	float yOffset = panel.getValueF("CV_MANAGER_PANEL_VERTICAL_OFFSET");
+
+	positionContours(
+		Contour,
+		xScale, yScale, xOffset, yOffset,
+		VideoFrame.width, VideoFrame.height);
+
+	smoothContour(Contour);
 
 	memset((char *)(packet), 0, sizeof(computerVisionPacket));
 
