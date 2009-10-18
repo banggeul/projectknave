@@ -11,8 +11,9 @@ class MagicTree {
 	
 public:
 	
-	
-	
+	float curveRateX, curveRateY;
+	float thetaRate;
+	float growRate;
 	
 	
 	int					growMod;
@@ -77,16 +78,20 @@ public:
 	ofxVec2f	dir;
 	ofxVec2f	pos, vel, des;
 	
-	
+	float fadeRate;
 	
 	// ------------------------------------------------------ The Magic Tree
 	MagicTree() {
-		
+		fadeRate = 7;
+		thetaRate = 0.02;
+		curveRateX = 10.0;
+		curveRateY = 10.0;
+		growRate = 0.09;
 		// the base of the trees
 		treeBase		= 0;
 		treeBaseD		= 0;
 		
-		trunkGirth		= ofRandom(10, 30);
+		trunkGirth		= ofRandom(8, 23);
 		totalTreePts	= 0;
 		treePtsCount	= 0;
 		growMod			= 4;
@@ -194,16 +199,16 @@ public:
 			
 			
 			pnts[0] = root;			// keep attached to root
-			growInc += 0.098;		// simulate people moving
+			growInc += growRate;		// simulate people moving
 			
 			
-			theta += 0.031;
+			theta += thetaRate;
 			
 			if(growInc >= 1.0) {
 				
 				des += dir;
-				des.x += cos(theta) * 4.3;
-				des.y += sin(theta) * 10.03;
+				des.x += cos(theta) * curveRateX;
+				des.y += sin(theta) * curveRateY;
 				growInc = 0;
 				
 				
@@ -242,8 +247,8 @@ public:
 			}
 		
 			// springy growing
-			vel = (vel * 0.87) + (des - pos) / 8.0;
-			pos += vel;
+			//vel = (vel * 0.87) + (des - pos) / 8.0;
+			pos += (des-pos) / 8.0;
 			pnts[treePtsCount]	  = pos;
 			
 			
@@ -279,7 +284,7 @@ public:
 			
 			bReadyToFadeOut = true;
 			
-			alpha -= 7;
+			alpha -= fadeRate;
 			if(alpha <= 0.0) {
 				
 				bDead = true;

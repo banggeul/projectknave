@@ -29,6 +29,13 @@ void TreeScene::setup() {
 	panel.addSlider("tree grow h", "TREE_GROW_H", 100.0, 0.0, 1000.0, false);
 	panel.addSlider("tree min pts", "TREE_MIN", 10.0, 0.0, 20.0, false);
 	panel.addSlider("tree max pts", "TREE_MAX", 20.0, 20.0, 100.0, false);
+	panel.addSlider("GrowRate", "GROW_RATE", 0.98, 0.0, 2.0, false);
+
+	panel.addSlider("Curve X", "GROW_C_X", 10.98, 0.0, 30.0, false);
+	panel.addSlider("Curve Y", "GROW_C_Y", 10.98, 0.0, 30.0, false);
+	panel.addSlider("Theta G", "GROW_T", 0.08, 0.0, 2.0, false);
+	panel.addSlider("Fade Rate", "FADE_RATE", 6.0, 1.0, 40.0, false);
+
 	
 	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
 	
@@ -337,6 +344,13 @@ void TreeScene::update() {
 	
 	// --------------------- Tree People
 	for(int i=0; i<trees.size(); i++) {
+		
+		trees[i].curveRateX = panel.getValueF("GROW_C_X");
+		trees[i].curveRateY = panel.getValueF("GROW_C_Y");
+		trees[i].thetaRate = panel.getValueF("GROW_T");
+		trees[i].fadeRate = panel.getValueF("FADE_RATE");
+		
+		trees[i].growRate = panel.getValueF("GROW_RATE");
 		trees[i].update();	
 	}
 	// clean up the trees

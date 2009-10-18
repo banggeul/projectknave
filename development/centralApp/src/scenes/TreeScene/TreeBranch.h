@@ -45,8 +45,8 @@ public:
 		fern2des = branchPos;
 		
 		
-		fern1des.x -= (step * ofRandom(3, 6));
-		fern2des.x += (step * ofRandom(3, 6));
+		fern1des.x -= (step * ofRandom(2, 3));
+		fern2des.x += (step * ofRandom(2, 3));
 		
 		fern1des.y -= 33;
 		fern2des.y -= 33;
