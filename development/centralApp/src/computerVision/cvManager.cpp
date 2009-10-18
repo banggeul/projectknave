@@ -124,7 +124,7 @@ void cvManager::setupGUI() {
 	panel.addSlider("thrshold",  "CV_MANAGER_PANEL_VIDEO_THRESHOLD", 80, 0, 255, true);
 
 
-	panel.addSlider("min blob size (pct of video)",  "CV_MANAGER_PANEL_MIN_BLOB", 0.02, 0.01,0.25, false);
+	panel.addSlider("min blob size (pct of video)",  "CV_MANAGER_PANEL_MIN_BLOB", 0.02, 0.000001,0.25, false);
 	panel.addSlider("max blob size (pct of video)",  "CV_MANAGER_PANEL_MAX_BLOB", 0.5, 0,1, false);
 
 

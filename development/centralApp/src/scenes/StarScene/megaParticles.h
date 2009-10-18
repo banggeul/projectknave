@@ -2,6 +2,9 @@
 
 #define NUM_PARTICLES 100000
 
+#include "ofMain.h"
+#include "ofxShader.h"
+
 // ----------------------- Classes for particles
 class Pvert {
 public:
@@ -25,18 +28,38 @@ public:
 
 class megaParticles {
 public:
-	void setup() {
+	float boxSizze;
 
+	// Camera
+	ofxVec3f tran, tranv;
+	ofxVec3f rot, rotv;
+
+		// Color and Vertex VBO
+	GLuint vbo[2];
+
+	Pvert	vel[NUM_PARTICLES];
+	Pvert	pnts[NUM_PARTICLES];
+	Pcolor	color[NUM_PARTICLES];
+
+	float pointSizes[NUM_PARTICLES];
+
+
+	ofTexture	texture;
+	ofxShader	shader;
+	bool		bShaderOn;
+
+
+	void setup() {
 		// set the camera
 		tranv.x = ofGetWidth() / 2;
 		tranv.y = ofGetHeight() / 2;
-		tranv.z = -600.0;
-
+		tranv.z = -600.0f;
 
 		// the world box size
-		boxSize = 2000.0;
+		boxSizze = 2000.0f;
 
 		// Load the particle texture
+
 		ofDisableArbTex();
 		ofImage tempImage;
 		tempImage.loadImage("dot.png");
@@ -47,14 +70,11 @@ public:
 		shader.loadShader("VBOShader");
 		bShaderOn = true;
 		shader.setShaderActive(bShaderOn);
-
-
-
+/*
 		// Random Points
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			resetParticle(i);
 		}
-
 
 		// Generate the VBO
 		glGenBuffersARB(2, &vbo[0]);
@@ -66,7 +86,9 @@ public:
 		// VBO for vertex positions
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo[1]);
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, NUM_PARTICLES*3*sizeof(float), pnts, GL_STREAM_DRAW_ARB);
-
+*/
+		bShaderOn = false;
+		shader.setShaderActive(false);
 	}
 
 	void resetParticle(int i) {
@@ -116,9 +138,9 @@ public:
 
 
 			// Particle Wrapping
-			if (pnts[i].x > boxSize || pnts[i].x < -boxSize ||
-			    pnts[i].y > boxSize || pnts[i].y < -boxSize ||
-			    pnts[i].z > boxSize || pnts[i].z < -boxSize) {
+			if (pnts[i].x > boxSizze || pnts[i].x < -boxSizze ||
+			    pnts[i].y > boxSizze || pnts[i].y < -boxSizze ||
+			    pnts[i].z > boxSizze || pnts[i].z < -boxSizze) {
 				resetParticle(i);
 			}
 
@@ -141,34 +163,34 @@ public:
 		{
 			// Front
 			glBegin(GL_LINE_LOOP);
-			glVertex3f(-boxSize, -boxSize, boxSize);
-			glVertex3f(-boxSize, boxSize, boxSize);
-			glVertex3f(boxSize, boxSize, boxSize);
-			glVertex3f(boxSize, -boxSize, boxSize);
+			glVertex3f(-boxSizze, -boxSizze, boxSizze);
+			glVertex3f(-boxSizze, boxSizze, boxSizze);
+			glVertex3f(boxSizze, boxSizze, boxSizze);
+			glVertex3f(boxSizze, -boxSizze, boxSizze);
 			glEnd();
 
 			// Back
 			glBegin(GL_LINE_LOOP);
-			glVertex3f(-boxSize, -boxSize, -boxSize);
-			glVertex3f(-boxSize, boxSize, -boxSize);
-			glVertex3f(boxSize, boxSize, -boxSize);
-			glVertex3f(boxSize, -boxSize, -boxSize);
+			glVertex3f(-boxSizze, -boxSizze, -boxSizze);
+			glVertex3f(-boxSizze, boxSizze, -boxSizze);
+			glVertex3f(boxSizze, boxSizze, -boxSizze);
+			glVertex3f(boxSizze, -boxSizze, -boxSizze);
 			glEnd();
 
 			// Right
 			glBegin(GL_LINES);
-			glVertex3f(-boxSize, boxSize, boxSize);
-			glVertex3f(-boxSize, boxSize, -boxSize);
-			glVertex3f(-boxSize, -boxSize, boxSize);
-			glVertex3f(-boxSize, -boxSize, -boxSize);
+			glVertex3f(-boxSizze, boxSizze, boxSizze);
+			glVertex3f(-boxSizze, boxSizze, -boxSizze);
+			glVertex3f(-boxSizze, -boxSizze, boxSizze);
+			glVertex3f(-boxSizze, -boxSizze, -boxSizze);
 			glEnd();
 
 			// Left
 			glBegin(GL_LINES);
-			glVertex3f(boxSize, boxSize, boxSize);
-			glVertex3f(boxSize, boxSize, -boxSize);
-			glVertex3f(boxSize, -boxSize, boxSize);
-			glVertex3f(boxSize, -boxSize, -boxSize);
+			glVertex3f(boxSizze, boxSizze, boxSizze);
+			glVertex3f(boxSizze, boxSizze, -boxSizze);
+			glVertex3f(boxSizze, -boxSizze, boxSizze);
+			glVertex3f(boxSizze, -boxSizze, -boxSizze);
 			glEnd();
 
 		}
@@ -247,26 +269,5 @@ public:
 
 		glPopMatrix();
 	}
-
-	// Camera
-	ofxVec3f tran, tranv;
-	ofxVec3f rot, rotv;
-
-
-	// Color and Vertex VBO
-	GLuint	 vbo[2];
-
-	float   boxSize;
-
-	Pvert	vel[NUM_PARTICLES];
-	Pvert	pnts[NUM_PARTICLES];
-	Pcolor	color[NUM_PARTICLES];
-
-	float pointSizes[NUM_PARTICLES];
-
-
-	ofTexture	texture;
-	ofxShader	shader;
-	bool		bShaderOn;
 
 };
