@@ -106,6 +106,7 @@ void sceneManager::gotoScene(int theScene) {
 		case HAND_SCENE: ofSetFrameRate(20); break;
 		case PAINT_SCENE: ofSetFrameRate(30); break;
 		case STAR_SCENE: ofSetFrameRate(45); break;
+		case MONSTER_SCENE: ofSetFrameRate(30); break;
 		default: ofSetFrameRate(60);
 	}
 

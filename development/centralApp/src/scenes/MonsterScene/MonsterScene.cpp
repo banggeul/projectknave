@@ -47,8 +47,6 @@ void MonsterScene::setup(){
 
 	// load all the svg parts
 	dotImage.loadImage("sceneAssets/monsters/dot.png");
-
-	ofSetFrameRate(30);	// <--------------- I need this
 }
 
 //-------------------------------------------------------------- update
