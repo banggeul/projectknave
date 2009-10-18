@@ -213,7 +213,7 @@ void cvManager::smoothContour(ofxCvContourFinder& contour) {
 		vector<ofPoint>& points = contour.blobs[i].pts;
 		vector<ofPoint>& basePoints = base[i].pts;
 		for(int j = 1; j < points.size() - 1; j++) {
-			points[j] = (basePoints[j - 1] + basePoints[j] + basePoints[j + 1]) / 3.;
+			points[j] = (basePoints[j - 1] + (basePoints[j] * 2) + basePoints[j + 1]) / 4.;
 		}
 	}
 }
