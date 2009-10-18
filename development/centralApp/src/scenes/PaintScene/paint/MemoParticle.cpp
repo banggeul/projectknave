@@ -38,9 +38,9 @@ void MemoParticle::update() {
 	vx = myApp->fluidSolver.u[fluidIndex] * myApp->window.width * mass * FLUID_FORCE + vx * MOMENTUM;
 	vy = myApp->fluidSolver.v[fluidIndex] * myApp->window.height * mass * FLUID_FORCE + vy * MOMENTUM;
 	
-//	color.r = myApp->fluidSolver.r[fluidIndex] + 0.5;
-//	color.g = myApp->fluidSolver.g[fluidIndex] + 0.5;
-//	color.b = myApp->fluidSolver.b[fluidIndex] + 0.5;
+	//color.r = myApp->fluidSolver.r[fluidIndex] + 0.5;
+	//color.g = myApp->fluidSolver.g[fluidIndex] + 0.5;
+	//color.b = myApp->fluidSolver.b[fluidIndex] + 0.5;
 	
 	
 	// update position
@@ -86,7 +86,7 @@ void MemoParticle::updateVertexArrays(int i, float* posBuffer, float* colBuffer)
 	posBuffer[vi++] = y;
 	
 	int ci = i * 6;
-	if(myApp->drawFluid) {
+	if(false) {//myApp->drawFluid) {
 		// if drawing fluid, draw lines as black & white
 		colBuffer[ci++] = alpha;
 		colBuffer[ci++] = alpha;

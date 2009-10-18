@@ -34,6 +34,8 @@ public:
 	
 	paintObject(){
 		pointCount = 0;
+		
+		myColor.set(255,0,0);
 	}
 	
 	ofPoint		center;
@@ -42,6 +44,8 @@ public:
 	int			whoThisFrame;
 	bool		bFoundThisFrame;
 	ofPoint		myColor;
+	
+	
 	
 	vector < contourObject > COBJ;
 

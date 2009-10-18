@@ -27,6 +27,18 @@
 #include "ofxCvGrayscaleAdvanced.h"
 
 
+typedef struct {
+	
+	float pctx;
+	float pcty;
+	float vely;
+	
+	ofPoint colorMe;
+	
+} ceilingDrip;
+
+
+
 
 
 class PaintScene : public baseScene {// , public b2ContactListener {
@@ -62,7 +74,7 @@ public:
 	bool				drawParticles;
 	bool				renderUsingVA;
 	
-	void addToFluid(float x, float y, float dx, float dy, bool addColor = true, bool addForce = true);
+	void addToFluid(float x, float y, float dx, float dy, ofPoint colorMe, bool addColor = true, bool addForce = true);
 
 	// cache these for slightly better performance
 	struct {
@@ -75,11 +87,26 @@ public:
 	} window;
 	
 	
+	ofImage							paintColors;
+	unsigned char					*	paintColorsPixels;
+	
+	
+	int								dripWidth, dripHeight;
+	unsigned char					* dripPixels;
+	ofxCvGrayscaleImage				dripImage;
+	bool							bAllocateDripPixels;
+	
+	
 	
 	ofxMSAFluidSolver	fluidSolver;
 	ofxMSAFluidDrawer	fluidDrawer;	
 	
 	ParticleSystem		particleSystem;
+	
+	
+	vector <ceilingDrip> drips;
+	
+	
 	
 };
 

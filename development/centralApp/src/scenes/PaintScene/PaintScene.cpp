@@ -15,12 +15,12 @@ void PaintScene::setup() {
 	particleSystem.myApp = this;
 	
 	// setup fluid stuff
-	fluidSolver.setup(100, 100);
-    fluidSolver.enableRGB(true).setFadeSpeed(0.005).setDeltaT(0.5).setVisc(0.00015).setColorDiffusion(0);
+	fluidSolver.setup(200, 200);
+    fluidSolver.enableRGB(true).setFadeSpeed(0.025).setDeltaT(0.5).setVisc(0.00035 * 1.8).setColorDiffusion(0);
 	fluidDrawer.setup(&fluidSolver);
 	
 	
-	fluidCellsX			= 150; //200;
+	fluidCellsX			= 200; //200;
 	
 	drawFluid			= true;
 	drawParticles		= true;
@@ -39,7 +39,7 @@ void PaintScene::setup() {
 	
 	
 	handImgW = 640;
-	handImgH = 240;
+	handImgH = 480;
 	
 	
 	handImage.setUseTexture(false);
@@ -52,10 +52,94 @@ void PaintScene::setup() {
 	handImage.preAllocate(MAX_BLOB_LENGTH);
 	
 	
+	paintColors.loadImage("images/Scene_03_Paint.jpg");
+	paintColors.setImageType(OF_IMAGE_COLOR);
+	paintColorsPixels = paintColors.getPixels();
+	
+	
+	bAllocateDripPixels = false;
+	
+	/*
+	
+	 
+	 */
+	
+	for (int i = 0; i < 80; i++){
+		ceilingDrip drip;
+		drips.push_back(drip);
+		drips[drips.size()-1].pctx = ofRandom(0,1);
+		drips[drips.size()-1].pcty = 0.3f;
+		drips[drips.size()-1].vely = ofRandom(0.02f, 0.015);
+	}
+	
+	
+	
 }
 
 // ------------------------------------------------
 void PaintScene::update(){
+	
+	
+	if(resizeFluid) 	{
+		fluidSolver.setSize(fluidCellsX, fluidCellsX / window.aspectRatio);
+		fluidDrawer.setup(&fluidSolver);
+		resizeFluid = false;
+		
+		dripWidth = fluidSolver._NX;
+		dripHeight = fluidSolver._NY;
+		dripImage.allocate(dripWidth, dripHeight);
+		dripPixels = new unsigned char[dripWidth * dripHeight];
+		
+		memset(dripPixels, 0, dripWidth * dripHeight);
+		dripImage.setFromPixels(dripPixels, dripWidth, dripHeight );
+	}
+	
+	
+	int index;
+	for (int i = 0; i < drips.size(); i++){
+		drips[i].pcty += drips[i].vely;
+		if (drips[i].pcty > 1) drips[i].pcty = 1;
+		drips[i].vely *= 0.97f;
+	}
+	
+	
+	std::vector<ceilingDrip >::iterator iter = drips.begin();
+	while (iter != drips.end())
+	{
+		if ((*iter).vely <= 0.002)
+		{
+			
+			iter = drips.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+	
+	cout << "drips size " << drips.size() << endl;
+	
+	
+	
+	
+	for (int i = 0; i < drips.size(); i++){
+		
+		if (drips[i].vely > 0.001f){
+			int x1 = fluidSolver._NX * drips[i].pctx;
+			int y1 = fluidSolver._NY * (drips[i].pcty - drips[i].vely);
+			int y2 = fluidSolver._NY * drips[i].pcty;
+			
+			for (int j = y1; j < y2; j++){
+				index =  ((x1) + (fluidSolver._NX + 2)  *(j));
+				fluidSolver.r[index] = drips[i].colorMe.x;
+				fluidSolver.g[index] = drips[i].colorMe.y;
+				fluidSolver.b[index] = drips[i].colorMe.z;
+			}
+		}
+		
+	}
+	
+	
 	
 	
 	if (lastFrameRendered !=  packet.frameNumber){
@@ -95,11 +179,6 @@ void PaintScene::update(){
 	
 	trackBlobs();
 	
-	if(resizeFluid) 	{
-		fluidSolver.setSize(fluidCellsX, fluidCellsX / window.aspectRatio);
-		fluidDrawer.setup(&fluidSolver);
-		resizeFluid = false;
-	}
 	
 
 	
@@ -116,8 +195,6 @@ void PaintScene::update(){
 		
 		// try to find my color :
 		
-		ofPoint myColor;
-		myColor.set(255,0,255);
 		
 		for (int j = 0; j < POBJ.size(); j++){
 			if (POBJ[j].bFoundThisFrame && POBJ[j].whoThisFrame == i){
@@ -173,7 +250,7 @@ void PaintScene::update(){
 void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
 	
 	
-	for (int i = 0; i < PO.COBJ.size(); i+=8){
+	for (int i = 0; i < PO.COBJ.size(); i+=2){
 		if ( PO.COBJ[i].bFoundThisFrame) {
 			
 			if (PO.COBJ[i].nFramesFound > 0){
@@ -198,8 +275,14 @@ void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
 				px *= window.invWidth * scalex;
 				py *= window.invHeight * scaley;
 				
-				addToFluid(px, py, vx*0.1, vy*0.1, true);
+				ofPoint myColor;
+				myColor.set(PO.myColor.x/255.0f,PO.myColor.y/255.0f,PO.myColor.z/255.0f);
+				//printf("myColor in pre fluid draw is %f %f %f \n", myColor.x, myColor.y, myColor.z);
+				addToFluid(px, py, vx*0.8, vy*0.8, myColor, true);
 				
+				// love partciles here!!
+				// if (i % 10 == 0) particleSystem.addParticles(px * window.width, py * window.height, 1);
+								
 			} else {
 				
 				float px = PO.COBJ[i].center.x ;
@@ -211,7 +294,10 @@ void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
 				px *= window.invWidth * scalex;
 				py *= window.invHeight * scaley;
 				
-				addToFluid(px, py, 0,0, true);
+				ofPoint myColor;
+				myColor.set(PO.myColor.x/255.0f,PO.myColor.y/255.0f,PO.myColor.z/255.0f);
+				addToFluid(px, py, 0,0, myColor, true);
+				//else addToFluid(px, py, 0,0, ofPoint(255,255,0), true);
 				
 				
 			}
@@ -226,7 +312,7 @@ void PaintScene::drawPaintObjectIntoFluid(paintObject & PO, int whichBlob){
 
 
 // add force and dye to fluid, and create particles
-void PaintScene::addToFluid(float x, float y, float dx, float dy, bool addColor, bool addForce) {
+void PaintScene::addToFluid(float x, float y, float dx, float dy, ofPoint colorMe, bool addColor, bool addForce) {
     float speed = dx * dx  + dy * dy * window.aspectRatio2;    // balance the x and y components of speed with the screen aspect ratio
 	//printf("%f, %f\n", dx, dy);
     if(speed > 0) {
@@ -235,7 +321,7 @@ void PaintScene::addToFluid(float x, float y, float dx, float dy, bool addColor,
         if(y<0) y = 0; 
         else if(y>1) y = 1;
 		
-        float colorMult = 50;
+        float colorMult = 1;
         float velocityMult = 30;
 		
         int index = fluidSolver.getIndexForNormalizedPosition(x, y);
@@ -245,10 +331,32 @@ void PaintScene::addToFluid(float x, float y, float dx, float dy, bool addColor,
 			int hue = lroundf((x + y) * 180 + ofGetFrameNum()) % 360;
 			drawColor.setHSV(hue, 1, 1);
 			
-			fluidSolver.r[index]  += drawColor.r * colorMult;
+			/*fluidSolver.r[index]  += drawColor.r * colorMult;
 			fluidSolver.g[index]  += drawColor.g * colorMult;
 			fluidSolver.b[index]  += drawColor.b * colorMult;
+			*/
+			//cout << "in add " << colorMe.x << " " << colorMe.y << " " << colorMe.z << endl;
 			
+			fluidSolver.r[index]  =colorMe.x; //MIN(colorMe.x, fluidSolver.r[index] + colorMe.x * colorMult);
+			fluidSolver.g[index]  = colorMe.y; //MIN(colorMe.y, fluidSolver.g[index] + colorMe.y * colorMult);
+			fluidSolver.b[index]  = colorMe.z;//MIN(colorMe.z, fluidSolver.b[index] + colorMe.z * colorMult);
+			
+			
+			if (ofRandom(0,1) > 0.99f){
+				ceilingDrip drip;
+				drips.push_back(drip);
+				drips[drips.size()-1].pctx = x;
+				drips[drips.size()-1].pcty = y;
+				drips[drips.size()-1].vely = ofRandom(0.02f, 0.015);	
+				drips[drips.size()-1].colorMe.x = colorMe.x*0.5;
+				drips[drips.size()-1].colorMe.y = colorMe.y*0.5;
+				drips[drips.size()-1].colorMe.z = colorMe.z*0.5;
+			}
+			
+			/*fluidSolver.r[index]  += colorMe.x * colorMult;
+			fluidSolver.g[index]  += colorMe.y * colorMult;
+			fluidSolver.b[index]  += colorMe.z * colorMult;
+			*/
 			//if(drawParticles) particleSystem.addParticles(x * window.width, y * window.height, 10);
 		}
 		
@@ -329,12 +437,19 @@ void PaintScene::mousePressed(int wx, int wy, int x, int y, int button) {
     float mouseNormY = y * window.invHeight;
 
 	
-	 addToFluid(mouseNormX, mouseNormY, 0.1, 0, true);
+	 addToFluid(mouseNormX, mouseNormY, 0.1, 0, ofPoint(255,0,0), true);
 }
 
 //--------------------------------------------------------------
 void PaintScene::keyPressed(int key) {
 
+	/*for (int i = 0; i < 80; i++){
+		ceilingDrip drip;
+		drips.push_back(drip);
+		drips[drips.size()-1].pctx = ofRandom(0,1);
+		drips[drips.size()-1].pcty = 0.3f;
+		drips[drips.size()-1].vely = ofRandom(0.02f, 0.015);
+	}*/
 }
 
 
@@ -377,7 +492,7 @@ void PaintScene::trackBlobs(){
 		}
 		
 		
-		if (minIndex != -1 && minDistance < 200){
+		if (minIndex != -1 && minDistance < 80){
 			bFoundThisFrame[minIndex] = true;
 			// kk we are close, so let's mark and keep rolling:
 			POBJ[i].center.set(packet.centroid[minIndex].x, packet.centroid[minIndex].y, 0);
@@ -411,21 +526,16 @@ void PaintScene::trackBlobs(){
 			
 			// this wasn't so great.  maybe if they were SUPER bright, the problem is I kind of need equality in terms of brightness
 			// across the color spectrum.  so I bumped to something else....
-			/*
-			 float xp = (int)(ofRandom(0,1) * (neon.width-1));
-			 float yp = (int)(ofRandom(0,1) * (neon.height-1));
-			 int pixelPos = (yp*neon.width + xp) * 3;
-			 */
-			float random = ofRandom(0,1);
-			if (random < 0.25){
-				POBJ[POBJ.size()-1].myColor.set(255,255,0);
-			} else if (random >= 0.25 && random < 0.5) {
-				POBJ[POBJ.size()-1].myColor.set(255,0,255);
-			} else if (random >= 0.5f && random < 0.75f){
-				POBJ[POBJ.size()-1].myColor.set(0,255,255);
-			} else {
-				POBJ[POBJ.size()-1].myColor.set(255,255,255);
-			}
+			
+			 float xp = (int)(ofRandom(0,1) * (paintColors.width-1));
+			 float yp = (int)(ofRandom(0,1) * (paintColors.height-1));
+			 int pixelPos = (yp*paintColors.width + xp) * 3;
+			 
+			//cout << (int)(paintColorsPixels[pixelPos])<<  " " << (int)(paintColorsPixels[pixelPos+1])<< " " << (int)(paintColorsPixels[pixelPos+2])<< endl;
+			
+			POBJ[POBJ.size()-1].myColor.set(   (int)(paintColorsPixels[pixelPos]), (int)(paintColorsPixels[pixelPos+1]), (int)(paintColorsPixels[pixelPos+2]));
+			
+			
 			
 			
 			trackerPaintCount ++;
