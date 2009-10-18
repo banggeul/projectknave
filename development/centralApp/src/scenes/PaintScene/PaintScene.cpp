@@ -14,13 +14,12 @@ void PaintScene::setup() {
 
 	particleSystem.myApp = this;
 
-	// setup fluid stuff
-	fluidSolver.setup(200, 200);
-    fluidSolver.enableRGB(true).setFadeSpeed(0.025).setDeltaT(0.5).setVisc(0.00035 * 1.8).setColorDiffusion(0);
-	fluidDrawer.setup(&fluidSolver);
-
-
 	fluidCellsX			= 200; //200;
+
+	// setup fluid stuff
+	fluidSolver.setup(fluidCellsX, 200);
+	fluidSolver.enableRGB(true).setFadeSpeed(0.0001).setDeltaT(1).setVisc(0.00035 * 3.8).setColorDiffusion(0);
+	fluidDrawer.setup(&fluidSolver);
 
 	drawFluid			= true;
 	drawParticles		= true;
@@ -39,8 +38,7 @@ void PaintScene::setup() {
 
 
 	handImgW = 640;
-	handImgH = 480;
-
+	handImgH = 240;
 
 	handImage.setUseTexture(false);
 	handImage.allocate(handImgW, handImgH);
@@ -80,7 +78,7 @@ void PaintScene::setup() {
 void PaintScene::update(){
 
 
-	
+
 	if (ofRandom(0,1) > 0.95){
 		float temp = ofRandom(0,0.2);
 		for (int i = 0; i < 5; i++){
@@ -92,8 +90,8 @@ void PaintScene::update(){
 			drips[drips.size()-1].colorMe.set(255,0,0);
 		}
 	}
-	
-	
+
+
 	if(resizeFluid) 	{
 		fluidSolver.setSize(fluidCellsX, fluidCellsX / window.aspectRatio);
 		fluidDrawer.setup(&fluidSolver);
@@ -395,31 +393,19 @@ void PaintScene::draw() {
 	}
 	if(drawParticles) particleSystem.updateAndDraw();
 
-
-
-
 	ofEnableAlphaBlending();
 	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 	ofSetColor(255, 255, 255);
 	handImageTemporallyBlurredInvert.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
 	ofEnableAlphaBlending();
 
-
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 
-
-
+/*
 	ofPushStyle();
 	glLineWidth(10);
 	for (int i = 0; i < packet.nBlobs; i++){
-
-		/*glBegin(GL_LINE_LOOP);
-		 for (int j = 0; j < packet.nPts[i]; j++){
-		 glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
-		 }
-		 glEnd();
-		 */
 
 		ofSetColor(255, 255, 255, 100);
 		ofNoFill();
@@ -430,15 +416,9 @@ void PaintScene::draw() {
 		}
 		glEnd();
 
-		ofSetColor(255, 255, 255, 85);
-		/*ofBeginShape();
-		 for (int j = 1; j < packet.nPts[i]; j+=3){
-		 ofCurveVertex(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
-		 }
-		 ofEndShape(true);*/
 	}
 	ofPopStyle();
-
+*/
 
 }
 

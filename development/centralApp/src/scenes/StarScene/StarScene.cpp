@@ -23,7 +23,7 @@ void StarScene::setup(){
 
 	bFinal = false;
 
-	skyImage.loadImage("images/flickr-joka2000-228053208-edit.jpg");
+	skyImage.loadImage("images/horsehead.jpg");
 }
 
 void StarScene::update(){
@@ -60,11 +60,15 @@ void StarScene::update(){
 
 */
 
-
-
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)videoGray.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)videoGray.height;
+	float middleX = videoGray.width / 2.;
 
+	float startY, leftStartX, rightStartX, xOffset;
+	xOffset = .33;
+	startY = (.8) * OFFSCREEN_HEIGHT;
+	leftStartX = (xOffset) * OFFSCREEN_WIDTH;
+	rightStartX = (1 - xOffset) * OFFSCREEN_WIDTH;
 
 	videoGray = *stitchedImage;
 	videoGraySmoothed = videoGray;
@@ -104,12 +108,21 @@ void StarScene::update(){
 					float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
 					float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
 
-						if (SOBJ[j].center.y*scaley > (1024/1.8) ||
-							fabs(SOBJ[j].center.x*scalex - 1793/2) < 150){
+						// SOBJ[j].center.y*scaley > (1024/1.8) || fabs(SOBJ[j].center.x*scalex - 1793/2) < 150
+						if (true){
 							PM.particles.erase(PM.particles.begin());
 							groupableParticle tempParticle;
 							PM.particles.push_back(tempParticle);
-							PM.particles[PM.particles.size()-1].setInitialCondition(SOBJ[j].center.x*scalex, SOBJ[j].center.y*scaley,0,0);
+							//PM.particles[PM.particles.size()-1].setInitialCondition(SOBJ[j].center.x*scalex, SOBJ[j].center.y*scaley,0,0);
+
+							float startX;
+							if(SOBJ[j].center.x > middleX) {
+								startX = rightStartX;
+							} else {
+								startX = leftStartX;
+							}
+							PM.particles[PM.particles.size()-1].setInitialCondition(startX, startY, 0, 0);
+
 							//PM.particles[PM.particles.size()-1].addForce(velx*1000, vely*1000);
 							PM.particles[PM.particles.size()-1].drag = ofRandom(0.0717, 0.08);
 							PM.particles[PM.particles.size()-1].radius = 30;
@@ -216,7 +229,14 @@ void StarScene::keyPressed(int key){
 
 void StarScene::draw(){
 	ofSetColor(232, 236, 244);
-	videoGrayTemporallySmoothed2.draw(0,0,OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+
+	float videoScaleX = .9;
+	float videoScaleY = .5;
+	videoGrayTemporallySmoothed2.draw(
+		(OFFSCREEN_WIDTH * (1 - videoScaleX)) / 2,
+		OFFSCREEN_HEIGHT * (1 - videoScaleY),
+		OFFSCREEN_WIDTH * videoScaleX,
+		OFFSCREEN_HEIGHT * videoScaleY);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);

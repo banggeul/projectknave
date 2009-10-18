@@ -162,7 +162,7 @@ void testApp::draw() {
 	}
 	
 	if(showInfo) {
-		string info = "	FPS: "+ofToString(ofGetFrameRate());
+		string info = "	FPS: " + ofToString(ofGetFrameRate());
 		info += "\n		left / right key to change draw";
 		info += "\n		up / down to change scenes";
 		info += "\n   f to toggle fullscreen";
@@ -179,8 +179,7 @@ void testApp::keyPressed(int key){
 	SM.keyPressed(key);
 	
 	switch (key){
-			
-		case 'f':
+		case 'o':			ofxDaito::toggleOutput();		case 'f':
 			ofToggleFullscreen();
 			break;
 		case 'm':

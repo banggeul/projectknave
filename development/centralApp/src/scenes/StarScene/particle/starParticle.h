@@ -13,15 +13,15 @@ class starParticle {
         ofxVec3f pos;
         ofxVec3f vel;
         ofxVec3f frc;
-	
+
 		ofxVec3f lockTarget;
 		void findLockTarget(unsigned char * pixels, int width, int height);
-	
+
 
         starParticle();
-	
+
 		float radius;
-	
+
 
         void        resetForce();
         void        setInitialCondition(float px, float py, float vx, float vy);
@@ -36,7 +36,7 @@ class starParticle {
         void        update();
         void        reset();
 		float       drag;
-		
+
 		float		energy;
 		void		peakMe(float amount){
 			if ((ofGetFrameNum()	- nFrameOfLastPeaking) > 50){
@@ -47,8 +47,8 @@ class starParticle {
 		}
 		int			nFrameOfLastPeaking;
 		bool		bBeenPeaked;
-	
-	
+
+
 		bool		bBeenDirectionallyPeaked;
 		float		direction;
 		void		directionallyPeakMe(float amount, float angle){
@@ -59,7 +59,7 @@ class starParticle {
 				bBeenDirectionallyPeaked = true;
 			}
 		}
-	
+
 	float fiveEnergy;
 
 		bool        bInSameBin(starParticle &p);
