@@ -6,7 +6,7 @@
 
 #include "TreeConstants.h"
 
-
+#include "ofxDaito.h"
 #include "RandomFern.h"
 #include "ofxControlPanel.h"
 #include "TreeBlob.h"

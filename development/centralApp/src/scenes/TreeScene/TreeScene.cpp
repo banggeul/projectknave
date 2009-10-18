@@ -263,6 +263,15 @@ void TreeScene::update() {
 					trees.back().treeBaseD.y = (newRec.y + newRec.height);
 					trees.back().treeBase	 = trees.back().treeBaseD;
 					
+					// new tree hit
+					ofxOscMessage msg;
+					msg.setAddress("/bang");							    //	bang
+					msg.addStringArg("newTree");					    //	hit
+					msg.addIntArg(2);									    //	SCENE 3
+					msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
+					msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
+					
+					ofxDaito::sendCustom(msg);
 					
 				}
 				
