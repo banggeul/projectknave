@@ -268,6 +268,8 @@ void TreeScene::update() {
 					msg.setAddress("/bang");							    //	bang
 					msg.addStringArg("newTree");					    //	hit
 					msg.addIntArg(2);									    //	SCENE 3
+					msg.addIntArg(trees.back().id);									    //	SCENE 3
+
 					msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
 					msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
 					

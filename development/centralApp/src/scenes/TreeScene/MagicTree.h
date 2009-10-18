@@ -288,6 +288,16 @@ public:
 			if(alpha <= 0.0) {
 				
 				bDead = true;
+				// new tree hit
+				ofxOscMessage msg;
+				msg.setAddress("/bang");							    //	bang
+				msg.addStringArg("treeDone");					    //	hit
+				msg.addIntArg(2);									    //	SCENE 3
+				msg.addIntArg(id);	
+				msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
+				msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
+				
+				ofxDaito::sendCustom(msg);
 			}
 			
 		}
