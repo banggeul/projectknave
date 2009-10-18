@@ -203,9 +203,11 @@ void ofxMSAFluidDrawer::drawColor(float x, float y, float renderWidth, float ren
 				g = 255 - g;
 				b = 255 - b;
 			}
+			
 			_pixels[index++] = r;
 			_pixels[index++] = g;
 			_pixels[index++] = b;
+			 
 			if(_alphaEnabled) int a = _pixels[index++] = withAlpha ? MAX(b, MAX(r, g)) : 255;
 		}
 	}

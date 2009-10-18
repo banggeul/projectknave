@@ -70,6 +70,9 @@
 #define			INLINE								FINLINE
 #endif
 
+
+
+
 class ofxMSAFluidSolver : public ofBaseUpdates {
 public:	
 #ifdef	AAASEED
@@ -203,7 +206,7 @@ public:
 	float invWidth;
 	float invHeight;
 	
-protected:
+
 	
 	int		_NX, _NY, _numCells;
 	float	_invNX, _invNY, _invNumCells;
@@ -247,6 +250,9 @@ protected:
 	
 	void	fadeR();
 	void	fadeRGB();
+	
+	
+	protected:
 	/*	
 	 bool lock() {
 	 return true;

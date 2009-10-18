@@ -82,6 +82,9 @@ ofxMSAFluidSolver::ofxMSAFluidSolver()
 ,_isInited(false)
 {
 	printf("ofxMSAFluidSolver::ofxMSAFluidSolver()\n");	
+	
+
+	
 }
 
 ofxMSAFluidSolver& ofxMSAFluidSolver::setSize(int NX, int NY)
@@ -575,6 +578,9 @@ void ofxMSAFluidSolver::advectRGB(int bound, float* du, float* dv) {
 	dt0x = _dt * _NX;
 	dt0y = _dt * _NY;
 	
+	
+		
+	
 	for (int j = _NY; j > 0; --j)
 	{
 		for (int i = _NX; i > 0; --i)
@@ -600,12 +606,21 @@ void ofxMSAFluidSolver::advectRGB(int bound, float* du, float* dv) {
 			
 			i0 = FLUID_IX(i0, j0);	//we don't need col/row index any more but index in 1 dimension
 			j0 = i0 + (_NX + 2);
+			
+			
 			r[index] = s0 * ( t0 * rOld[i0] + t1 * rOld[j0] ) + s1 * ( t0 * rOld[i0+1] + t1 * rOld[j0+1] );
 			g[index] = s0 * ( t0 * gOld[i0] + t1 * gOld[j0] ) + s1 * ( t0 * gOld[i0+1] + t1 * gOld[j0+1] );                  
 			b[index] = s0 * ( t0 * bOld[i0] + t1 * bOld[j0] ) + s1 * ( t0 * bOld[i0+1] + t1 * bOld[j0+1] );                          
+			 
+			
+			
+			
+			
+			
 		}
 	}
 	setBoundaryRGB();
+
 }
 
 
