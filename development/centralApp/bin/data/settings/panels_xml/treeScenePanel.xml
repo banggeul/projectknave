@@ -1,18 +1,45 @@
 <TREE_DELAY>
-    <val_0>1.166667</val_0>
+    <val_0>1.000000</val_0>
 </TREE_DELAY>
 <BOTTOM_OFFSET>
-    <val_0>0.000000</val_0>
+    <val_0>358.333313</val_0>
 </BOTTOM_OFFSET>
 <PEOPLE_SCALE>
-    <val_0>2.311111</val_0>
+    <val_0>2.088889</val_0>
 </PEOPLE_SCALE>
 <PEOPLE_GLOW>
-    <val_0>86.416664</val_0>
+    <val_0>31.166666</val_0>
 </PEOPLE_GLOW>
 <BPEOPLE_GLOW>
     <val_0>1.000000</val_0>
 </BPEOPLE_GLOW>
 <TREE_OFF>
-    <val_0>20.400000</val_0>
+    <val_0>133.333313</val_0>
 </TREE_OFF>
+<TREE_GROW_W>
+    <val_0>105.555557</val_0>
+</TREE_GROW_W>
+<TREE_GROW_H>
+    <val_0>27.777779</val_0>
+</TREE_GROW_H>
+<TREE_MIN>
+    <val_0>20.000000</val_0>
+</TREE_MIN>
+<TREE_MAX>
+    <val_0>32.888889</val_0>
+</TREE_MAX>
+<GROW_RATE>
+    <val_0>0.288889</val_0>
+</GROW_RATE>
+<GROW_C_X>
+    <val_0>14.500000</val_0>
+</GROW_C_X>
+<GROW_C_Y>
+    <val_0>10.980000</val_0>
+</GROW_C_Y>
+<GROW_T>
+    <val_0>0.088889</val_0>
+</GROW_T>
+<FADE_RATE>
+    <val_0>4.033334</val_0>
+</FADE_RATE>
