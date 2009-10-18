@@ -105,29 +105,6 @@ void testApp::update() {
 void testApp::draw() {
 
 	// ----------------------------------
-	//  -------- Networking -------------
-	// ----------------------------------
-	if (bUseNetworking == true){
-		if (CVM.id == 0){
-			ofBackground(255,0,255);
-			CVM.draw();
-			return;
-		}
-	}
-
-	// ----------------------------------
-	//  -------- Info ----------------
-	// ----------------------------------
-	ofSetColor(0, 0, 0);
-	string info = "	FPS: "+ofToString(ofGetFrameRate());
-	info += "\n		left / right key to change draw";
-	info += "\n		up / down to change scenes";
-	info += "\n   f to toggle fullscreen";
-	info += "\n   m multiscreen with fbo";
-
-	info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
-
-	// ----------------------------------
 	//  --------  Vision ----------------
 	// ----------------------------------
 	if (drawMode == DRAW_CV){
@@ -184,10 +161,14 @@ void testApp::draw() {
 		}
 	}
 
-	// ----------------------------------
-	//  -------- Debug ----------------
-	// ----------------------------------
 	if(showInfo) {
+		string info = "	FPS: "+ofToString(ofGetFrameRate());
+		info += "\n		left / right key to change draw";
+		info += "\n		up / down to change scenes";
+		info += "\n   f to toggle fullscreen";
+		info += "\n   m multiscreen with fbo";
+		info += "\n		Scene: "+ofToString(SM.currentScene)+"/"+ofToString(SM.numScenes);
+		ofSetColor(255, 255, 0);
 		ofDrawBitmapString(info, 20, 20);
 	}
 }
@@ -204,6 +185,10 @@ void testApp::keyPressed(int key){
 			break;
 		case 'm':
 			bDrawInDebugWay = !bDrawInDebugWay;
+			if(bDrawInDebugWay)
+				ofShowCursor();
+			else
+				ofHideCursor();
 			break;
 		case 'i':
 			showInfo = !showInfo;
