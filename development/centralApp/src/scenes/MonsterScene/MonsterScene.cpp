@@ -52,6 +52,11 @@ void MonsterScene::setup(){
 //-------------------------------------------------------------- update
 void MonsterScene::update(){
 
+	
+	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
 	bDebug = panel.getValueB("DEBUG");
 	SCALE = panel.getValueF("SCALE");
 	if(panel.getValueB("REBUILD")) {
@@ -69,13 +74,13 @@ void MonsterScene::update(){
 
 
 		// Add Ball every 20 times
-		for(int i=0; i<(int)ofRandom(1, 10); i++) {
+		for(int i=0; i<(int)ofRandom(1, 5); i++) {
 
 			float bx = (898 + ofRandom(-20, 20));
 			float by = (227 + ofRandom(-20, 20));
 
-			bx -= ((OFFSCREEN_WIDTH - W)/2);
-			by -= (OFFSCREEN_HEIGHT - H);
+			//bx -= ((OFFSCREEN_WIDTH - W)/2);
+			//by -= (OFFSCREEN_HEIGHT - H);
 			MonsterBall bub;
 			bub.setPhysics(3.0, 0.3, 0.1); // mass - bounce - friction
 			bub.setup(box2d.getWorld(), bx, by, ofRandom(5, 15));
@@ -89,12 +94,13 @@ void MonsterScene::update(){
 		// ok add a bunch
 		if((int)ofRandom(0, 50) == 10 && timeSinceLastBurst > 30) {
 
-			for(int i=0; i<(int)ofRandom(20, 100); i++) {
-				float bx = 898 + ofRandom(-520, 520);
-				float by = 227 + ofRandom(-100, -120);
+			for(int i=0; i<(int)ofRandom(20, 70); i++) {
+				
+				float bx =ofRandom(0, OFFSCREEN_WIDTH);// ofRandom(-520, 520);
+				float by = 200;
 
-				bx -= ((OFFSCREEN_WIDTH - W)/2);
-				by -= (OFFSCREEN_HEIGHT - H);
+				//bx -= ((OFFSCREEN_WIDTH - W)/2);
+				//by -= (OFFSCREEN_HEIGHT - H);
 
 				MonsterBall bub;
 				bub.setPhysics(3.0, 0.3, 0.1); // mass - bounce - friction
@@ -114,6 +120,7 @@ void MonsterScene::update(){
 
 
 	// ---------------------------- monster dust
+	/*
 	for(int i=0; i<dust.size(); i++) {
 		dust[i].update();
 
@@ -140,6 +147,7 @@ void MonsterScene::update(){
 			dust.erase(dust.begin() + i);
 		}
 	}
+	*/
 
 
 	// --------------------- particles
@@ -163,7 +171,7 @@ void MonsterScene::update(){
 	for(int i=balls.size()-1; i>=0; i--) {
 
 		ofPoint ps = balls[i].getPosition();
-		if(ps.y > 500) {
+		if(ps.y > OFFSCREEN_HEIGHT) {
 
 			balls[i].destroyShape();
 			balls.erase(balls.begin() + i);
@@ -183,28 +191,30 @@ void MonsterScene::update(){
 			// yes we match
 			if(monsters[j].monsterID == lookID) {
 
-				ofRectangle newRec = tracker->blobs[i].boundingRect;
+				ofRectangle& newRec = tracker->blobs[i].boundingRect;
 
-				newRec.x		*= SCALE;
-				newRec.y		*= SCALE;
-				newRec.width	*= SCALE;
-				newRec.height	*= SCALE;
-
+				newRec.x		*= scalex;
+				newRec.y		*= scaley;
+				newRec.width	*= scalex;
+				newRec.height	*= scaley;
+				
+				/*
 				sclContour.assign(tracker->blobs[i].pts.size(), ofPoint());
 				for(int e=0; e<tracker->blobs[i].pts.size(); e++) {
-					sclContour[e].x = tracker->blobs[i].pts[e].x * SCALE;
-					sclContour[e].y = tracker->blobs[i].pts[e].y * SCALE;
-				}
+					sclContour[e].x = tracker->blobs[i].pts[e].x * scalex;
+					sclContour[e].y = tracker->blobs[i].pts[e].y * scaley;
+				}*/
 
 
 				// the contour (fixed)
-				monsters[j].pos  = tracker->blobs[i].centroid * SCALE;
+				monsters[j].pos.x  = tracker->blobs[i].centroid.x * scalex;
+				monsters[j].pos.y  = tracker->blobs[i].centroid.y * scaley;
+				
 				monsters[j].rect = newRec;
-				monsters[j].updateContourPnts(sclContour);
-
+				
 				// a simple contour
-				monsters[j].contourSimple.assign(sclContour.size(), ofPoint());
-				contourAnalysis.simplify(sclContour, monsters[j].contourSimple, 0.50);
+				monsters[j].contourSimple.assign(tracker->blobs[i].pts.size(), ofPoint());
+				contourAnalysis.simplify(tracker->blobs[i].pts, monsters[j].contourSimple, 0.50);
 
 				// a smooth contour
 				monsters[j].contourSmooth.assign(monsters[j].contourSimple.size(), ofPoint());
@@ -214,7 +224,9 @@ void MonsterScene::update(){
 				monsters[j].contourConvex.assign(monsters[j].contourSimple.size(), ofPoint());
 				contourAnalysis.convexHull(monsters[j].contourSimple, monsters[j].contourConvex);
 
+			//	monsters[j].updateContourPnts(tracker->blobs[i].pts);
 
+				
 			}
 		}
 	}
@@ -224,7 +236,10 @@ void MonsterScene::update(){
 
 	// --------------------- Monsters
 	for(int i = 0; i < monsters.size(); i++) {
-		monsters[i].SCALE = panel.getValueF("SCALE");
+		//monsters[i].SCALE = panel.getValueF("SCALE");
+		monsters[i].bDebug = bDebug;
+		monsters[i].packetW = packet.width;
+		monsters[i].packetH = packet.height;
 		monsters[i].monsterDelayAge = panel.getValueF("MONSTER_AGE");
 		monsters[i].update();
 
@@ -236,12 +251,12 @@ void MonsterScene::update(){
 		printf("got my first packet - %i\n", packet.frameNumber);
 		bGotMyFirstPacket = true;
 
-		contourAnalysis.setSize(packet.width*SCALE, packet.height*SCALE);
+		contourAnalysis.setSize(packet.width, packet.height);
 		createBuildingContour();
 	}
 
-	W = packet.width * SCALE;
-	H = panel.getValueF("BOTTOM_OFFSET") + (packet.height * SCALE);
+	//W = packet.width * SCALE;
+	//H = panel.getValueF("BOTTOM_OFFSET") + (packet.height * SCALE);
 
 
 
@@ -291,6 +306,9 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 
 
 		// set the parts
+		monster.packetW = packet.width;
+		monster.packetH = packet.height;
+		
 		monster.parts = &parts;
 		monster.init( tracker->getById(bid) );
 		monster.area = (float)(blober.boundingRect.height*blober.boundingRect.width) / (float)(packet.width*packet.height);
@@ -329,6 +347,11 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 //--------------------------------------------------------------
 void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 
+	
+	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	
 	for(int i=monsters.size()-1; i>=0; i--) {
 		if(monsters[i].monsterID == bid) {
 
@@ -353,8 +376,8 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 			//---------- add some particle love -- ewww
 			if(monsterParticles.size() < MAX_MONSTER_PARTICLES) {
 
-				float bx = (x*SCALE) + ofRandom(-30, 30);
-				float by = (y*SCALE) + ofRandom(-30, 30);
+				float bx = (x*scalex) + ofRandom(-30, 30);
+				float by = (y*scaley) + ofRandom(-30, 30);
 
 				monsterParticles.push_back(MonsterParticles());
 				monsterParticles.back().setPhysics(3.0, 0.53, 0.1); // mass - bounce - friction
@@ -420,9 +443,21 @@ void MonsterScene::draw() {
 	ofPushStyle();
 	ofEnableAlphaBlending();
 
+	
+	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
+	
+	if(bDebug) {
+		ofSetColor(0, 25, 255);
+		ofFill();
+		ofRect(-300, -500, 10000, 10000);
+	}
+	
+	
 	// --------------------- People
 	glPushMatrix();
-	glTranslatef(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), 0);
+	glTranslatef(0 , 0, 0);
+	//glTranslatef(((OFFSCREEN_WIDTH - W)/2), (OFFSCREEN_HEIGHT-H), 0);
 
 	bool bDrawPeople = false;
 	if(bDrawPeople) {
@@ -433,8 +468,8 @@ void MonsterScene::draw() {
 			ofBeginShape();
 			for (int j = 0; j < packet.nPts[i]; j++) {
 
-				float x = packet.pts[i][j].x * SCALE;
-				float y = packet.pts[i][j].y * SCALE;
+				float x = packet.pts[i][j].x * scalex;
+				float y = packet.pts[i][j].y * scaley;
 
 				ofVertex(x, y);
 			}
@@ -511,8 +546,8 @@ void MonsterScene::createBuildingContour() {
 			float bx = ferryBuilding.shapes[i].pnts[j].x;
 			float by = ferryBuilding.shapes[i].pnts[j].y;
 
-			bx -= ((OFFSCREEN_WIDTH - W)/2);
-			by -= (OFFSCREEN_HEIGHT - H);
+			//bx -= ((OFFSCREEN_WIDTH - W)/2);
+			//by -= (OFFSCREEN_HEIGHT - H);
 
 			box2dBuilding.back().addPoint(bx, by);
 		}
@@ -585,8 +620,8 @@ void MonsterScene::mousePressed(int wx, int wy, int x, int y, int button) {
 		ferryBuilding.mousePressed(x, y, button);
 
 
-		bx -= ((OFFSCREEN_WIDTH - W)/2);
-		by -= (OFFSCREEN_HEIGHT - H);
+		//bx -= ((OFFSCREEN_WIDTH - W)/2);
+	//	by -= (OFFSCREEN_HEIGHT - H);
 
 		//printf("windddddddddd = %i, %i", x, y);
 		windowPnts.push_back(MonsterWindow());
