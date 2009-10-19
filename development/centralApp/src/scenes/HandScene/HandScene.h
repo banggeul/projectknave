@@ -72,7 +72,7 @@ public:
 
 
 	ofImage							neon;
-	unsigned char *	neonPixels;
+	unsigned char					*	neonPixels;
 
 
 	/*

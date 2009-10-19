@@ -223,7 +223,7 @@ void HandScene::update(){
 	FBO.setupScreenForMe();
 	ofEnableAlphaBlending();
 
-	ofSetColor(0, 0, 0, 15);
+	ofSetColor(0, 0, 0, 15);       // [KYLE_FRAMERATE maybe here, you need to alter the clearing rectangle's alpha / this is fbo trail for the neon glow]
 	ofRect(0,0,640,480);
 
 

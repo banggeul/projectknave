@@ -83,19 +83,19 @@ void buildingShape::draw(){
 void buildingShape::update(){
 
 
-	myColor.x = 0.93f * myColor.x + 0.07f * myColorTarget.x;
-	myColor.y = 0.93f * myColor.y + 0.07f * myColorTarget.y;
-	myColor.z = 0.93f * myColor.z + 0.07f * myColorTarget.z;
+	myColor.x = 0.93f * myColor.x + 0.07f * myColorTarget.x;     // [KYLE_FRAMERATE  faster = 0.90/0.1, slower = 0.95/0.05 etc adds to one]
+	myColor.y = 0.93f * myColor.y + 0.07f * myColorTarget.y;     // [KYLE_FRAMERATE]
+	myColor.z = 0.93f * myColor.z + 0.07f * myColorTarget.z;     // [KYLE_FRAMERATE]
 
 
-	energy*=0.95f;
+	energy*=0.95f;  // [KYLE_FRAMERATE 0.99 = slower, 0.93 = faster]
 
 
-	float lengthPct = (length - 50) / 700.0f;
+	float lengthPct = (length - 50) / 700.0f;     
 	if (lengthPct < 0) lengthPct = 0;
 	if (lengthPct > 1) lengthPct = 1;
 
-	animator += (energy + peakMakeStuffSick*0.3) * (0.02f - 0.015f*lengthPct) * 2 * direction;
+	animator += (energy + peakMakeStuffSick*0.3) * (0.02f - 0.015f*lengthPct) * 2 * direction;    
 
 	while (animator < 0) animator += 1;
 	while (animator > 1) animator -= 1;
@@ -115,7 +115,7 @@ void buildingShape::update(){
 	temp.set(x,y);
 	trail.push_back(temp);
 
-	if (trail.size() > 30){
+	if (trail.size() > 30){						// [KYLE_FRAMERATE this is the length of the train in pts] 
 		trail.erase(trail.begin());
 	}
 
@@ -125,7 +125,7 @@ void buildingShape::update(){
 	}
 	bAnyInsideMeFromLastFrame = false;
 
-	if (nFramesSinceTrigger > 15 && energy > 0.94f){
+	if (nFramesSinceTrigger > 15 && energy > 0.94f){       // [KYLE_FRAMERATE this is a trigger for daito's tone and an additional "peak" of brightness, maybe alter nFrameTrigger?] 
 
 		//cout << "peaking ! \n" << endl;
 		peakEnergy = 1;
@@ -135,8 +135,8 @@ void buildingShape::update(){
 		nFramesSinceTrigger = 0;
 	}
 
-	peakEnergy *= 0.96f;
-	peakMakeStuffSick *= 0.99;
+	peakEnergy *= 0.96f;                 // [KYLE_FRAMERATE]
+	peakMakeStuffSick *= 0.99;           // [KYLE_FRAMERATE]
 
 	nFramesSinceTrigger ++;
 
