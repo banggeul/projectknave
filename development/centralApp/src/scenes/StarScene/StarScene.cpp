@@ -24,11 +24,22 @@ void StarScene::setup(){
 	bFinal = false;
 
 	skyImage.loadImage("images/horsehead.jpg");
+	
+	
+	
+	panel.setup("Star Scene", 700, 10, 300, 450);
+	panel.addPanel("Settings", 1, false);
+	
+	panel.setWhichPanel("Settings");
+	panel.addSlider("Max Particle Alpha", "MAX_ALPHA", 0.0, 0.0, 1.0, false);
+	panel.addSlider("Max Particle Size", "MAX_SIZE", 30.0, 1.0, 200.0, false);
+	panel.loadSettings("settings/panels_xml/StarScenePanel.xml");
+	
 }
 
 void StarScene::update(){
 
-
+	panel.update();
 	track();
 
 	if (!bAllocatedYet){
@@ -105,8 +116,8 @@ void StarScene::update(){
 					if (!bFinal){
 
 
-					float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
-					float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
+						float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
+						float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
 
 						// SOBJ[j].center.y*scaley > (1024/1.8) || fabs(SOBJ[j].center.x*scalex - 1793/2) < 150
 						if (true){
@@ -177,8 +188,8 @@ void StarScene::update(){
 
 
 
-
-
+	PM.maxPtsSize = panel.getValueF("MAX_SIZE");
+	PM.maxAlpha = panel.getValueF("MAX_ALPHA");
 	PM.update();
 						  /*
 
@@ -227,6 +238,28 @@ void StarScene::keyPressed(int key){
 
 }
 
+//--------------------------------------------------------------
+void StarScene::mouseDragged(int wx, int wy, int x, int y, int button){
+	panel.mouseDragged(wx, wy, button);
+}
+
+//--------------------------------------------------------------
+void StarScene::mousePressed(int wx, int wy, int x, int y, int button){
+	panel.mousePressed(wx, wy, button);
+	
+	// events for the ferry building
+	building.mousePressed(x, y, button);
+}
+
+//--------------------------------------------------------------
+void StarScene::mouseReleased(int wx, int wy, int x, int y, int button){
+	panel.mouseReleased();
+}
+
+
+
+//--------------------------------------------------------------
+
 void StarScene::draw(){
 	ofSetColor(232, 236, 244);
 
@@ -252,6 +285,8 @@ void StarScene::drawTop(){
 		videoGrayTemporallySmoothed2.draw(0,0);
 		contours.draw(0,0);
 	}
+	
+	panel.draw();
 }
 
 

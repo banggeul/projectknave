@@ -1,7 +1,6 @@
 #pragma once
 
 
-#define OF_ADDON_USING_OFXVECTORMATH
 #include "ofMain.h"
 #include "ofxVectorMath.h"
 

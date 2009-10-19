@@ -13,7 +13,10 @@
 #include "groupableParticle.h"
 #include "ImprovedNoise.h"
 
+#include "ofxShader.h"
 #include "ofxDaito.h"
+
+#define NUM_PARTICLES_VBO 1400
 
 using std::cout;
 using std::cerr;
@@ -144,6 +147,17 @@ class particleManager{
 		float maxNoise ;//= 0.501;
 	
 	int mode;
+	
+	// image of the dot
+	float		maxAlpha, maxPtsSize;
+	ofxShader   shader;
+	ofImage		theDot;
+	GLuint		vbo[2];
+	float		vboPts[NUM_PARTICLES_VBO][3];
+	float		vboColor[NUM_PARTICLES_VBO][4];
+	float		vboPtsSize[NUM_PARTICLES_VBO];
+	
+	
 	
 
 };

@@ -13,7 +13,7 @@
 #include "baseScene.h"
 #include "particleManager.h"
 #include "ofxCvGrayscaleAdvanced.h"
-
+#include "ofxControlPanel.h"
 
 typedef struct {
 	ofPoint		center;
@@ -45,8 +45,12 @@ public:
 
 	void announceChange(int change);
 	void keyPressed(int key);
-
-	 particleManager PM;
+	void mouseDragged(int wx, int wy, int x, int y, int button);
+	void mousePressed(int wx, int wy, int x, int y, int button);
+	void mouseReleased(int wx, int wy, int x, int y, int button);
+	
+	
+	particleManager PM;
 		ofImage		temp;
 		ofImage skyImage;
 
@@ -60,7 +64,7 @@ public:
 	ofxCvContourFinder		contours;
 
 	vector < starObject > SOBJ;
-
+	ofxControlPanel			panel;
 	bool	bFinal;
 };
 
