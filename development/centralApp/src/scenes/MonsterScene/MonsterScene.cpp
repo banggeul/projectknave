@@ -11,14 +11,15 @@ void MonsterScene::setup(){
 
 	panel.setWhichPanel("Triggers");
 	panel.addSlider("Monster Age", "MONSTER_AGE", 1.3, 0.0, 10.0, false);
-	panel.addSlider("Bottom offset", "BOTTOM_OFFSET", 100.3, 0.0, 500.0, false);
-	panel.addSlider("scale", "SCALE", 1.3, 0.10, 5.0, false);
+	panel.addSlider("Max Ball Age", "BALL_AGE", 5.3, 0.0, 30.0, false);
+	panel.addSlider("Ball Glow", "BALL_GLOW", 1.0, 0.0, 1.0, false);
+	panel.addSlider("Ball Size Offect", "BALL_SIZE_PCT", 1.0, 0.0, 1.0, false);
 	panel.addToggle("Building", "REBUILD", 0);
 	panel.addToggle("debug", "DEBUG", 0);
 
 	panel.loadSettings("settings/panels_xml/monsterScenePanel.xml");
 
-
+	bMonsterTimer	  = false;
 	bDebug			  = true;
 	bGotMyFirstPacket = false;
 
@@ -30,7 +31,7 @@ void MonsterScene::setup(){
 	printf("monster box2d allocated\n");
 
 	// load the ferry contour
-	ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/windowsFerryContour.xml");
+	ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/BuildingMonsters_1.xml");
 	loadMonsterSettings();
 	box2d.getWorld()->SetContactListener(this);
 
@@ -58,7 +59,6 @@ void MonsterScene::update(){
 	
 	
 	bDebug = panel.getValueB("DEBUG");
-	SCALE = panel.getValueF("SCALE");
 	if(panel.getValueB("REBUILD")) {
 		createBuildingContour();
 		panel.setValueB("REBUILD", 0);
@@ -76,13 +76,14 @@ void MonsterScene::update(){
 		// Add Ball every 20 times
 		for(int i=0; i<(int)ofRandom(1, 5); i++) {
 
-			float bx = (898 + ofRandom(-20, 20));
-			float by = (227 + ofRandom(-20, 20));
+			float bx = (OFFSCREEN_WIDTH/2) + ofRandom(-20, 20);
+			float by = (100 + ofRandom(-20, 20));
 
 			//bx -= ((OFFSCREEN_WIDTH - W)/2);
 			//by -= (OFFSCREEN_HEIGHT - H);
 			MonsterBall bub;
-			bub.setPhysics(3.0, 0.3, 0.1); // mass - bounce - friction
+			bub.initTime = ofGetElapsedTimef();
+			bub.setPhysics(13.0, 0.03, 0.1); // mass - bounce - friction
 			bub.setup(box2d.getWorld(), bx, by, ofRandom(5, 15));
 			bub.img = &dotImage;
 			balls.push_back(bub);
@@ -92,21 +93,42 @@ void MonsterScene::update(){
 
 		// 0 - 50 probality to add a ton of particles
 		// ok add a bunch
-		if((int)ofRandom(0, 50) == 10 && timeSinceLastBurst > 30) {
+		if((int)ofRandom(0, 20) == 10 && timeSinceLastBurst > 30) {
 
-			for(int i=0; i<(int)ofRandom(20, 70); i++) {
+			for(int i=0; i<(int)ofRandom(20, 100); i++) {
 				
-				float bx =ofRandom(0, OFFSCREEN_WIDTH);// ofRandom(-520, 520);
-				float by = 200;
+				float bx = ofRandom(0, OFFSCREEN_WIDTH);// ofRandom(-520, 520);
+				float by = 500;
 
 				//bx -= ((OFFSCREEN_WIDTH - W)/2);
 				//by -= (OFFSCREEN_HEIGHT - H);
 
 				MonsterBall bub;
-				bub.setPhysics(3.0, 0.3, 0.1); // mass - bounce - friction
-				bub.setup(box2d.getWorld(), bx, by, ofRandom(10, 15));
+				bub.initTime = ofGetElapsedTimef();
+				bub.setPhysics(13.0, 0.03, 0.1); // mass - bounce - friction
+				bub.setup(box2d.getWorld(), bx, by, ofRandom(5, 35));
 				bub.img = &dotImage;
 				balls.push_back(bub);
+			}
+			
+			if((int)ofRandom(0, 10) == 5) {
+				
+				for(int i=0; i<(int)ofRandom(80, 100); i++) {
+					
+					float bx = ofRandom(0, OFFSCREEN_WIDTH);// ofRandom(-520, 520);
+					float by = 500;
+					
+					//bx -= ((OFFSCREEN_WIDTH - W)/2);
+					//by -= (OFFSCREEN_HEIGHT - H);
+					
+					MonsterBall bub;
+					bub.initTime = ofGetElapsedTimef();
+					bub.setPhysics(13.0, 0.03, 0.1); // mass - bounce - friction
+					bub.setup(box2d.getWorld(), bx, by, ofRandom(5, 6));
+					bub.img = &dotImage;
+					balls.push_back(bub);
+				}
+				
 			}
 
 			timeSinceLastBurst = 0;
@@ -116,38 +138,6 @@ void MonsterScene::update(){
 
 	timeSinceLastBurst ++;
 	ballCounter ++;
-
-
-
-	// ---------------------------- monster dust
-	/*
-	for(int i=0; i<dust.size(); i++) {
-		dust[i].update();
-
-		if(packet.nBlobs > 1 && !dust[i].bColor) {
-
-			int hex = particleColor[(int)ofRandom(0, NUM_PARTICLE_COLOR)];
-			dust[i].colorD.x = (hex >> 16) & 0xff;
-			dust[i].colorD.y = (hex >> 8)  & 0xff;
-			dust[i].colorD.z = (hex >> 0)  & 0xff;
-
-			dust[i].bColor = true;
-
-		}
-
-		else {
-			dust[i].colorD= 255;
-			dust[i].bColor = false;
-		}
-
-
-	}
-	for(int i=dust.size()-1; i>=0; i--) {
-		if(dust[i].dead) {
-			dust.erase(dust.begin() + i);
-		}
-	}
-	*/
 
 
 	// --------------------- particles
@@ -171,11 +161,22 @@ void MonsterScene::update(){
 	for(int i=balls.size()-1; i>=0; i--) {
 
 		ofPoint ps = balls[i].getPosition();
-		if(ps.y > OFFSCREEN_HEIGHT) {
+		
+		balls[i].age = ofGetElapsedTimef() - balls[i].initTime;
+		balls[i].alphaPct = panel.getValueF("BALL_GLOW");
+		balls[i].sizePct  = panel.getValueF("BALL_SIZE_PCT");
+		
+		if(balls[i].age > panel.getValueF("BALL_AGE")) {
+			balls[i].color.a -= 10.0;
+			
+		}
+		
+		if(ps.y > OFFSCREEN_HEIGHT || balls[i].color.a <= 0.0) {
 
 			balls[i].destroyShape();
 			balls.erase(balls.begin() + i);
 		}
+		
 	}
 
 
@@ -255,11 +256,6 @@ void MonsterScene::update(){
 		createBuildingContour();
 	}
 
-	//W = packet.width * SCALE;
-	//H = panel.getValueF("BOTTOM_OFFSET") + (packet.height * SCALE);
-
-
-
 
 }
 
@@ -276,6 +272,9 @@ BubbleMonster& MonsterScene::getMonsterById( int monsterId ) {
 
 //-------------------------------------------------------------- blob events
 void MonsterScene::blobOn( int x, int y, int bid, int order ) {
+
+	if(!bMonsterTimer) return;
+	
 	printf("monster on - %i\n", bid);
 
 
@@ -346,7 +345,10 @@ void MonsterScene::blobOn( int x, int y, int bid, int order ) {
 
 //--------------------------------------------------------------
 void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
-
+	
+	
+	if(!bMonsterTimer) return;
+	
 	
 	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
@@ -394,6 +396,8 @@ void MonsterScene::blobMoved( int x, int y, int bid, int order ) {
 //--------------------------------------------------------------
 void MonsterScene::blobOff( int x, int y, int bid, int order ) {
 
+	//if(!bMonsterTimer) return;
+	
 	printf("monster off - %i\n", bid);
 	for(int i=monsters.size()-1; i>=0; i--) {
 		if(monsters[i].monsterID == bid) {
@@ -444,13 +448,13 @@ void MonsterScene::draw() {
 	ofEnableAlphaBlending();
 
 	
-	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
+	float scalex = (float)OFFSCREEN_WIDTH / (float)packet.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 	
 	if(bDebug) {
-		ofSetColor(0, 25, 255);
-		ofFill();
-		ofRect(-300, -500, 10000, 10000);
+	//	ofSetColor(0, 25, 255);
+	//	ofFill();
+	//	ofRect(-300, -500, 10000, 10000);
 	}
 	
 	
@@ -519,8 +523,9 @@ void MonsterScene::draw() {
 
 
 	// ferry building only for setup (hide when live)
-	if(bDebug) ferryBuilding.drawContour();
-	//ferryBuilding.drawInfo();
+	ferryBuilding.drawContour();
+	ferryBuilding.drawInfo();
+	
 	ofDisableAlphaBlending();
 	ofPopStyle();
 }
@@ -563,6 +568,7 @@ void MonsterScene::createBuildingContour() {
 void MonsterScene::keyPressed(int key) {
 
 	if(bDebug) {
+		
 		ferryBuilding.keyPressed(key);
 
 		if(key == ' ') {
@@ -584,11 +590,12 @@ void MonsterScene::keyPressed(int key) {
 		float bx = mouseX;
 		float by = mouseY;
 
-		bx -= ((OFFSCREEN_WIDTH - W)/2);
-		by -= (OFFSCREEN_HEIGHT - H);
+		//bx -= ((OFFSCREEN_WIDTH - W)/2);
+		//by -= (OFFSCREEN_HEIGHT - H);
 
 
 		MonsterBall bub;
+		bub.initTime = ofGetElapsedTimef();
 		bub.setPhysics(30.0, 0.53, 0.1); // mass - bounce - friction
 		bub.setup(box2d.getWorld(), bx, by, ofRandom(10, 20));
 		bub.img = &dotImage;
@@ -606,6 +613,8 @@ void MonsterScene::keyPressed(int key) {
 	if(key == 'v'){
 		createBuildingContour();
 	}
+	
+	if(key == 'p') bMonsterTimer = !bMonsterTimer;
 }
 
 //--------------------------------------------------------------
@@ -624,9 +633,9 @@ void MonsterScene::mousePressed(int wx, int wy, int x, int y, int button) {
 	//	by -= (OFFSCREEN_HEIGHT - H);
 
 		//printf("windddddddddd = %i, %i", x, y);
-		windowPnts.push_back(MonsterWindow());
-		windowPnts.back().pos.set(x, y);
-		windowPnts.back().img = &dotImage;
+		//windowPnts.push_back(MonsterWindow());
+		//windowPnts.back().pos.set(x, y);
+		//windowPnts.back().img = &dotImage;
 
 
 	}
@@ -672,9 +681,9 @@ void MonsterScene::loadMonsterSettings() {
 
 				float x = xmlSaver.getValue("pnt:x", 0.0, 0);
 				float y = xmlSaver.getValue("pnt:y", 0.0, 1);
-				windowPnts.push_back(MonsterWindow());
-				windowPnts.back().pos.set(x, y);
-				windowPnts.back().img = &dotImage;
+			//	windowPnts.push_back(MonsterWindow());
+			//	windowPnts.back().pos.set(x, y);
+			//	windowPnts.back().img = &dotImage;
 				xmlSaver.popTag();
 
 			}

@@ -108,6 +108,7 @@ public:
 	ofImage						dotImage;
 	
 	// ---------------------- settings
+	bool						bMonsterTimer;
 	bool						bDebug;
 	ofxXmlSettings				xmlSaver;
 	vector <MonsterWindow>		windowPnts;
@@ -135,6 +136,7 @@ public:
 	ofxContourAnalysis			contourAnalysis;
 	vector <BubbleMonster>		monsters;
 	vector <MonsterBall>		balls;
+	//vector <MonsterRect>		rects;
 	vector <ofPoint>			sclContour;
 };
 

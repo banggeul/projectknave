@@ -134,6 +134,7 @@ public:
 	// ----------------------------------------
 	void draw() {
 		
+		ofEnableAlphaBlending();
 		if(bDead) return;
 		
 		//ofEnableAlphaBlending();
@@ -178,6 +179,6 @@ public:
 		ofFill();
 		ofCircle(0, 0, r);
 		glPopMatrix();
-		//ofDisableAlphaBlending();
+		ofDisableAlphaBlending();
 	}
 };
