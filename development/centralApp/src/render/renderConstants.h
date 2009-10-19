@@ -1,32 +1,10 @@
-
-
-
-#pragma once;
+#pragma once
 
 #include "ofMain.h"
 
+// it's way too hard to scale everything...
+// too many things were done in terms of screen space
 
-/*
+#define OFFSCREEN_WIDTH 1793//448//897//1793//3586
+#define OFFSCREEN_HEIGHT 1024//256//512//1024//2048
 
-#define OFFSCREEN_WIDTH				3840		// 768 * 5
-#define OFFSCREEN_HEIGHT			2048		// this is not totally right.  1024*2
-
-												// assumes: 
-			
-												// P P P P P
-												// P P P P P
-	
-*/
-
-/*
-#define OFFSCREEN_WIDTH				3840		// 768 * 5
-#define OFFSCREEN_HEIGHT			2880		// 3840 * 0.75 
-
-												// this seems even worse.
-												// with auto clear I'm at about 30-40 fps on the MBP
-												// maybe the GTX can rock that but 
-												// gonna start something simpler
-*/
-
-#define OFFSCREEN_WIDTH				1793		// 768 * 5
-#define OFFSCREEN_HEIGHT			1024		// 3840 * 0.75 
