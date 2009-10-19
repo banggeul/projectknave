@@ -14,7 +14,7 @@
     <val_0>1.000000</val_0>
 </BPEOPLE_GLOW>
 <TREE_OFF>
-    <val_0>151.111145</val_0>
+    <val_0>8.888916</val_0>
 </TREE_OFF>
 <TREE_GROW_W>
     <val_0>105.555557</val_0>
@@ -29,22 +29,22 @@
     <val_0>39.111111</val_0>
 </TREE_MAX>
 <GROW_RATE>
-    <val_0>0.288889</val_0>
+    <val_0>0.155556</val_0>
 </GROW_RATE>
 <GROW_C_X>
-    <val_0>14.500000</val_0>
+    <val_0>30.000000</val_0>
 </GROW_C_X>
 <GROW_C_Y>
     <val_0>10.980000</val_0>
 </GROW_C_Y>
 <GROW_T>
-    <val_0>0.433333</val_0>
+    <val_0>0.355556</val_0>
 </GROW_T>
 <FADE_RATE>
-    <val_0>14.650000</val_0>
+    <val_0>39.783333</val_0>
 </FADE_RATE>
 <BUTTERFLY_SPEED>
-    <val_0>0.077778</val_0>
+    <val_0>0.055556</val_0>
 </BUTTERFLY_SPEED>
 <PEOPLE_COLOR>
     <val_0>0.000000</val_0>
@@ -53,5 +53,5 @@
     <val_0>0.100000</val_0>
 </BUTTERFLY_SCALE>
 <TREE_ADD_TIME>
-    <val_0>0.122222</val_0>
+    <val_0>0.333333</val_0>
 </TREE_ADD_TIME>

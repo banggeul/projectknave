@@ -1,5 +1,5 @@
 <MONSTER_AGE>
-    <val_0>1.111111</val_0>
+    <val_0>1.888889</val_0>
 </MONSTER_AGE>
 <BOTTOM_OFFSET>
     <val_0>113.888893</val_0>
@@ -13,3 +13,12 @@
 <DEBUG>
     <val_0>1.000000</val_0>
 </DEBUG>
+<BALL_AGE>
+    <val_0>18.833332</val_0>
+</BALL_AGE>
+<BALL_GLOW>
+    <val_0>0.022222</val_0>
+</BALL_GLOW>
+<BALL_SIZE_PCT>
+    <val_0>0.827778</val_0>
+</BALL_SIZE_PCT>
