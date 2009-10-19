@@ -188,8 +188,8 @@ void StarScene::update(){
 
 
 
-	PM.maxPtsSize = panel.getValueF("MAX_SIZE");
-	PM.maxAlpha = panel.getValueF("MAX_ALPHA");
+	//PM.maxPtsSize = panel.getValueF("MAX_SIZE");
+	//PM.maxAlpha = panel.getValueF("MAX_ALPHA");
 	PM.update();
 						  /*
 
@@ -278,6 +278,8 @@ void StarScene::draw(){
 
 	ofSetColor(255, 255, 255);
 	PM.draw();
+	
+	
 }
 
 void StarScene::drawTop(){

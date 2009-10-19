@@ -7,8 +7,8 @@
 
 
 particleManager::particleManager(){
-	maxPtsSize = 20.0;
-	maxAlpha = 1.0;
+	//maxPtsSize = 20.0;
+	//maxAlpha = 1.0;
 	mode = 0;
 	minNoise = 0.499;
 	maxNoise = 0.501;
@@ -35,7 +35,7 @@ void particleManager::setupWorld(){
 		//if (j == 10)  particles[j].radius = 30;
 		
 		// get the pos from the particle system
-		if(j < NUM_PARTICLES_VBO) {
+		/*if(j < NUM_PARTICLES_VBO) {
 			vboPts[j][0] = particles[j].pos.x;
 			vboPts[j][1] = particles[j].pos.y;
 			vboPts[j][2] = particles[j].pos.z;
@@ -45,12 +45,14 @@ void particleManager::setupWorld(){
 			vboColor[j][2] = 1.0;
 			vboColor[j][3] = maxAlpha;
 			vboPtsSize[j] = 10.0;
-		}
+		}*/
 	}
-	
-	shader.loadShader("sceneAssets/stars/VBOShader");
+	/*
 	ofDisableArbTex();
+	shader.loadShader("sceneAssets/stars/VBOShader");
+	
 	theDot.loadImage("images/spot.png");
+	ofEnableArbTex();
 	
 	// set up the vbo
 	glGenBuffersARB(2, &vbo[0]);
@@ -64,6 +66,8 @@ void particleManager::setupWorld(){
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo[1]);
 	glBufferDataARB(GL_ARRAY_BUFFER_ARB, NUM_PARTICLES_VBO*3*sizeof(float), vboPts, GL_STREAM_DRAW_ARB);
 	
+	shader.setShaderActive(false);
+	*/
 }
 
 
@@ -342,6 +346,7 @@ void particleManager::update(){
             particles[i].vel.y += velFromVF.y*3;
         }
 		
+		/*
 		// get the pos from the particle system
 		if(i < NUM_PARTICLES_VBO) {
 			vboPts[i][0] = particles[i].pos.x;
@@ -357,7 +362,7 @@ void particleManager::update(){
 			vboColor[i][3] = MIN(particles[i].radius/5.0, maxAlpha);
 			
 			
-		}
+		}*/
     }
 	
 	
@@ -553,6 +558,10 @@ void particleManager::update(){
 //---------------------------------------------------------------------------------
 void particleManager::draw(){
 	
+	// BOOO HOO NOT WORKING ON THE PC :(
+	
+	/*
+	ofPushStyle();
 	shader.setShaderActive(true); 
 	
 	// Get the attribute and bind it
@@ -612,11 +621,7 @@ void particleManager::draw(){
 	// bind other buffer
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	shader.setShaderActive(false);
-	
-	
-	
-	glPopMatrix();
-	
+	*/
 	
 	
 	
@@ -679,6 +684,8 @@ void particleManager::draw(){
 		//VFs[i].draw();
 	}
 	
+	//shader.setShaderActive(false);
+	//ofPopStyle();
 }
 
 //--------------------------------------------------------------

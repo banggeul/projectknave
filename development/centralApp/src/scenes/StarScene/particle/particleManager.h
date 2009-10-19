@@ -147,7 +147,7 @@ class particleManager{
 		float maxNoise ;//= 0.501;
 	
 	int mode;
-	
+	/*
 	// image of the dot
 	float		maxAlpha, maxPtsSize;
 	ofxShader   shader;
@@ -155,7 +155,7 @@ class particleManager{
 	GLuint		vbo[2];
 	float		vboPts[NUM_PARTICLES_VBO][3];
 	float		vboColor[NUM_PARTICLES_VBO][4];
-	float		vboPtsSize[NUM_PARTICLES_VBO];
+	float		vboPtsSize[NUM_PARTICLES_VBO];*/
 	
 	
 	
