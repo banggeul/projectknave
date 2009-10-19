@@ -60,7 +60,7 @@ public:
 	void makeBranch(ofPoint branchPos, int stepIn, float dir) {
 		
 		base = branchPos;
-		pos  = branchPos;
+		pos  = 0;
 		des  = pos;
 		des.y -= 30.0;
 		
@@ -77,24 +77,15 @@ public:
 	
 	// -----------------------------------------	
 	void draw() {
-		
+		glPushMatrix();
+		glTranslatef(base.x, base.y, 0);
 		drawThick();
-		return;
-		
-		ofFill();
-		ofSetColor(255, 255, 255, alpha);
-		glLineWidth(girth);
-		
-		ofLine(base.x, base.y, pos.x, pos.y);
-		//ofLine(fern2P1.x, fern2P1.y, fern2P2.x, fern2P2.y);
-		
-		glLineWidth(1.0);
-		
-		//drawThick();
+		glPopMatrix();
 	}
 	
 	// -----------------------------------------	
 	void drawThick() {
+		
 		
 		if(ptCount > 2) {
 			ofxVec3f pos1, pos2;
@@ -104,8 +95,8 @@ public:
 			
 			glBegin(GL_QUAD_STRIP);
 			
-			glVertex2f(base.x-3, base.y-3);
-			glVertex2f(base.x+3, base.y+3);
+			glVertex2f(-3, -3);
+			glVertex2f(3, 3);
 			
 			for(int i=1; i<ptCount; i++) {
 				
@@ -123,8 +114,8 @@ public:
 				
 			}
 			
-			glVertex2f(base.x-3, base.y-3);
-			glVertex2f(base.x+3, base.y+3);
+			glVertex2f(-3, -3);
+			glVertex2f(3, 3);
 			
 			glEnd();
 		}

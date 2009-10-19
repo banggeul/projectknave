@@ -30,7 +30,7 @@ void TreeScene::setup() {
 	panel.addSlider("tree min pts", "TREE_MIN", 10.0, 0.0, 20.0, false);
 	panel.addSlider("tree max pts", "TREE_MAX", 20.0, 20.0, 100.0, false);
 	panel.addSlider("GrowRate", "GROW_RATE", 0.98, 0.0, 2.0, false);
-
+	
 	panel.addSlider("Curve X", "GROW_C_X", 10.98, 0.0, 30.0, false);
 	panel.addSlider("Curve Y", "GROW_C_Y", 10.98, 0.0, 30.0, false);
 	panel.addSlider("Theta G", "GROW_T", 0.08, 0.0, 2.0, false);
@@ -39,7 +39,7 @@ void TreeScene::setup() {
 	panel.addSlider("Butterfly Speed", "BUTTERFLY_SPEED", 0.09, 0.0, 2.0, false);
 	panel.addSlider("People Color", "PEOPLE_COLOR", 0.0, 0.0, 255.0, false);
 	panel.addSlider("Tree Adding Time", "TREE_ADD_TIME", 1.0, 0.0, 2.0, false);
-
+	
 	
 	panel.addToggle("do people glow", "BPEOPLE_GLOW", 1);
 	
@@ -206,9 +206,6 @@ void TreeScene::updateFlocking() {
 	
 }
 
-
-
-
 // ------------------------------------------
 void TreeScene::update() {
 	
@@ -271,7 +268,7 @@ void TreeScene::update() {
 					msg.addStringArg("newTree");					    //	hit
 					msg.addIntArg(2);									    //	SCENE 3
 					msg.addIntArg(trees.back().id);									    //	SCENE 3
-
+					
 					msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
 					msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
 					
@@ -284,76 +281,6 @@ void TreeScene::update() {
 		
 	}
 	
-	
-	
-	// --------------------- The Magic Trees
-	/*
-	 for(int i=0; i<tracker->blobs.size(); i++) {
-	 
-	 int lookID = tracker->blobs[i].id;
-	 
-	 ofRectangle& newRec = tracker->blobs[i].boundingRect;
-	 newRec.x		*= scalex;
-	 newRec.y		*= scaley;
-	 newRec.width	*= scalex;
-	 newRec.height	*= scaley;
-	 
-	 for(int j=0; j<trees.size(); j++) {
-	 if(lookID == treeBlobs[j].id) {
-	 
-	 treeBlobs[j].age		= ofGetElapsedTimef() - treeBlobs[j].initTime;
-	 treeBlobs[j].rect	    = newRec;
-	 treeBlobs[j].center.x   = tracker->blobs[i].centroid.x * scalex;
-	 treeBlobs[j].center.y   = tracker->blobs[i].centroid.y * scaley;
-	 
-	 }
-	 }
-	 
-	 }
-	 */
-	
-	
-	
-	/*
-	 // --------------------- Tree Blobs
-	 for(int i=0; i<treeBlobs.size(); i++) {
-	 
-	 //treeBlobs[i].age = (float)(ofGetElapsedTimef()-treeBlobs[i].initTime);	
-	 
-	 
-	 if(treeBlobs[i].age > panel.getValueF("TREE_DELAY") && !treeBlobs[i].bAlive) {
-	 treeBlobs[i].bAlive = true;	
-	 
-	 // time to grow a tree
-	 printf("--- time to grow a tree:%i---\n", treeBlobs[i].id);
-	 trees.push_back(MagicTree());
-	 
-	 trees.back().initTree(0, 0, (int)ofRandom(20, 50));	// <--- i need a init pos
-	 trees.back().img = &theDot;
-	 trees.back().id = treeBlobs[i].id; 
-	 
-	 for(int j=0; j<tracker->blobs.size(); j++) {
-	 
-	 ofRectangle& newRec = tracker->blobs[j].boundingRect;
-	 newRec.x		*= scalex;
-	 newRec.y		*= scaley;
-	 newRec.width	*= scalex;
-	 newRec.height	*= scaley;
-	 
-	 trees.back().rect	    = newRec;
-	 trees.back().center.x   = tracker->blobs[j].centroid.x * scalex;
-	 trees.back().center.y   = tracker->blobs[j].centroid.y * scaley;
-	 
-	 // init the tree pos
-	 trees.back().treeBaseD   = trees.back().center;
-	 trees.back().treeBaseD.y = trees.back().rect.y + trees.back().rect.height + panel.getValueF("TREE_OFF");
-	 trees.back().treeBase	 = trees.back().treeBaseD;
-	 }
-	 }
-	 
-	 
-	 }
-	 */
 	
 	// --------------------- Tree People
 	for(int i=0; i<trees.size(); i++) {
@@ -380,33 +307,7 @@ void TreeScene::update() {
 	
 	
 	
-	// --------------------- update the trees
-	/*for(int i=0; i<tracker->blobs.size(); i++) {
-	 
-	 int lookID = tracker->blobs[i].id;
-	 float barea  = (float)(tracker->blobs[i].boundingRect.height*tracker->blobs[i].boundingRect.width) / (float)(packet.width*packet.height);
-	 
-	 ofRectangle& newRec = tracker->blobs[i].boundingRect;
-	 
-	 newRec.x		*= scalex;
-	 newRec.y		*= scaley;
-	 newRec.width	*= scalex;
-	 newRec.height	*= scaley;
-	 newRec.height   += panel.getValueF("TREE_OFF");
-	 
-	 for(int j=0; j<trees.size(); j++) {
-	 if(lookID == trees[j].id) {
-	 trees[j].frameAge  = 0;// tracker->blobs[i].frameAge;
-	 trees[j].rect	   = newRec;
-	 trees[j].center.x   = tracker->blobs[i].centroid.x * scalex;
-	 trees[j].center.y   = tracker->blobs[i].centroid.y * scaley;
-	 }
-	 }
-	 
-	 
-	 }
-	 */
-	
+	// --------------------- the butterfly flocking 
 	updateFlocking();
 	
 	
@@ -555,47 +456,19 @@ void TreeScene::blobOn( int x, int y, int bid, int order ) {
 	// else make a Tree
 	else {
 		
-		//	if(blober->boundingRect.width >= panel.getValueI("TREE_GROW_W") || 
-		//	   blober->boundingRect.height >= panel.getValueI("TREE_GROW_H")) {
-		
-		
-		
-		
-		treeBlobs.push_back(TreeBlob());
-		treeBlobs.back().id = bid;
-		treeBlobs.back().age = 0;
-		treeBlobs.back().bAlive = false;
-		
-		treeBlobs.back().initTime = ofGetElapsedTimef();
-		
-		printf("new tree blob  - %i\n", treeBlobs.back().id);
-		//	}
-		
-		//if(blober.boundingRect.width >= minSpawnToGrowW || blober.boundingRect.height >= minSpawnToGrowH) {
-		//	treePeople.push_back(TreePerson());
-		//	treePeople.back().init( tracker->getById(bid) );
-		//	treePeople.back().tree.img = &theDot;
-		//}
-		/*
-		 printf("-- id:%i, frameAge:%i\n", bid, tracker->getById(bid).frameAge);
-		 if(blober->frameAge > 50) {
-		 trees.push_back(MagicTree());
-		 
-		 float tx = x * TREE_SCALE;
-		 float ty = y * TREE_SCALE;
-		 trees.back().initTree(tx, ty, 10);
-		 trees.back().img = &theDot;
-		 trees.back().id = bid;
-		 trees.back().frameAge = blober->frameAge;
-		 
-		 printf("new tree  - %i\n", bid);
-		 
-		 }
-		 */
+		if(blober->boundingRect.width >= panel.getValueI("TREE_GROW_W") || 
+		   blober->boundingRect.height >= panel.getValueI("TREE_GROW_H")) {
+			
+			treeBlobs.push_back(TreeBlob());
+			treeBlobs.back().id = bid;
+			treeBlobs.back().age = 0;
+			treeBlobs.back().bAlive = false;
+			
+			treeBlobs.back().initTime = ofGetElapsedTimef();
+			
+			printf("new tree blob  - %i\n", treeBlobs.back().id);
+		}
 	}
-	
-	
-	
 }
 
 // ---------------------------------------------------------

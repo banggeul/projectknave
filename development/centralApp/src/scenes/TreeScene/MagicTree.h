@@ -226,7 +226,6 @@ public:
 				//printf("-- add a branch here ---\n");
 				
 				
-				
 				// Right
 				children.push_back(TreeBranch());
 				children.back().pos = pos;
@@ -236,35 +235,13 @@ public:
 				children.push_back(TreeBranch());
 				children.back().pos = pos;
 				children.back().makeBranch(pos, totalTreePts - treePtsCount, -10);
-				
-				
-				
-				
-				//	}
-				/*
-				 cnt ++;
-				 if(cnt > length) cnt = length;
-				 
-				 life *= 0.66;
-				 
-				 if(pid < 2 && cnt > 3) {
-				 spawn = true;
-				 //	children.push_back(TreeBranch());
-				 //	children.back().pid = pid + 1;
-				 //	children.back().initBranch(pos.x, pos.y, life);
-				 //	children.back().setAngle(ofRandom(-75.0, 75.0), (int)ofRandom(0, 1));
-				 
-				 //printf("-- add branch[%f] --\n", life);
-				 
-				 }
-				 */
+		
 			}
 		
-			// springy growing
+			// springy growing -- or not - hehe
 			//vel = (vel * 0.87) + (des - pos) / 8.0;
 			pos += (des-pos) / 8.0;
 			pnts[treePtsCount]	  = pos;
-			
 			
 		}
 		else {
@@ -275,7 +252,6 @@ public:
 		
 		
 		// update all the children
-		
 		bool allBranchesDone = true;
 		for(int i=0; i<children.size(); i++) {
 			
@@ -287,6 +263,13 @@ public:
 			
 			if(bReadyToFadeOut) {
 				children[i].alpha = alpha;
+			}
+			
+			// if we are done growing lets blow the
+			// leaves off <-- nahhh looks cheap
+			if(allBranchesDone) {
+				//children[i].base.x -= 12;
+				//children[i].base.y += 12;
 			}
 		
 		}
@@ -303,12 +286,12 @@ public:
 				bDead = true;
 				// new tree hit
 				ofxOscMessage msg;
-				msg.setAddress("/bang");							    //	bang
-				msg.addStringArg("treeDone");					    //	hit
-				msg.addIntArg(2);									    //	SCENE 3
-				msg.addIntArg(id);	
-				msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);		//  x (normalize)
-				msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	// centroid y (normalize)
+				msg.setAddress("/bang");									//	bang
+				msg.addStringArg("treeDone");								//	hit
+				msg.addIntArg(2);											//	SCENE 3
+				msg.addIntArg(id);											//	tree ID
+				msg.addFloatArg((float)center.x/(float)OFFSCREEN_WIDTH);	//  x (normalize)
+				msg.addFloatArg((float)center.y/(float)OFFSCREEN_HEIGHT);	//  centroid y (normalize)
 				
 				ofxDaito::sendCustom(msg);
 			}
@@ -319,9 +302,6 @@ public:
 	
 	// ------------------------------------------------------
 	void draw() {
-		
-		
-		
 		
 		ofEnableAlphaBlending();		
 		glPushMatrix();
