@@ -419,7 +419,7 @@ void HandScene::draw(){
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
 
 	ofPushStyle();
-	glLineWidth(NEON_SILHOUETTE_SIZE);
+	glLineWidth(NEON_SILHOUETTE_SIZE * OFFSCREEN_SCALE);
 	for (int i = 0; i < packet.nBlobs; i++){
 
 		/*glBegin(GL_LINE_LOOP);

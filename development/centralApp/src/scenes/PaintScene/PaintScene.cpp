@@ -401,25 +401,6 @@ void PaintScene::draw() {
 
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)packet.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)packet.height;
-
-/*
-	ofPushStyle();
-	glLineWidth(10);
-	for (int i = 0; i < packet.nBlobs; i++){
-
-		ofSetColor(255, 255, 255, 100);
-		ofNoFill();
-		ofEnableSmoothing();
-		glBegin(GL_LINE_LOOP);
-		for (int j = 0; j < packet.nPts[i]; j++){
-			glVertex2f(packet.pts[i][j].x * scalex, packet.pts[i][j].y * scaley);
-		}
-		glEnd();
-
-	}
-	ofPopStyle();
-*/
-
 }
 
 

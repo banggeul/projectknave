@@ -11,6 +11,7 @@
 
 #include "ofMain.h"
 #include "ofxDisplayList.h"
+#include "renderConstants.h"
 
 #define BUILDING_HIGHLIGHT_SIZE 4
 

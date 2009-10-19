@@ -653,7 +653,7 @@ void particleManager::draw() {
 	delobject.Triangulate();
 
 	ofPushStyle();
-	glLineWidth(connectionLineWidth);
+	glLineWidth(connectionLineWidth * OFFSCREEN_SCALE);
 	for (Delaunay::fIterator fit  = delobject.fbegin();
 	     fit != delobject.fend();
 	     ++fit) {

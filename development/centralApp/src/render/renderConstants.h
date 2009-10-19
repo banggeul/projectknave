@@ -2,9 +2,10 @@
 
 #include "ofMain.h"
 
-// it's way too hard to scale everything...
-// too many things were done in terms of screen space
+// everything was designed around this
+// so they shouldn't be changed
 
-#define OFFSCREEN_WIDTH 1793//448//897//1793//3586
-#define OFFSCREEN_HEIGHT 1024//256//512//1024//2048
+#define OFFSCREEN_WIDTH 1793
+#define OFFSCREEN_HEIGHT 1024
 
+#define OFFSCREEN_SCALE 4.0f

@@ -19,8 +19,8 @@
 
 		<scene1>
 			<nVideoSources>2</nVideoSources>
-			<video0>testMovies/single-hand.mov</video0>
-			<video1>testMovies/single-hand.mov</video1>
+			<video0>testMovies/320x240-hands.mov</video0>
+			<video1>testMovies/320x240-hands.mov</video1>
 			<videoGrabberSource0>0</videoGrabberSource0>
 			<videoGrabberSource1>1</videoGrabberSource1>
 		</scene1>

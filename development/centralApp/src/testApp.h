@@ -58,9 +58,10 @@ public:
 	ofRectangle				guiIn;
 	ofRectangle				guiOut;
 
-	bool					bDrawInDebugWay;
+	bool bDrawInDebugWay;
 	bool showInfo;
 
+	float effectiveWidth, effectiveHeight;
 };
 
 #endif

@@ -69,7 +69,7 @@ void buildingShape::draw(){
 
 	ofNoFill();
 	ofPushStyle();
-	glLineWidth(BUILDING_HIGHLIGHT_SIZE);
+	glLineWidth(BUILDING_HIGHLIGHT_SIZE * OFFSCREEN_SCALE);
 	ofBeginShape();
 	for (int i = 0; i < trail.size(); i++){
 		ofVertex(trail[i].x, trail[i].y);

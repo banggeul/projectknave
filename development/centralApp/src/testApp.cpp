@@ -5,6 +5,9 @@ void testApp::setup() {
 	ofBackground(90, 90, 90);
 	drawMode = DRAW_SCENE;
 
+	effectiveWidth = OFFSCREEN_WIDTH * OFFSCREEN_SCALE;
+	effectiveHeight = OFFSCREEN_HEIGHT * OFFSCREEN_SCALE;
+
 	// -------- The images for the building
 	building.loadImage("buildingRefrences/building.jpg");
 	mask.loadImage("buildingRefrences/mask_half.png");
@@ -31,7 +34,7 @@ void testApp::setup() {
 
 	// Mega Render Manager
 	nScreens	= 6;		// <--- if you just want to work on your mac set to one screen
-	MRM.allocateForNScreens(nScreens, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+	MRM.allocateForNScreens(nScreens, effectiveWidth, effectiveHeight);
 	//MRM.loadFromXml("settings/fboSettingsLive.xml");
 	MRM.loadFromXml("settings/fboSettings.xml");
 	float ratio = .2;
@@ -121,11 +124,14 @@ void testApp::draw() {
 		MRM.startOffscreenDraw();
 
 		ofPushStyle();
+		ofPushMatrix();
+		glScalef(OFFSCREEN_SCALE, OFFSCREEN_SCALE, 1.0f);
 		SM.draw();
+		ofPopMatrix();
 		ofPopStyle();
 
 		ofEnableAlphaBlending();
-		mask.draw(0, 0, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+		mask.draw(0, 0, effectiveWidth, effectiveHeight);
 		ofDisableAlphaBlending();
 
 		MRM.endOffscreenDraw();
@@ -149,10 +155,10 @@ void testApp::draw() {
 			}
 		} else {
 			ofSetColor(255, 255, 255, 255);
-			if(OFFSCREEN_WIDTH < ofGetWidth() && OFFSCREEN_HEIGHT < ofGetHeight()) {
-				MRM.myOffscreenTexture.draw(0, ofGetHeight() - OFFSCREEN_HEIGHT, OFFSCREEN_WIDTH, OFFSCREEN_HEIGHT);
+			if(effectiveWidth < ofGetWidth() && effectiveHeight < ofGetHeight()) {
+				MRM.myOffscreenTexture.draw(0, ofGetHeight() - effectiveHeight, effectiveWidth, effectiveHeight);
 			} else {
-				float ratio = (float) OFFSCREEN_HEIGHT / (float) OFFSCREEN_WIDTH;
+				float ratio = (float) effectiveHeight / (float) effectiveWidth;
 				float scaledWidth = ofGetWidth();
 				float scaledHeight = ratio * scaledWidth;
 				MRM.myOffscreenTexture.draw(0, ofGetHeight() - scaledHeight, scaledWidth, scaledHeight);
