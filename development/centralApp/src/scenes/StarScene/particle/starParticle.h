@@ -1,8 +1,8 @@
 #pragma once
 
-
 #include "ofMain.h"
 #include "ofxVectorMath.h"
+#include "renderConstants.h"
 
 class starParticle {
 

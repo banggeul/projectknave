@@ -18,23 +18,20 @@ void StarScene::setup(){
 	temp.setImageType(OF_IMAGE_GRAYSCALE);
 	PM.findLockTarget(temp.getPixels(), temp.width, temp.height);
 
-
 	bAllocatedYet = false;
 
 	bFinal = false;
 
-	skyImage.loadImage("images/horsehead.jpg");
-	
-	
-	
+	skyImage.loadImage("images/horsehead-big.jpg");
+
 	panel.setup("Star Scene", 700, 10, 300, 450);
 	panel.addPanel("Settings", 1, false);
-	
+
 	panel.setWhichPanel("Settings");
 	panel.addSlider("Max Particle Alpha", "MAX_ALPHA", 0.0, 0.0, 1.0, false);
 	panel.addSlider("Max Particle Size", "MAX_SIZE", 30.0, 1.0, 200.0, false);
 	panel.loadSettings("settings/panels_xml/StarScenePanel.xml");
-	
+
 }
 
 void StarScene::update(){
@@ -53,23 +50,6 @@ void StarScene::update(){
 		videoGrayTemporallySmoothed2.allocate(w,h);
 		bAllocatedYet  = true;
 	}
-
-	/*// always move 200 particles OFFSCREEN
-	for (int i = 0; i < 200; i++){
-		PM.particles[i].pos.set(OFFSCREEN_WIDTH*2 + i * 10, 500,0);
-	}
-*/
-
-
-/*
-
-	for (int i = 0; i < packet.nCentroids; i++){
-		PM.particles[i].pos.set(packet.allCentroid[i].x * scalex, packet.allCentroid[i].y * scaley, 0);
-		PM.particles[i].vel.set(0,0,0);
-		PM.particles[i].energy = 1;						// BIG
-	}
-
-*/
 
 	float scalex =  (float)OFFSCREEN_WIDTH / (float)videoGray.width;
 	float scaley = (float)OFFSCREEN_HEIGHT / (float)videoGray.height;
@@ -97,7 +77,6 @@ void StarScene::update(){
 
 	contours.findContours(videoGraySmoothed, 5, 10000, 40, false, false);
 
-
 	videoGrayTemporallySmoothed.set(0);
 
 	for (int i = 0; i < contours.nBlobs; i++){
@@ -119,12 +98,10 @@ void StarScene::update(){
 						float velx = SOBJ[j].center.x - SOBJ[j].prevCenter.x;
 						float vely = SOBJ[j].center.y - SOBJ[j].prevCenter.y;
 
-						// SOBJ[j].center.y*scaley > (1024/1.8) || fabs(SOBJ[j].center.x*scalex - 1793/2) < 150
 						if (true){
 							PM.particles.erase(PM.particles.begin());
 							groupableParticle tempParticle;
 							PM.particles.push_back(tempParticle);
-							//PM.particles[PM.particles.size()-1].setInitialCondition(SOBJ[j].center.x*scalex, SOBJ[j].center.y*scaley,0,0);
 
 							float startX;
 							if(SOBJ[j].center.x > middleX) {
@@ -144,29 +121,6 @@ void StarScene::update(){
 					PM.VF.addIntoField( ((float)SOBJ[j].center.x *scalex ) / (float)OFFSCREEN_WIDTH, (float)(SOBJ[j].center.y*scaley)/ (float)OFFSCREEN_HEIGHT, ofxVec2f(SOBJ[j].vel.x*0.0003, SOBJ[j].vel.y*0.0003), 0.09);
 
 					}
-
-					///cout << SOBJ[j].center.x << " " << SOBJ[j].center.y << endl;
-
-					/*
-
-					 //------------------------------------- make some particles
-					 particles.assign(1400, groupableParticle());
-
-					 //------------------------------------- properties, like drag and pos, etc, etc.
-					 for(int j = 0; j < particles.size(); j ++){
-					 particles[j].pos.set(ofxVec3f(ofRandom(0,1793), ofRandom(0,1024), 0));
-					 particles[j].vel.set(0,0,0);
-					 float drag = ofRandom(0.0717, 0.08);
-					 particles[j].drag = drag;
-
-					 particles[j].radius = 5;// + powf(ofRandom(0,1), 3) * 20;
-					 //if (j == 10)  particles[j].radius = 30;
-					 }
-					 }
-
-					 */
-
-
 				}
 
 				if (pct > 0.01f)
@@ -246,7 +200,7 @@ void StarScene::mouseDragged(int wx, int wy, int x, int y, int button){
 //--------------------------------------------------------------
 void StarScene::mousePressed(int wx, int wy, int x, int y, int button){
 	panel.mousePressed(wx, wy, button);
-	
+
 	// events for the ferry building
 	building.mousePressed(x, y, button);
 }
@@ -278,8 +232,6 @@ void StarScene::draw(){
 
 	ofSetColor(255, 255, 255);
 	PM.draw();
-	
-	
 }
 
 void StarScene::drawTop(){
@@ -287,7 +239,6 @@ void StarScene::drawTop(){
 		videoGrayTemporallySmoothed2.draw(0,0);
 		contours.draw(0,0);
 	}
-	
 	panel.draw();
 }
 

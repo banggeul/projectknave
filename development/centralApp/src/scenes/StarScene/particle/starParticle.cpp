@@ -8,7 +8,7 @@ starParticle::starParticle(){
     pos = ofxVec3f(0,0,0);
     vel = ofxVec3f(0,0,0);
     frc = ofxVec3f(0,0,0);
-	
+
 	energy = 0;
 	radius = 4;// + ofRandom(0,6);
 	bBeenPeaked = false;
@@ -68,9 +68,9 @@ void starParticle::addRepulsionForce(starParticle & p, float radius, float scale
 			bAmCloseEnough = false;
 		}
 	}
-	
+
 	if (bAmCloseEnough == true){
-		
+
 		ofxVec2f forceVec = ofxVec2f(0,0);
 		forceVec.x = x-pos.x;
 		forceVec.y = y-pos.y;
@@ -88,16 +88,16 @@ void starParticle::addRepulsionForce(starParticle & p, float radius, float scale
 void starParticle::addAttractionForce(starParticle & p, float radius, float scale){
 	float x = p.pos.x;
 	float y = p.pos.y;
-	
+
 	bool bAmCloseEnough = true;
 	if (radius > 0){
 		if (sqrt((x-pos.x)*(x-pos.x) + (y-pos.y)*(y-pos.y)) > radius){
 			bAmCloseEnough = false;
 		}
 	}
-	
+
 	if (bAmCloseEnough == true){
-		
+
 		ofxVec2f forceVec = ofxVec2f(0,0);
 		forceVec.x = x-pos.x;
 		forceVec.y = y-pos.y;
@@ -118,7 +118,7 @@ void starParticle::addRepulsionForce(float x, float y, float radius, float scale
 			bAmCloseEnough = false;
 		}
 	}
-	
+
 	if (bAmCloseEnough == true){
 		ofxVec2f forceVec = ofxVec2f(0,0);
 		forceVec.x = x-pos.x;
@@ -130,14 +130,14 @@ void starParticle::addRepulsionForce(float x, float y, float radius, float scale
 }
 
 void starParticle::addAttractionForce(float x, float y, float radius, float scale){
-	
+
 	bool bAmCloseEnough = true;
 	if (radius > 0){
 		if (sqrt((x-pos.x)*(x-pos.x) + (y-pos.y)*(y-pos.y)) > radius){
 			bAmCloseEnough = false;
 		}
 	}
-	
+
 	if (bAmCloseEnough == true){
 		ofxVec2f forceVec = ofxVec2f(0,0);
 		forceVec.x = x-pos.x;
@@ -170,33 +170,23 @@ void starParticle::update(){
     vel.y = vel.y + frc.y;
     pos.x = pos.x + vel.x;
     pos.y = pos.y + vel.y;
-	
+
 	energy *= 0.989f;
 }
 
 
 //--------------------------
-void starParticle::findLockTarget(unsigned char * pixels, int width, int height){
-	
-	//cout << "heeeer \n";
-	bool bfoundWhite = false;
-	while (bfoundWhite == false){
-		
-		int randW = (int)ofRandom(0,width-1);
-		int randH = (int)ofRandom(0,height-1);
-		if (pixels[randH * width + randW] > 10){
-			lockTarget.set(randW*2, randH*2, 0);
-			//pos.set(randW*2, randH*2, 0);
-			bfoundWhite = true;
-			//cout << "2 \n";
-		} else {
-			//cout << "1 \n";
-			//cout << "looking again \n";
+void starParticle::findLockTarget(unsigned char * pixels, int imgWidth, int imgHeight){
+	float scaleX = (float) OFFSCREEN_WIDTH / (float) imgWidth;
+	float scaleY = (float) OFFSCREEN_HEIGHT / (float) imgHeight;
+	while (true){
+		int randW = (int) ofRandom(0, imgWidth - 1);
+		int randH = (int) ofRandom(0, imgHeight - 1);
+		if (pixels[randH * imgWidth + randW] > 10){
+			lockTarget.set(randW * scaleX, randH * scaleY, 0);
+			break;
 		}
-		
 	}
-	
-	
 }
 
 
