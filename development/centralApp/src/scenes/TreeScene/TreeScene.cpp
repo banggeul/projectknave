@@ -17,7 +17,7 @@ void TreeScene::setup() {
 	
 	
 	// ------------ Control Panel For Trees
-	panel.setup("Tree Scene", 700, 10, 300, 950);
+	panel.setup("Tree Scene", 700, 10, 300, 850);
 	panel.addPanel("Triggers", 1, false);
 	
 	panel.setWhichPanel("Triggers");
