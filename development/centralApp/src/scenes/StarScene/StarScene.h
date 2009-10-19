@@ -48,11 +48,11 @@ public:
 	void mouseDragged(int wx, int wy, int x, int y, int button);
 	void mousePressed(int wx, int wy, int x, int y, int button);
 	void mouseReleased(int wx, int wy, int x, int y, int button);
-	
-	
+
+
 	particleManager PM;
-		ofImage		temp;
-		ofImage skyImage;
+	ofImage		temp;
+	ofImage skyImage;
 
 	bool					bAllocatedYet;
 	ofxCvGrayscaleImage		videoGray;
@@ -67,15 +67,3 @@ public:
 	ofxControlPanel			panel;
 	bool	bFinal;
 };
-
-
-/*
-
-
-
- temp.loadImage("images/logoHalf.png");
- temp.setImageType(OF_IMAGE_GRAYSCALE);
- PM.findLockTarget(temp.getPixels(), temp.width, temp.height);
-
-
- */

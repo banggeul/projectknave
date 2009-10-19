@@ -12,6 +12,10 @@ particleManager::particleManager() {
 	minNoise = 0.499;
 	maxNoise = 0.501;
 	impNoise = new ImprovedNoise();
+
+	float designedHeight = 1024;
+	radiusScale = .7 * (float) OFFSCREEN_HEIGHT / designedHeight;
+	connectionLineWidth = 1 * (float) OFFSCREEN_HEIGHT / designedHeight;
 }
 
 //---------------------------------------------------------------------------------
@@ -626,25 +630,16 @@ void particleManager::draw() {
 	*/
 
 	float time = ofGetElapsedTimeMillis();
-	float dotR = 10;
 
 	ofSetColor(255, 255, 255);
 	ofFill();
 	for (int i = 0; i < particles.size(); i++) {
-
 		if (mode != 5) {
-			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 0.7);
+			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * radiusScale);
 		} else {
-			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 2 * 0.7 + particles[i].fiveEnergy * 2.5);
+			ofCircle(particles[i].pos.x, particles[i].pos.y, particles[i].radius * 2 * radiusScale + particles[i].fiveEnergy * 3 * radiusScale);
 		}
 	}
-
-	// VF.draw(0,0,ofGetWidth(), ofGetHeight(), 20);
-
-	// triangle mother fucker
-
-
-	//------------------------------------
 
 	Delaunay::Point tempP;
 	vector< Delaunay::Point > v;
@@ -657,6 +652,8 @@ void particleManager::draw() {
 	Delaunay delobject(v);
 	delobject.Triangulate();
 
+	ofPushStyle();
+	glLineWidth(connectionLineWidth);
 	for (Delaunay::fIterator fit  = delobject.fbegin();
 	     fit != delobject.fend();
 	     ++fit) {
@@ -675,12 +672,7 @@ void particleManager::draw() {
 			}
 		}
 	}
-	ofSetColor(0xffffff);
-
-
-	for (int i = 0; i < VFs.size(); i++) {
-		//VFs[i].draw();
-	}
+	ofPopStyle();
 
 	//shader.setShaderActive(false);
 	//ofPopStyle();
