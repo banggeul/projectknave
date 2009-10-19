@@ -1,5 +1,5 @@
 attribute float particleSize;
-uniform vec3 theColor;
+
 void main() {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	vec4 eyeCoord = gl_ModelViewMatrix * gl_Vertex;
