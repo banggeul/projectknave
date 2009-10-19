@@ -4,7 +4,7 @@
 // ------------------------------------------
 void TreeScene::setup() {
 	
-	bDebug = true;
+	bDebug = false;
 	butterFlyColor.push_back(0xd1007e);
 	butterFlyColor.push_back(0x00a3c4);
 	butterFlyColor.push_back(0x6ac539);

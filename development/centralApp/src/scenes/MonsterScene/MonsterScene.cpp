@@ -19,10 +19,12 @@ void MonsterScene::setup(){
 
 	panel.loadSettings("settings/panels_xml/monsterScenePanel.xml");
 
-	bMonsterTimer	  = false;
-	bDebug			  = true;
+	bMonsterTimer	  = true;
+	bDebug			  = false;
 	bGotMyFirstPacket = false;
-
+	
+	panel.setValueB("DEBUG", 0);
+	
 	// box2d
 	box2d.init();
 	box2d.setGravity(0, 20);
@@ -523,9 +525,10 @@ void MonsterScene::draw() {
 
 
 	// ferry building only for setup (hide when live)
-	ferryBuilding.drawContour();
-	ferryBuilding.drawInfo();
-	
+	if(bDebug) {
+		ferryBuilding.drawContour();
+		ferryBuilding.drawInfo();
+	}
 	ofDisableAlphaBlending();
 	ofPopStyle();
 }
@@ -578,6 +581,20 @@ void MonsterScene::keyPressed(int key) {
 		if(key == 'M') {
 			saveMonsterSettings();
 		}
+		
+		if(key == '1') {
+			ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/BuildingMonsters_0.xml");
+			createBuildingContour();
+		}
+		if(key == '2') {
+			ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/BuildingMonsters_1.xml");
+			createBuildingContour();
+		}
+		if(key == '3') {
+			ferryBuilding.setupBuilding("buildingRefrences/buidlingFiles/BuildingMonsters_2.xml");
+			createBuildingContour();
+		}
+		
 	}
 
 	if(key == 'd') {
@@ -614,7 +631,7 @@ void MonsterScene::keyPressed(int key) {
 		createBuildingContour();
 	}
 	
-	if(key == 'p') bMonsterTimer = !bMonsterTimer;
+	//if(key == 'p') bMonsterTimer = !bMonsterTimer;
 }
 
 //--------------------------------------------------------------
