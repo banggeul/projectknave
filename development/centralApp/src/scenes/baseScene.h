@@ -1,16 +1,4 @@
-/*
- *  baseScene.h
- *  openFrameworks
- *
- *  Created by Zach Lieberman on 9/23/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
-
-
-
-#pragma once;
+#pragma once
 
 #include "ofMain.h"
 #include "cvPacket.h"
@@ -42,7 +30,7 @@ public:
 	virtual void mouseDragged(int wx, int wy, int x, int y, int button){}
 	virtual void mousePressed(int wx, int wy, int x, int y, int button){}
 	virtual void mouseReleased(int wx, int wy, int x, int y, int button){}
-	
+
 
 	// blob tracking
 	virtual void blobOn( int x, int y, int bid, int order ) {}

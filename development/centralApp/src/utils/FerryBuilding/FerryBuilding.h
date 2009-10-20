@@ -1,6 +1,4 @@
-
-
-#pragma once;
+#pragma once
 
 #include "ofMain.h"
 #include "ofxXmlSettings.h"

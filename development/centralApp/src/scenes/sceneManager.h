@@ -19,6 +19,7 @@
 #include "StarScene.h"
 #include "TreeScene.h"
 #include "PaintScene.h"
+#include "WarpScene.h"
 
 #include "FerryBuilding.h"
 #include "ofxBox2d.h"
@@ -28,7 +29,7 @@
 #include "cvManager.h"
 
 enum {
-	HAND_SCENE, TREE_SCENE, PAINT_SCENE, MONSTER_SCENE, STAR_SCENE
+	HAND_SCENE, TREE_SCENE, PAINT_SCENE, MONSTER_SCENE, STAR_SCENE, WARP_SCENE
 };
 
 

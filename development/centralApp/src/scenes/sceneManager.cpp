@@ -14,7 +14,7 @@ void sceneManager::setup(cvManager& CVM){
 	this->CVM = &CVM;
 
 	currentScene	= 0;
-	numScenes		= 5;
+	numScenes		= 6;
 
 	scenes			= new baseScene*[numScenes];
 
@@ -23,6 +23,7 @@ void sceneManager::setup(cvManager& CVM){
 	scenes[2]		= new PaintScene();
 	scenes[3]		= new MonsterScene();
 	scenes[4]		= new StarScene();
+	scenes[5]   = new WarpScene();
 
 
 	// set the blob listener
@@ -107,6 +108,7 @@ void sceneManager::gotoScene(int theScene) {
 		case PAINT_SCENE: ofSetFrameRate(30); break;
 		case STAR_SCENE: ofSetFrameRate(45); break;
 		case MONSTER_SCENE: ofSetFrameRate(30); break;
+		case WARP_SCENE: ofSetFrameRate(30); break;
 		default: ofSetFrameRate(60);
 	}
 
