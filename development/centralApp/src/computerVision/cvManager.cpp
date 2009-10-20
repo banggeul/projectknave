@@ -3,6 +3,7 @@
 cvManager::cvManager(){
 	bSetup				= false;
 	bUseFBOSticher      = false;
+	recording = false;
 }
 
 void cvManager::setupNonCV(){
@@ -455,9 +456,10 @@ void cvManager::update(){
 	//pointer to our incoming video pixels
 	unsigned char * pixCam;
 
+	unsigned char * pixCapture;
+
 	// are we using a video grabber
 	if(bUsingVideoGrabber) {
-
 		if(bUseFBOSticher) {
 			for(int i=0; i<nVideos; i++) {
 				VG[i].grabFrame();
@@ -477,6 +479,10 @@ void cvManager::update(){
 
 		}
 
+		if(recording) {
+			videoCapture.addFrame(VG[0].getPixels());
+			cout << "adding a frame from VG" << endl;
+		}
 	}
 
 
@@ -508,9 +514,11 @@ void cvManager::update(){
 
 		}
 
+		if(recording) {
+			videoCapture.addFrame(VP[0].getPixels());
+			cout << "adding a frame from VP" << endl;
+		}
 	}
-
-
 
 
 	///////////////////////////////////////////////////////////
@@ -957,4 +965,20 @@ void cvManager::draw() {
 	 */
 
 	panel.draw();
+}
+
+void cvManager::startRecording(string filename) {
+	if(!recording) {
+		videoCapture.setCodecType(OF_QT_SAVER_CODEC_SORENSON_3);
+		videoCapture.setCodecQualityLevel(OF_QT_SAVER_CODEC_QUALITY_HIGH);
+		videoCapture.setup(inputW, inputH, filename);
+		recording = true;
+	}
+}
+
+void cvManager::stopAndSaveRecording() {
+	if(recording) {
+		videoCapture.finishMovie();
+		recording = false;
+	}
 }

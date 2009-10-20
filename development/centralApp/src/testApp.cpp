@@ -216,6 +216,15 @@ void testApp::keyPressed(int key){
 		case OF_KEY_DOWN:
 			SM.prevScene();
 			break;
+
+		case 'r':
+			CVM.startRecording(
+				ofToString(ofGetHours()) + "_" +
+				ofToString(ofGetMinutes()) + "_" +
+				ofToString(ofGetElapsedTimeMillis()) + ".mov");
+				break;
+		case 'e':
+			CVM.stopAndSaveRecording();
 	}
 }
 

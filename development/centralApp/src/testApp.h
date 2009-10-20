@@ -13,9 +13,6 @@
 
 #include "ofxDaito.h"
 
-
-// ----------------------------------------- new Render Manager
-
 #include "megaRenderManager.h"
 
 enum {

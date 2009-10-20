@@ -19,7 +19,7 @@
 // fbo stricher
 #include "stricherRenderManager.h"
 
-
+#include "ofxQtVideoSaver.h"
 
 enum {
 	CV_SENDER, CV_RECEIVER
@@ -162,20 +162,17 @@ class cvManager {
 	vector < partialReadObject * >	partialReadObjects;
 
 
-
-
-
-
 	int connectTime;
 	int deltaTime;
 	bool weConnected;
 
 
+	// - - -- save video input to file
+	void startRecording(string filename);
+	void stopAndSaveRecording();
 
-
-
-
-
+	ofxQtVideoSaver videoCapture;
+	bool recording;
 };
 
 
