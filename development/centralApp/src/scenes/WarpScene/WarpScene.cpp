@@ -1,7 +1,7 @@
 #include "WarpScene.h"
 
 void WarpScene::setup() {
-	warper.setup("images/multicolor.jpg", 30, 50);
+	warper.setup("images/warping.jpg", 30, 50);
 
 	panel.setup("Warp Scene", 700, 10, 300, 750);
 
