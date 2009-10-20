@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofxBox2d.h"
+#include "ofxXmlSettings.h"
 
 class ImageWarper {
 protected:
@@ -21,6 +22,10 @@ public:
 		box2d.setGravity(0, 0);
 	}
 	void setup(string filename, int fps, float resolution) {
+		ofxXmlSettings xml;
+		xml.loadFile("settings/ImageWarperSettings.xml");
+		warpDebug = xml.getValue("warpDebug", 0) == 1;
+
 		img.loadImage(filename);
 
 		box2d.setFPS(fps);
@@ -28,16 +33,16 @@ public:
 		warpWidth = img.getWidth();
 		warpHeight = img.getHeight();
 
-		xSize = (int) resolution;
+		xSize = (int) xml.getValue("resolution", 20);
 		ySize = (int) (resolution * warpHeight / warpWidth);
 
 		float radius = 3;
-		float mass = 1;
+		float mass = xml.getValue("mass", 1);
 		float bounce = 0.4; // irrelevant
 		float friction = 0.1; // irrelevant
 
-		float stiffness = warpWidth / xSize;
-		float damping = .5; // harder to pull around, rests faster
+		float stiffness = (warpWidth / xSize) * xml.getValue("stiffness", 1);
+		float damping = xml.getValue("damping", .3); // harder to pull around, rests faster
 
 		for (int y = 0; y < ySize; y++) {
 			for (int x = 0; x < xSize; x++) {
@@ -73,15 +78,9 @@ public:
 			}
 		}
 	}
-	void addAttraction(float x, float y, float sourceWidth, float sourceHeight, float attraction, float minDistance) {
-		x *= warpWidth / sourceWidth;
-		y *= warpHeight / sourceHeight;
+	void addAttraction(float x, float y, float attraction, float minDistance) {
 		for(int i = 0; i < grid.size(); i++)
 			grid[i].addAttractionPoint(x, y, attraction, minDistance);
-
-	}
-	void addAttraction(float x, float y, float sourceWidth, float sourceHeight) {
-		addAttraction(x, y, sourceWidth, sourceHeight, -10, 20);
 	}
 	void update() {
 		box2d.update();
