@@ -44,9 +44,9 @@ ofxMSAFluidDrawer::ofxMSAFluidDrawer() {
 	_didICreateTheFluid	= false;
 	alpha				= 1;
 	doInvert			= false;
-	
+
 	enableAlpha(false);
-	
+
 	setDrawMode(FLUID_DRAW_COLOR);
 }
 
@@ -203,11 +203,11 @@ void ofxMSAFluidDrawer::drawColor(float x, float y, float renderWidth, float ren
 				g = 255 - g;
 				b = 255 - b;
 			}
-			
+
 			_pixels[index++] = r;
 			_pixels[index++] = g;
 			_pixels[index++] = b;
-			 
+
 			if(_alphaEnabled) int a = _pixels[index++] = withAlpha ? MAX(b, MAX(r, g)) : 255;
 		}
 	}
@@ -287,7 +287,7 @@ void ofxMSAFluidDrawer::drawVectors(float x, float y, float renderWidth, float r
 
 	ofPoint vel;
 	glEnable(GL_LINE_SMOOTH);
-	glLineWidth(1);
+	glLineWidth(1 * OFFSCREEN_SCALE);
 	for (int j=0; j<fh-2; j++ ){
 		for (int i=0; i<fw-2; i++ ){
 			_fluidSolver->getInfoAtCell(i+1, j+1, &vel, NULL);
