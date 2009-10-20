@@ -139,7 +139,7 @@ b2ContactSolver::b2ContactSolver(const b2TimeStep& step, b2Contact** contacts, i
 			{
 				b2ContactConstraintPoint* ccp1 = cc->points + 0;
 				b2ContactConstraintPoint* ccp2 = cc->points + 1;
-				
+
 				float32 invMass1 = b1->m_invMass;
 				float32 invI1 = b1->m_invI;
 				float32 invMass2 = b2->m_invMass;
@@ -285,14 +285,14 @@ void b2ContactSolver::SolveVelocityConstraints()
 			// implies that we must have in any solution either vn_i = 0 or x_i = 0. So for the 2D contact problem the cases
 			// vn1 = 0 and vn2 = 0, x1 = 0 and x2 = 0, x1 = 0 and vn2 = 0, x2 = 0 and vn1 = 0 need to be tested. The first valid
 			// solution that satisfies the problem is chosen.
-			// 
+			//
 			// In order to account of the accumulated impulse 'a' (because of the iterative nature of the solver which only requires
 			// that the accumulated impulse is clamped and not the incremental impulse) we change the impulse variable (x_i).
 			//
 			// Substitute:
-			// 
+			//
 			// x = x' - a
-			// 
+			//
 			// Plug into above equation:
 			//
 			// vn = A * x + b
@@ -372,7 +372,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 				//
 				// Case 2: vn1 = 0 and x2 = 0
 				//
-				//   0 = a11 * x1' + a12 * 0 + b1' 
+				//   0 = a11 * x1' + a12 * 0 + b1'
 				// vn2 = a21 * x1' + a22 * 0 + b2'
 				//
 				x.x = - cp1->normalMass * b.x;
@@ -414,7 +414,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 				//
 				// Case 3: w2 = 0 and x1 = 0
 				//
-				// vn1 = a11 * 0 + a12 * x2' + b1' 
+				// vn1 = a11 * 0 + a12 * x2' + b1'
 				//   0 = a21 * 0 + a22 * x2' + b2'
 				//
 				x.x = 0.0f;
@@ -454,7 +454,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 
 				//
 				// Case 4: x1 = 0 and x2 = 0
-				// 
+				//
 				// vn1 = b1
 				// vn2 = b2;
 				x.x = 0.0f;

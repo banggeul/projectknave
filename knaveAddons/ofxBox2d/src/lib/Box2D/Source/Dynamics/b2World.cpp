@@ -505,7 +505,7 @@ void b2World::Solve(const b2TimeStep& step)
 		{
 			continue;
 		}
-		
+
 		// Update shapes (for broad-phase). If the shapes go out of
 		// the world AABB then shapes and contacts may be destroyed,
 		// including contacts that are
@@ -528,13 +528,13 @@ void b2World::SolveTOI(const b2TimeStep& step)
 {
 	// Reserve an island and a queue for TOI island solution.
 	b2Island island(m_bodyCount, b2_maxTOIContactsPerIsland, b2_maxTOIJointsPerIsland, &m_stackAllocator, m_contactListener);
-	
+
 	//Simple one pass queue
 	//Relies on the fact that we're only making one pass
 	//through and each body can only be pushed/popped once.
-	//To push: 
+	//To push:
 	//  queue[queueStart+queueSize++] = newElement;
-	//To pop: 
+	//To pop:
 	//	poppedElement = queue[queueStart++];
 	//  --queueSize;
 	int32 queueCapacity = m_bodyCount;
@@ -594,7 +594,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 
 				// Put the sweeps onto the same time interval.
 				float32 t0 = b1->m_sweep.t0;
-				
+
 				if (b1->m_sweep.t0 < b2->m_sweep.t0)
 				{
 					t0 = b2->m_sweep.t0;
@@ -667,7 +667,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 
 		// Reset island and queue.
 		island.Clear();
-		
+
 		int32 queueStart = 0; // starting index for queue
 		int32 queueSize = 0;  // elements in queue
 		queue[queueStart + queueSize++] = seed;
@@ -679,7 +679,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 			// Grab the next body off the stack and add it to the island.
 			b2Body* b = queue[queueStart++];
 			--queueSize;
-			
+
 			island.Add(b);
 
 			// Make sure the body is awake.
@@ -737,36 +737,36 @@ void b2World::SolveTOI(const b2TimeStep& step)
 				++queueSize;
 				other->m_flags |= b2Body::e_islandFlag;
 			}
-			
+
 			for (b2JointEdge* jEdge = b->m_jointList; jEdge; jEdge = jEdge->next)
 			{
 				if (island.m_jointCount == island.m_jointCapacity)
 				{
 					continue;
 				}
-				
+
 				if (jEdge->joint->m_islandFlag == true)
 				{
 					continue;
 				}
-				
+
 				island.Add(jEdge->joint);
-				
+
 				jEdge->joint->m_islandFlag = true;
-				
+
 				b2Body* other = jEdge->other;
-				
+
 				if (other->m_flags & b2Body::e_islandFlag)
 				{
 					continue;
 				}
-				
+
 				if (!other->IsStatic())
 				{
 					other->Advance(minTOI);
 					other->WakeUp();
 				}
-				
+
 				b2Assert(queueStart + queueSize < queueCapacity);
 				queue[queueStart + queueSize] = other;
 				++queueSize;
@@ -833,7 +833,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 			b2Joint* j = island.m_joints[i];
 			j->m_islandFlag = false;
 		}
-		
+
 		// Commit shape proxy movements to the broad-phase so that new contacts are created.
 		// Also, some contacts can be destroyed.
 		m_broadPhase->Commit();
@@ -862,7 +862,7 @@ void b2World::Step(float32 dt, int32 velocityIterations, int32 positionIteration
 	step.dtRatio = m_inv_dt0 * dt;
 
 	step.warmStarting = m_warmStarting;
-	
+
 	// Update contacts.
 	m_contactManager.Collide();
 
@@ -989,13 +989,13 @@ void b2World::DrawShape(b2Shape* shape, const b2XForm& xf, const b2Color& color,
 			}
 		}
 		break;
-		
+
 	case e_edgeShape:
 		{
 			b2EdgeShape* edge = (b2EdgeShape*)shape;
-			
+
 			m_debugDraw->DrawSegment(b2Mul(xf, edge->GetVertex1()), b2Mul(xf, edge->GetVertex2()), color);
-			
+
 			if (core)
 			{
 				m_debugDraw->DrawSegment(b2Mul(xf, edge->GetCoreVertex1()), b2Mul(xf, edge->GetCoreVertex2()), coreColor);

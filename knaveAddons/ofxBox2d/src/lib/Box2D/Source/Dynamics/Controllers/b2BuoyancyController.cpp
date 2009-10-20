@@ -84,7 +84,7 @@ void b2BuoyancyController::Step(const b2TimeStep& step)
 		//Angular drag
 		//TODO: Something that makes more physical sense?
 		body->ApplyTorque(-body->GetInertia()/body->GetMass()*area*body->GetAngularVelocity()*angularDrag);
-		
+
 	}
 }
 

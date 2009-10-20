@@ -24,20 +24,20 @@ b2EdgeShape::b2EdgeShape(const b2Vec2& v1, const b2Vec2& v2, const b2ShapeDef* d
 	b2Assert(def->type == e_edgeShape);
 
 	m_type = e_edgeShape;
-	
+
 	m_prevEdge = NULL;
 	m_nextEdge = NULL;
-	
+
 	m_v1 = v1;
 	m_v2 = v2;
-	
+
 	m_direction = m_v2 - m_v1;
 	m_length = m_direction.Normalize();
 	m_normal.Set(m_direction.y, -m_direction.x);
-	
+
 	m_coreV1 = -b2_toiSlop * (m_normal - m_direction) + m_v1;
 	m_coreV2 = -b2_toiSlop * (m_normal + m_direction) + m_v2;
-	
+
 	m_cornerDir1 = m_normal;
 	m_cornerDir2 = -1.0f * m_normal;
 }
@@ -152,7 +152,7 @@ void b2EdgeShape::SetNextEdge(b2EdgeShape* edge, const b2Vec2& core, const b2Vec
 
 float32 b2EdgeShape::ComputeSubmergedArea(	const b2Vec2& normal,
 												float32 offset,
-												const b2XForm& xf, 
+												const b2XForm& xf,
 												b2Vec2* c) const
 {
 	//Note that v0 is independant of any details of the specific edge

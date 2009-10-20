@@ -28,7 +28,7 @@ void b2ConstantAccelController::Step(const b2TimeStep& step)
 	for(b2ControllerEdge *i=m_bodyList;i;i=i->nextBody){
 		b2Body* body = i->body;
 		if(body->IsSleeping())
-			continue; 
+			continue;
 		body->SetLinearVelocity(body->GetLinearVelocity()+step.dt*A);
 	}
 }
