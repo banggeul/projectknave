@@ -16,9 +16,15 @@ protected:
 	ofImage img;
 public:
 	ImageWarper() {
-		warpDebug = true;
+		warpDebug = false;
 		box2d.init();
 		box2d.setGravity(0, 0);
+	}
+	int getWidth() {
+		return (int) img.getWidth();
+	}
+	int getHeight() {
+		return (int) img.getHeight();
 	}
 	void setup(string filename, int fps, float resolution) {
 		img.loadImage(filename);
@@ -31,13 +37,13 @@ public:
 		xSize = (int) resolution;
 		ySize = (int) (resolution * warpHeight / warpWidth);
 
-		float radius = 3;
+		float radius = ((float) warpWidth / (float) xSize) * .3;
 		float mass = 1;
 		float bounce = 0.4; // irrelevant
 		float friction = 0.1; // irrelevant
 
-		float stiffness = warpWidth / xSize;
-		float damping = .5; // harder to pull around, rests faster
+		float stiffness = ((float) warpWidth / (float) xSize) * .05;
+		float damping = .1; // harder to pull around, rests faster
 
 		for (int y = 0; y < ySize; y++) {
 			for (int x = 0; x < xSize; x++) {
@@ -73,11 +79,7 @@ public:
 			}
 		}
 	}
-	void addAttraction(float x, float y, float sourceWidth, float sourceHeight) {
-		float attraction = -10;
-		float minDistance = 20;
-		x = ofMap(x, 0, sourceWidth, 0, warpWidth);
-		y = ofMap(y, 0, sourceHeight, 0, warpHeight);
+	void addAttraction(float x, float y, float attraction, float minDistance) {
 		for(int i = 0; i < grid.size(); i++)
 			grid[i].addAttractionPoint(x, y, attraction, minDistance);
 	}
